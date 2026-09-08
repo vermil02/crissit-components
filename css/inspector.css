@@ -216,3 +216,18 @@ button.insp-tok:hover{text-decoration:underline}
 
 /* 선언 문자열 안에 박힌 토큰 이름 — 줄 안에 그대로 흐르게 둔다 */
 .insp-tok--inline{display:inline;margin:0;vertical-align:baseline}
+
+/* 설명 켜고 끄기 버튼 — 검사·메모와 같은 부두에 선다 (js/annotations.js) */
+.notes-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;
+  border:1px solid var(--line-normal);border-radius:9999px;
+  background:var(--bg-normal);color:var(--label-normal);
+  font:var(--label-2-bold);cursor:pointer;
+  box-shadow:0 6px 20px rgb(0 0 0 / .10);
+}
+.notes-toggle:hover{border-color:var(--label-alternative)}
+.notes-toggle svg{width:18px;height:18px;flex:none}
+.notes-toggle.is-on{
+  background:var(--neutral-900);color:var(--neutral-0);border-color:var(--neutral-900);
+}

@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="ko">
+<!-- hide-notes: 설명글을 기본으로 감춘다. js/annotations.js 가 「설명」 버튼을 만든다 -->
+<html lang="ko" class="hide-notes">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -53,6 +54,13 @@ body{background:var(--neutral-50)}
 .lbl{font:var(--label-3-medium);color:var(--label-assistive);width:100%;margin:0 0 -8px}
 .spec{font:var(--label-3-medium);color:var(--label-assistive);margin:12px 0 0}
 
+/* 설명 켜고 끄기 — 값의 출처·판단 근거를 적은 글만 감춘다.
+   절 제목·카드 제목·표·행 이름은 내용이라 그대로 둔다 */
+.hide-notes .sec > .desc,
+.hide-notes .sec > .src,
+.hide-notes .card > .note,
+.hide-notes .card .spec{display:none}
+
 /* 아이콘 목록 — 이름 길이가 제각각이라 flex 로 늘어놓으면 두 줄로 넘어가는
    칸 때문에 아이콘 높이가 어긋난다. 격자로 깔면 줄 안에서 자동으로 맞는다 */
 .iconset{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
@@ -95,13 +103,14 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 <script src="js/boardlist-main.js" defer></script>
 <script src="js/inspector.js" defer></script>
 <script src="js/memo.js" defer></script>
+<script src="js/annotations.js" defer></script>
 </head>
 <body>
 
 <div class="cat">
 <nav class="cat__nav">
   <h1>crissit 컴포넌트</h1>
-  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나옵니다.<br>고칠 곳은 <b>메모</b>로 핀을 꽂아<br>남겨 주세요.</p>
+  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나옵니다.<br>고칠 곳은 <b>메모</b>로 핀을 꽂아<br>남겨 주세요.<br><br><b>설명</b> 버튼을 켜면 값의 출처와<br>판단 근거가 컴포넌트마다 붙습니다.</p>
 
   <div class="grp">기반</div>
   <a href="#tokens">디자인 토큰</a>
