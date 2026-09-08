@@ -368,6 +368,45 @@ button.insp-tok:hover{text-decoration:underline}
 }
 .memo-count.is-some{background:var(--memo-accent);color:#fff}
 
+/* ── 연동 상태 — 늘 보인다 ──────────────────────────────────
+   앞의 점으로 상태를 한눈에 알리고, 글자로 무엇인지 못박는다.
+   점만 두면 무슨 색이 무슨 뜻인지 외워야 하고, 글자만 두면 눈에 안 걸린다.
+   눌러서 서버 설정으로 바로 들어간다 */
+.memo-link-state{
+  display:inline-flex;align-items:center;gap:5px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  padding:2px 9px 2px 7px;background:var(--bg-normal, #fff);cursor:pointer;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
+  color:var(--label-alternative, #7c8288);
+}
+.memo-link-state::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--neutral-300, #c9ccd0);
+}
+.memo-link-state:hover{border-color:var(--label-assistive, #a3a8ad)}
+
+/* 연동됨 — 초록. 토큰에 없는 색이라 여기서만 쓴다(도구 UI 이고
+   디자인 컴포넌트가 아니다). 「확인 필요」에 올리지 않는다 */
+.memo-link-state.is-ok{color:#0f7a4a;border-color:#a8dcc0}
+.memo-link-state.is-ok::before{background:#12a05f}
+
+/* 끊김 — 메모 색(빨강)을 그대로 쓴다 */
+.memo-link-state.is-bad{color:var(--memo-accent);border-color:currentColor}
+.memo-link-state.is-bad::before{background:currentColor}
+
+/* 확인 중 — 깜빡여서 지금 뭔가 하고 있음을 알린다 */
+.memo-link-state.is-busy::before{animation:memo-blink 1s ease-in-out infinite}
+@keyframes memo-blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){
+  .memo-link-state.is-busy::before{animation:none}
+}
+
+/* 마지막으로 확인한 시각 — 연동됨일 때만 나온다 */
+.memo-link-when{
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
+  color:var(--label-assistive, #a3a8ad);
+}
+
 /* 고정된 요소가 있을 때만 나타난다 */
 .memo-add{
   margin-left:auto;border:0;border-radius:9999px;padding:4px 11px;

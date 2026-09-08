@@ -784,7 +784,12 @@
   var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
   var trash = [];      // 지운 메모 — 되살릴 수 있게 남겨 둔다
   var srv = null;      // { url, key } — 서버를 안 붙였으면 null
-  var srvState = "";   // 화면에 보여줄 연결 상태
+  var srvState = "";   // 방금 일어난 일을 알리는 **한 번짜리** 문구
+  /* 연동 상태 — 이쪽은 **늘 보인다.** srvState 는 떴다 사라지므로
+     평소에 연동 여부를 알 수 없었다(2026-09-08 사용자 지적) */
+  var linkState = "off";  // off(이 브라우저만) | busy(확인 중) | ok(연동됨) | bad(끊김)
+  var linkAt = 0;      // 마지막으로 서버를 읽어낸 시각
+  var linkWhy = "";    // bad 일 때 왜인지
   var pendingReset = false;  // `?memo-reset=1` 로 열렸다
   var layer, col, bodyEl, footEl, countBtn, toggleBtn, badgeEl;
   var editing = null;             // 지금 쓰고 있는 메모 id (새 메모면 null)
@@ -912,24 +917,43 @@
       var url = "memos.json?t=" + Date.now();   // Pages 가 캐시하므로 매번 새로 받는다
       try {
         fetch(url).then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (d) { shared = (d && d.notes) || []; srvState = ""; done(); })
+          .then(function (d) {
+            shared = (d && d.notes) || [];
+            srvState = ""; linkState = "off"; renderLink(); done();
+          })
           .catch(function () { done(); });
       } catch (e) { done(); }
       return;
     }
     srvState = "불러오는 중…";
+    linkState = "busy"; renderLink();
     fetch(srvUrl()).then(function (r) {
       if (r.status === 401) throw new Error("열쇠가 맞지 않습니다");
       if (!r.ok) throw new Error("서버가 " + r.status + " 로 답했습니다");
       return r.json();
     }).then(function (d) {
       shared = (d && d.notes) || [];
-      srvState = "연결됨 · " + shared.length + "건";
+      srvState = "";                      // 상태는 머리말 표시가 늘 보여 준다
+      linkState = "ok"; linkAt = Date.now(); linkWhy = "";
+      renderLink();
       done();
     }).catch(function (e) {
-      srvState = "연결 실패 — " + e.message;
+      srvState = "";
+      linkState = "bad"; linkWhy = why(e);
+      renderLink();
       done();
     });
+  }
+
+  /* 실패한 이유를 사람이 읽을 말로. `fetch` 는 주소가 틀렸든 인터넷이
+     끊겼든 CORS 에 막혔든 똑같이 "Failed to fetch" 만 던진다 — 브라우저가
+     구분해서 알려주지 않기 때문이라 여기서도 셋을 묶어 적을 수밖에 없다 */
+  function why(e) {
+    var m = (e && e.message) || "";
+    if (/failed to fetch|networkerror|load failed/i.test(m)) {
+      return "서버에 닿지 못했습니다 — 주소가 맞는지, 인터넷이 되는지 확인해 주세요";
+    }
+    return m || "알 수 없는 오류";
   }
 
   /* 화면 → 서버. 실패해도 내 브라우저에는 이미 저장돼 있으니 잃지 않는다 */
@@ -941,10 +965,14 @@
       body: JSON.stringify(note)
     }).then(function (r) {
       srvState = r.ok ? "올렸습니다" : "올리지 못했습니다 (" + r.status + ")";
-      renderFootState();
+      // 올리기가 막혔으면 연동이 끊긴 것이다 — 머리말 표시도 같이 바꾼다
+      if (r.ok) { linkState = "ok"; linkAt = Date.now(); linkWhy = ""; }
+      else { linkState = "bad"; linkWhy = "서버가 " + r.status + " 로 답했습니다"; }
+      renderLink(); renderFootState();
     }).catch(function () {
       srvState = "올리지 못했습니다 — 인터넷이나 주소를 확인해 주세요";
-      renderFootState();
+      linkState = "bad"; linkWhy = "서버에 닿지 못했습니다";
+      renderLink(); renderFootState();
     });
   }
   function drop(id) {
@@ -1100,6 +1128,46 @@
     return "<b>내가 쓴 메모는 이 브라우저에만 저장됩니다</b> — 다른 사람에게는 보이지 않습니다. " +
            "「JSON 내보내기」로 파일을 만들어 전달하거나, <b>「서버 붙이기」</b>로 자동으로 모이게 하세요.";
   }
+  /* 연동 상태 표시 — **늘 보인다.** 눌러서 서버 설정으로 바로 들어갈 수 있다.
+     넷 중 하나다
+       off   이 브라우저만 — 서버를 안 붙였다. 내 메모는 남에게 안 보인다
+       busy  확인 중 — 서버를 읽고 있다
+       ok    연동됨 — 마지막으로 읽어낸 시각을 함께 적는다
+       bad   끊김 — 왜인지를 함께 적는다 (열쇠 · 서버 응답 · 인터넷) */
+  var LINK_TEXT = { off: "이 브라우저만", busy: "확인 중", ok: "연동됨", bad: "연동 끊김" };
+  function renderLink() {
+    if (!col) return;
+    var b = col.querySelector(".memo-link-state");
+    if (!b) return;
+    b.className = "memo-link-state is-" + linkState;
+    b.textContent = LINK_TEXT[linkState];
+    b.title =
+      linkState === "ok"   ? "서버와 연동되어 있습니다 (" + ago(linkAt) + " 확인) · 눌러서 설정" :
+      linkState === "bad"  ? linkWhy + " · 눌러서 설정" :
+      linkState === "busy" ? "서버를 읽고 있습니다" :
+                        "서버를 붙이지 않았습니다 — 내 메모는 이 브라우저에만 있습니다 · 눌러서 붙이기";
+    // ok 일 때만 언제 확인했는지 옆에 적는다. 나머지는 상태 이름이 이미 답이다
+    var when = col.querySelector(".memo-link-when");
+    if (linkState === "ok" && linkAt) {
+      if (!when) {
+        when = document.createElement("span");
+        when.className = "memo-link-when";
+        b.parentNode.insertBefore(when, b.nextSibling);
+      }
+      when.textContent = ago(linkAt);
+    } else if (when) when.remove();
+  }
+
+  /* "방금" · "3분 전" · "2시간 전" — 초 단위까지 적을 이유가 없다 */
+  function ago(t) {
+    if (!t) return "";
+    var s = Math.floor((Date.now() - t) / 1000);
+    if (s < 45) return "방금";
+    if (s < 3600) return Math.round(s / 60) + "분 전";
+    if (s < 86400) return Math.round(s / 3600) + "시간 전";
+    return Math.round(s / 86400) + "일 전";
+  }
+
   function renderFootState() {
     var p = footEl.querySelector(".memo-state");
     if (!srvState) { if (p) p.remove(); return; }
@@ -1232,7 +1300,8 @@
     col = document.createElement("div");
     col.className = "insp-col insp-col--memo";
     col.innerHTML =
-      '<div class="memo-head"><h2>메모</h2><span class="memo-count"></span></div>' +
+      '<div class="memo-head"><h2>메모</h2><span class="memo-count"></span>' +
+        '<button type="button" class="memo-link-state"></button></div>' +
       '<div class="memo-body"></div>' +
       '<div class="memo-foot"></div>';
     panel.appendChild(col);
@@ -1306,6 +1375,7 @@
       var t = e.target;
       if (!t.closest) return;
 
+      if (t.closest(".memo-link-state")) { e.stopPropagation(); openSrv(); return; }
       if (t.closest(".memo-add")) { e.stopPropagation(); openEditor(null, api.getPinned()); return; }
       if (t.closest(".memo-save")) { commit(); return; }
       if (t.closest(".memo-cancel")) { openList(); return; }
@@ -1322,19 +1392,20 @@
         var k = col.querySelector(".memo-srv-key").value.trim();
         if (!/^https:\/\//.test(u) || !k) { alert("주소는 https:// 로 시작해야 하고, 열쇠도 있어야 합니다."); return; }
         saveSrv({ url: u, key: k });
+        linkState = "busy"; renderLink();
         pull(function () { renderCount(); renderPins(); openList(); });
         startWatching();
         return;
       }
       if (t.closest(".memo-srv-link")) {
-        var link = shareLink();
+        var url = shareLink();
         var done = function (ok) {
           srvState = ok ? "링크를 복사했습니다 — 이 링크를 받은 사람은 열기만 하면 연결됩니다"
                         : "복사가 막혔습니다. 아래 칸의 링크를 직접 복사해 주세요";
           renderFootState();
         };
         try {
-          navigator.clipboard.writeText(link).then(function () { done(true); }, function () { done(false); });
+          navigator.clipboard.writeText(url).then(function () { done(true); }, function () { done(false); });
         } catch (e) { done(false); }
         // 복사가 막히는 브라우저를 위해 화면에도 띄워 준다
         var box = col.querySelector(".memo-link");
@@ -1344,12 +1415,13 @@
           box.readOnly = true;
           col.querySelector(".memo-body").appendChild(box);
         }
-        box.value = link;
+        box.value = url;
         box.select();
         return;
       }
       if (t.closest(".memo-srv-off")) {
         saveSrv(null); srvState = "";
+        linkState = "off"; linkAt = 0; linkWhy = ""; renderLink();
         pull(function () { renderCount(); renderPins(); openList(); });
         return;
       }
@@ -1415,6 +1487,10 @@
     });
     addEventListener("load", renderPins);
 
+    // 표시를 먼저 세운다 — pull 이 끝나기 전에도 「확인 중」이 보여야 한다
+    linkState = srv ? "busy" : "off";
+    renderLink();
+
     startWatching();
   }
 
@@ -1454,6 +1530,7 @@
   function startWatching() {
     clearInterval(watchTimer);
     watchTimer = setInterval(function () {
+      renderLink();                        // 「3분 전」이 멈춰 있으면 오해를 준다
       if (!srv || document.hidden) return;
       refresh({ tell: true });
     }, WATCH_MS);
