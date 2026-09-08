@@ -31,7 +31,7 @@
   position:fixed;right:20px;bottom:20px;z-index:9998;
   display:flex;gap:8px;
 }
-.insp-on .insp-dock{right:calc(var(--insp-w) + 20px)}
+.insp-open .insp-dock{right:calc(var(--insp-w) + 20px)}
 
 .insp-panelbtn{
   display:inline-flex;align-items:center;gap:8px;
@@ -44,7 +44,7 @@
 .insp-panelbtn:hover{border-color:var(--label-alternative, #7c8288)}
 .insp-panelbtn svg{width:18px;height:18px;flex:none}
 /* 열려 있으면 눌린 것으로 — 지금 도구를 쓰는 중이라는 표시다 */
-.insp-on .insp-panelbtn{
+.insp-open .insp-panelbtn{
   background:var(--neutral-900, #151617);color:var(--neutral-0, #ffffff);
   border-color:var(--neutral-900, #151617);
 }
@@ -74,19 +74,19 @@
   border-left:1px solid var(--line-normal, #e4e6e8);
   box-shadow:-8px 0 24px rgb(0 0 0 / .06);
 }
-.insp-on .insp-panel{display:grid}
+.insp-open .insp-panel{display:grid}
 
 /* 화면이 좁으면 위아래로 나눈다. **고른 모드 쪽을 크게** 준다 —
    반씩 주면 지금 쓰는 칸이 늘 좁다 */
-.insp-on .insp-panel{grid-template-rows:1fr 1fr}
+.insp-open .insp-panel{grid-template-rows:1fr 1fr}
 .insp-mode-main .insp-panel{grid-template-rows:2fr 1fr}
 .insp-mode-memo .insp-panel{grid-template-rows:1fr 2fr}
 
 /* 열려 있으면 두 열이 다 보인다 — 메모를 쓰는 순간 필요한 것이 그 값이라,
    갈라 두면 매번 오가야 한다. 무엇을 하겠다(모드)는 클릭 동작과 색만 바꾼다 */
 .insp-col{display:none;flex-direction:column;min-height:0;min-width:0}
-.insp-on .insp-col--main{display:flex;overflow:hidden}
-.insp-on .insp-col--memo{display:flex}
+.insp-open .insp-col--main{display:flex;overflow:hidden}
+.insp-open .insp-col--memo{display:flex}
 
 /* 둘 다 켜졌을 때만 패널을 넓혀 좌우로 가른다.
    하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다.
@@ -96,15 +96,19 @@
      170px 씩이라 값도 메모도 못 읽는다.
      (본문은 1280 + 사이드바 220 이라 패널 680 을 밀어도 남는다) */
 @media (min-width:1400px){
-  .insp-on{--insp-w:680px}
-  .insp-on .insp-panel,
+  .insp-open{--insp-w:680px}
+  .insp-open .insp-panel,
   .insp-mode-main .insp-panel,
   .insp-mode-memo .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
-  .insp-on .insp-col--memo{border-left:1px solid var(--line-normal, #e4e6e8);border-top:0;max-height:none}
+  .insp-open .insp-col--memo{border-left:1px solid var(--line-normal, #e4e6e8);border-top:0;max-height:none}
 }
-/* 본문을 밀어서 패널이 가리지 않게 한다 */
+/* 본문을 밀어서 패널이 가리지 않게 한다.
+   ▸ 전에는 이 프로젝트의 감싸개 클래스(`.cat`)를 도구가 알고 있었다.
+     어느 페이지에나 되도록 `body` 를 민다 — 그것으로 안 되는 짜임이면
+     페이지 쪽에서 `.insp-open 내감싸개{padding-right:var(--insp-w)}` 를 준다.
+   ▸ 패널이 닫혀 있으면 밀지 않는다(`insp-open` 이 없다) */
 @media (min-width:1180px){
-  .insp-on .cat{padding-right:var(--insp-w)}
+  .insp-open body{padding-right:var(--insp-w)}
 }
 
 .insp-panel__head{
@@ -225,7 +229,7 @@ button.insp-tok:hover{text-decoration:underline}
   border:1px solid var(--insp-accent);
   background:rgb(84 62 250 / .07);
 }
-.insp-on .insp-hl{display:block}
+.insp-pick .insp-hl{display:block}
 /* 지금 무엇을 하는 중인지 테두리에 붙인다.
    검사는 보라, 메모는 빨강 — 색만으로는 헷갈려서 라벨도 같이 준다 */
 .insp-hl__tag{
@@ -250,13 +254,15 @@ button.insp-tok:hover{text-decoration:underline}
    검사 중에 화면 전체를 덮어 마우스를 받는다. 비활성(disabled) 버튼도
    고를 수 있게 하려는 것이다 — 자세한 이유는 js/inspector.js 참고 */
 .insp-catch{display:none}
-.insp-on .insp-catch{
+.insp-pick .insp-catch{
   display:block;position:fixed;inset:0;z-index:9994;
   cursor:crosshair;background:transparent;
 }
-.insp-on .insp-panel,.insp-on .insp-dock{cursor:auto}
-.insp-on .insp-panelbtn{cursor:pointer}
-.insp-on .insp-toggle,.insp-on .memo-toggle{cursor:pointer}
+/* 패널은 열려 있는데 검사·메모를 둘 다 끈 상태 — 판이 없어서 페이지를
+   그냥 쓸 수 있다. 값과 메모 목록은 그대로 읽힌다 */
+.insp-pick .insp-panel,.insp-pick .insp-dock{cursor:auto}
+.insp-pick .insp-panelbtn{cursor:pointer}
+.insp-pick .insp-toggle,.insp-pick .memo-toggle{cursor:pointer}
 
 /* 조상 사슬 — 버튼 안 <span> 을 집었을 때 위로 올라가는 길 */
 .insp-path{

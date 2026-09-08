@@ -43,16 +43,20 @@
      처음에는 「검사」·「메모」 버튼이 **창 열기**와 **무엇을 하겠다**를 같이
      맡고 있었다. 그래서 메모를 쓰려면 검사를 먼저 켜야 했다. 둘로 나눴다.
 
-       open   패널을 열까 닫을까 — **도구 전체의 on/off** 다.
-              닫으면 고르기 판도 없어서 페이지를 그냥 쓸 수 있다.
-       mode   열려 있는 동안 **무엇을 하겠다** — "main"(검사) | "memo"(메모).
-              클릭했을 때의 동작과 테두리 색·라벨만 바뀐다. 끄는 값은 없다.
+       open   패널을 열까 닫을까. 열리면 두 열이 늘 다 보인다 —
+              메모를 쓰는 순간 필요한 것이 그 값이라, 갈라 두면 매번 오가야 한다.
+       mode   **무엇을 하겠다** — "" (아무것도) | "main"(검사) | "memo"(메모).
+              같은 버튼을 다시 누르면 "" 로 꺼진다.
 
-     열리면 두 열이 늘 다 보인다 — 메모를 쓰는 순간 필요한 것이 그 값이라,
-     둘을 갈라 두면 매번 오가야 한다. 좁은 화면에서는 고른 모드 쪽을 크게 준다.
+     둘의 곱이 「고르기」다 — `open && mode` 일 때만 화면을 덮는 판이 생긴다.
+     그래서 **패널은 열어 두고 고르기만 끌 수 있다** — 값과 메모 목록을 읽으면서
+     페이지를 그냥 쓰는 상태다. 화면 클래스도 그렇게 갈라 두었다.
+
+       insp-open  패널이 보인다 · 본문이 밀린다
+       insp-pick  고르기 판이 있다 · 커서가 십자다 (open && mode)
      ──────────────────────────────────────────────────────── */
   var open = false;
-  var mode = "main";
+  var mode = "";
   var on = false, pinned = null, hovered = null, rafId = 0;
   var pinListeners = [], showListeners = [];
 
@@ -419,20 +423,25 @@
   /* 패널을 열거나 닫는다 — 이것이 도구의 on/off 다 */
   function setOpen(v) { open = !!v; apply(); }
 
-  /* 무엇을 하겠다를 고른다. 닫혀 있으면 **열면서** 그 모드로 —
-     닫힌 채로 모드만 바꿔 두면 눌러도 아무 일이 없는 것처럼 보인다 */
+  /* 무엇을 하겠다를 고른다.
+     ▸ 같은 것을 다시 누르면 **끈다** — 판이 없어져 페이지를 그냥 쓸 수 있고,
+       패널은 그대로 남아 값과 메모 목록이 읽힌다
+     ▸ 닫혀 있으면 **열면서** 그 모드로 — 닫힌 채로 모드만 바꿔 두면
+       눌러도 아무 일이 없는 것처럼 보인다 */
   function setMode(m) {
-    mode = (m === "memo") ? "memo" : "main";
+    mode = (mode === m && open) ? "" : m;
     if (!open) open = true;
     apply();
   }
 
   function apply() {
-    on = open;
+    on = open && !!mode;              // 고르기가 도는가
     var c = document.documentElement.classList;
-    c.toggle("insp-on", open);
-    c.toggle("insp-mode-main", mode === "main");
-    c.toggle("insp-mode-memo", mode === "memo");
+    c.toggle("insp-open", open);      // 패널이 보인다
+    c.toggle("insp-pick", on);        // 고르기 판이 있다
+    c.toggle("insp-on", on);          // 옛 이름 — 페이지가 쓰고 있을 수 있어 남긴다
+    c.toggle("insp-mode-main", open && mode === "main");
+    c.toggle("insp-mode-memo", open && mode === "memo");
     if (panelBtn) {
       panelBtn.setAttribute("aria-expanded", open ? "true" : "false");
       panelBtn.querySelector("span").textContent = open ? "패널 닫기" : "패널 열기";
@@ -444,12 +453,16 @@
     for (var i = 0; i < showListeners.length; i++) {
       try { showListeners[i](open ? mode : ""); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
     }
-    if (!open) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); }
+    // 고르기를 끈 것만으로는 읽던 값을 지우지 않는다 — 그게 끄는 이유다
+    if (!on) { hovered = null; hl.style.display = "none"; }
+    if (!open) { pinned = null; body.innerHTML = ""; closeDetail(); }
     setHint();
   }
   function setOn(v) { setOpen(v); }
   function setHint() {
-    if (pinned) {
+    if (!on) {
+      hint.innerHTML = "고르기가 꺼져 있습니다 — <b>검사</b>나 <b>메모</b>를 누르면 다시 고를 수 있습니다";
+    } else if (pinned) {
       hint.innerHTML = '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기';
     } else if (mode === "memo") {
       hint.innerHTML = '<span class="insp-pin is-memo">메모</span> 고칠 곳을 클릭하면 바로 쓸 수 있습니다';
@@ -615,7 +628,10 @@
     document.addEventListener("keydown", function (e) {
       if (!on) return;
       if (e.key === "Escape") {
-        if (pinned) { pinned = null; setHint(); queue(); } else setOn(false);
+        // 한 단계씩 물러난다 — 고정 해제 → 고르기 끄기 → 패널 닫기
+        if (pinned) { pinned = null; setHint(); queue(); }
+        else if (mode) { mode = ""; apply(); }
+        else setOpen(false);
         return;
       }
       var cur = pinned || hovered;
@@ -691,7 +707,10 @@
     getMode: function () { return open ? mode : ""; },
     onMode: function (fn) { showListeners.push(fn); },
     dock: function () { return dock; },
-    pin: function (el) { if (!on) setOn(true); pinned = el; render(el); setHint(); queue(); },
+    pin: function (el) {
+      if (!open) { open = true; if (!mode) mode = "main"; apply(); }
+      pinned = el; render(el); setHint(); queue();
+    },
     getPinned: function () { return pinned; },
     /* 요소가 고정될 때마다 알린다 — 메모 창이 대상을 따라가야 하므로 */
     onPin: function (fn) { pinListeners.push(fn); },
