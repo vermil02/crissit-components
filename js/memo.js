@@ -21,7 +21,12 @@
    쓰는 법
      오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → 「＋ 메모」
      핀을 누르면 그 메모가 열린다
-     메모 열 아래 — JSON 내보내기 · 불러오기 · 전부 지우기
+     메모 열 아래 — 새로 받기 · JSON 내보내기 · 불러오기 · 내 메모 비우기 · 휴지통
+
+   ▸ 지우기는 **휴지통**으로 간다. 「휴지통 N」에서 되살릴 수 있다.
+     서버에 붙어 있으면 되살릴 때 서버에도 다시 올라간다.
+   ▸ 서버에 붙어 있으면 **30초마다, 그리고 이 탭으로 돌아올 때마다**
+     남이 쓴 메모를 알아서 받아 온다 — 새로고침하지 않아도 된다.
 
    ▸ 「검사」와 따로 켜진다. 값을 보면서 메모를 쓰려면 둘 다 켜면
      화면이 넓을 때 좌우로 나란히 선다.
@@ -45,21 +50,46 @@
 
   var KEY = "crissit-catalog-memo-v1";
   var SRV = "crissit-catalog-memo-server";   // 주소·열쇠를 이 브라우저에 저장한다
+  var TRASH = "crissit-catalog-memo-trash";  // 지운 메모를 담아 두는 곳
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];      // 내 메모 (localStorage)
   var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
+  var trash = [];      // 지운 메모 — 되살릴 수 있게 남겨 둔다
   var srv = null;      // { url, key } — 서버를 안 붙였으면 null
   var srvState = "";   // 화면에 보여줄 연결 상태
+  var pendingReset = false;  // `?memo-reset=1` 로 열렸다
   var layer, col, bodyEl, footEl, countBtn, toggleBtn, badgeEl;
   var editing = null;             // 지금 쓰고 있는 메모 id (새 메모면 null)
+  var view = "list";              // list | edit | srv | trash — 지금 보고 있는 화면
   var target = null;              // 새 메모를 붙일 요소
 
   /* ── 저장 ──────────────────────────────────────────────── */
+  var TRASH_MAX = 100;   // 이 이상 쌓이면 오래된 것부터 밀어낸다
+
   function load() {
     try {
       var raw = localStorage.getItem(KEY);
       notes = raw ? (JSON.parse(raw).notes || []) : [];
     } catch (e) { notes = []; }
+    try {
+      trash = JSON.parse(localStorage.getItem(TRASH) || "[]") || [];
+    } catch (e) { trash = []; }
+  }
+
+  /* 지운 메모를 휴지통에 담는다 — 지우기가 되돌릴 수 없는 일이 되면
+     사람들이 지우기를 아예 안 쓴다. 언제 지웠는지도 같이 남긴다 */
+  function toTrash(list) {
+    var now = new Date().toISOString();
+    for (var i = 0; i < list.length; i++) {
+      var c = JSON.parse(JSON.stringify(list[i]));
+      c.__trashedAt = now;
+      trash.push(c);
+    }
+    if (trash.length > TRASH_MAX) trash = trash.slice(trash.length - TRASH_MAX);
+    try { localStorage.setItem(TRASH, JSON.stringify(trash)); } catch (e) { /* 저장 공간 */ }
+  }
+  function saveTrash() {
+    try { localStorage.setItem(TRASH, JSON.stringify(trash)); } catch (e) { /* 저장 공간 */ }
   }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(pack())); } catch (e) { /* 저장 공간이 막힌 경우 */ }
@@ -111,18 +141,29 @@
        저장됐으니 지워도 연결은 유지된다).
      ▸ 저장소에는 여전히 넣지 않는다. 링크를 받은 사람만 쓴다. */
   function fromLink() {
+    // `?memo-reset=1` — 열기만 하면 그 브라우저의 **내 메모**가 비워진다.
+    // 서버는 건드리지 않는다. 상대방에게 "정리해 주세요" 를 말로 전하지
+    // 않아도 되게 하려는 것이다
+    if (/[?&]memo-reset=1/.test(location.search)) pendingReset = true;
+
     var m = /[?&]memo=([^&#]+)/.exec(location.search);
-    if (!m) return;
+    if (!m) { cleanUrl(); return; }
     var parts = decodeURIComponent(m[1]).split("|");
     var url = (parts[0] || "").trim(), key = (parts[1] || "").trim();
     if (/^https:\/\//.test(url) && key) saveSrv({ url: url, key: key });
 
-    // 주소창 청소 — 뒤로가기 기록도 남기지 않는다
+    cleanUrl();
+  }
+
+  /* 주소창에서 `memo=` · `memo-reset=` 를 지운다 — 화면 공유나 북마크로
+     열쇠가 흘러가지 않게, 그리고 새로고침 때 또 비워지지 않게 */
+  function cleanUrl() {
     try {
-      var clean = location.pathname +
-        location.search.replace(/([?&])memo=[^&#]*&?/, "$1").replace(/[?&]$/, "") +
-        location.hash;
-      history.replaceState(null, "", clean);
+      var q = location.search
+        .replace(/([?&])memo=[^&#]*&?/, "$1")
+        .replace(/([?&])memo-reset=[^&#]*&?/, "$1")
+        .replace(/[?&]$/, "");
+      if (q !== location.search) history.replaceState(null, "", location.pathname + q + location.hash);
     } catch (e) { /* 오래된 브라우저 */ }
   }
   function saveSrv(v) {
@@ -240,6 +281,7 @@
       '<button type="button" class="memo-cancel">취소</button>' +
       (note ? '<button type="button" class="memo-del">삭제</button>' : "") +
       "</div>";
+    view = "edit";
     var ta = bodyEl.querySelector(".memo-text");
     ta.focus();
     ta.selectionStart = ta.value.length;
@@ -290,13 +332,15 @@
         }).join("")
       : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
 
+    view = "list";
     bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
     footEl.innerHTML =
       '<div class="memo-btns">' +
       (srv ? '<button type="button" class="memo-refresh">새로 받기</button>' : "") +
       '<button type="button" class="memo-export">JSON 내보내기</button>' +
       '<label class="memo-import">불러오기<input type="file" accept="application/json,.json" hidden></label>' +
-      (notes.length ? '<button type="button" class="memo-clear">전부 지우기</button>' : "") +
+      (notes.length ? '<button type="button" class="memo-clear">내 메모 비우기</button>' : "") +
+      (trash.length ? '<button type="button" class="memo-trash">휴지통 ' + trash.length + "</button>" : "") +
       '<button type="button" class="memo-srv">' + (srv ? "서버 설정" : "서버 붙이기") + "</button>" +
       "</div>" +
       '<p class="memo-hint">' + hintText() + "</p>";
@@ -336,6 +380,7 @@
       (srv ? '<button type="button" class="memo-srv-off">끊기</button>' : "") +
       "</div>";
     editing = null;
+    view = "srv";
   }
 
   /* 주소·열쇠가 담긴 링크를 만들어 클립보드에 넣는다.
@@ -344,6 +389,49 @@
     if (!srv) return;
     var base = location.origin + location.pathname;
     return base + "?memo=" + encodeURIComponent(srv.url + "|" + srv.key);
+  }
+
+  /* 내 메모를 **이 브라우저에서만** 비운다. 서버 것은 건드리지 않는다.
+     ▸ 왜 서버를 안 지우나 — 이미 올라간 메모는 다른 사람도 보고 있는 것이라,
+       한 사람이 자기 브라우저를 정리하려다 남의 화면까지 비우면 안 된다.
+       한 건을 정말 취소하려면 그 메모를 열어 「삭제」를 누른다(그건 서버에서도 지운다).
+     ▸ 서버에 붙어 있으면 비운 뒤에도 그 메모들이 「공유」로 다시 내려온다 —
+       내 것에서 남의 것으로 자리만 바뀌는 셈이다 */
+  function clearMine(silent) {
+    if (!notes.length) return;
+    if (!silent) {
+      var msg = "내가 쓴 메모 " + notes.length + "개를 이 브라우저에서 비웁니다.\n\n" +
+        "휴지통에 들어가니 되살릴 수 있습니다." +
+        (srv ? "\n서버에 올라간 것은 지워지지 않고 「공유」 메모로 다시 보입니다." : "");
+      if (!confirm(msg)) return;
+    }
+    toTrash(notes);
+    notes = [];
+    save();
+    openList();
+  }
+
+  /* 휴지통 — 지운 메모를 되살리는 곳 */
+  function openTrash() {
+    var rows = trash.length
+      ? trash.slice().reverse().map(function (n) {
+          return '<li class="memo-item" data-id="' + n.id + '">' +
+            '<span class="memo-no is-trash">·</span>' +
+            "<div><b>" + esc(n.text) + "</b>" +
+            '<span class="memo-meta">' + esc((n.__trashedAt || "").slice(0, 16).replace("T", " ")) +
+            " 지움 · " + esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
+            '<button type="button" class="memo-undo" data-id="' + n.id + '">되살리기</button></li>';
+        }).join("")
+      : '<li class="memo-empty">휴지통이 비어 있습니다.</li>';
+    bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
+    footEl.innerHTML =
+      '<div class="memo-btns">' +
+      '<button type="button" class="memo-cancel">목록으로</button>' +
+      (trash.length ? '<button type="button" class="memo-trash-empty">휴지통 비우기</button>' : "") +
+      "</div>" +
+      '<p class="memo-hint">지운 메모는 여기에 최대 ' + TRASH_MAX + '개까지 남습니다. ' +
+      '되살리면 내 메모로 돌아가고, 서버에 붙어 있으면 다시 올라갑니다.</p>';
+    view = "trash";
   }
 
   function exportJson() {
@@ -425,6 +513,11 @@
     badgeEl = toggleBtn.querySelector(".memo-badge");
 
     load(); loadSrv();
+    if (pendingReset) {
+      var had = notes.length;
+      clearMine(true);                       // 물어보지 않는다 — 링크가 이미 뜻을 담고 있다
+      srvState = had ? "이 브라우저의 내 메모 " + had + "개를 비웠습니다" : "비울 메모가 없었습니다";
+    }
     renderCount(); renderPins(); openList();
     bind(panel);
     // 남이 쓴 메모는 네트워크라 늦게 온다. 오면 다시 그린다
@@ -460,6 +553,8 @@
       if (t.closest(".memo-save")) { commit(); return; }
       if (t.closest(".memo-cancel")) { openList(); return; }
       if (t.closest(".memo-del")) {
+        var gone = notes.filter(function (x) { return x.id === editing; });
+        toTrash(gone);                      // 서버에서는 지우지만 휴지통에는 남는다
         drop(editing);
         notes = notes.filter(function (x) { return x.id !== editing; });
         save(); openList(); return;
@@ -471,6 +566,7 @@
         if (!/^https:\/\//.test(u) || !k) { alert("주소는 https:// 로 시작해야 하고, 열쇠도 있어야 합니다."); return; }
         saveSrv({ url: u, key: k });
         pull(function () { renderCount(); renderPins(); openList(); });
+        startWatching();
         return;
       }
       if (t.closest(".memo-srv-link")) {
@@ -505,10 +601,24 @@
         return;
       }
       if (t.closest(".memo-export")) { exportJson(); return; }
-      if (t.closest(".memo-clear")) {
-        if (confirm("내가 쓴 메모 " + notes.length + "개를 전부 지웁니다. 되돌릴 수 없습니다.")) {
-          for (var k = 0; k < notes.length; k++) drop(notes[k].id);
-          notes = []; save(); openList();
+      if (t.closest(".memo-clear")) { clearMine(); return; }
+      if (t.closest(".memo-trash")) { openTrash(); return; }
+      if (t.closest(".memo-trash-empty")) {
+        if (confirm("휴지통의 " + trash.length + "개를 완전히 지웁니다. 이제는 되돌릴 수 없습니다.")) {
+          trash = []; saveTrash(); openList();
+        }
+        return;
+      }
+      var undo = t.closest(".memo-undo");
+      if (undo) {
+        var uid2 = undo.getAttribute("data-id"), back = null;
+        for (var z = 0; z < trash.length; z++) if (trash[z].id === uid2) { back = trash.splice(z, 1)[0]; break; }
+        if (back) {
+          delete back.__trashedAt;
+          var dup = false;
+          for (var y = 0; y < notes.length; y++) if (notes[y].id === back.id) { notes[y] = back; dup = true; break; }
+          if (!dup) notes.push(back);
+          saveTrash(); save(); push(back); openTrash();
         }
         return;
       }
@@ -547,6 +657,53 @@
       clearTimeout(t); t = setTimeout(renderPins, 150);
     });
     addEventListener("load", renderPins);
+
+    startWatching();
+  }
+
+  /* ── 남이 쓴 메모를 알아서 받아 온다 ─────────────────────
+     서버에 붙어 있으면 30초마다, 그리고 이 탭으로 돌아올 때마다 확인한다.
+     ▸ 배경 탭에서는 쉰다 — 보고 있지도 않은 화면을 위해 통신할 이유가 없다
+     ▸ **메모를 쓰고 있는 중에는 화면을 갈지 않는다.** 목록을 다시 그리면
+       입력 중인 글이 날아간다. 그때는 개수와 핀만 조용히 갱신한다
+     ▸ 바뀐 게 없으면 아무것도 다시 그리지 않는다
+     ──────────────────────────────────────────────────────── */
+  var WATCH_MS = 30000;
+  var watchTimer = 0;
+
+  function fingerprint(list) {
+    var out = [];
+    for (var i = 0; i < list.length; i++) out.push(list[i].id + ":" + (list[i].at || "") + ":" + (list[i].text || "").length);
+    return out.sort().join("|");
+  }
+
+  function refresh(opts) {
+    if (!srv) return;
+    var before = fingerprint(shared);
+    pull(function () {
+      var changed = fingerprint(shared) !== before;
+      renderCount();
+      if (changed) renderPins();
+      // 목록·휴지통 화면일 때만 다시 그린다. 쓰던 글은 지키다
+      if (changed && (view === "list")) openList();
+      else renderFootState();
+      if (changed && (opts && opts.tell)) {
+        srvState = "새 메모가 왔습니다";
+        renderFootState();
+      }
+    });
+  }
+
+  function startWatching() {
+    clearInterval(watchTimer);
+    watchTimer = setInterval(function () {
+      if (!srv || document.hidden) return;
+      refresh({ tell: true });
+    }, WATCH_MS);
+
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) refresh({ tell: true });
+    });
   }
 
   if (document.readyState === "loading") {

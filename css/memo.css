@@ -179,3 +179,13 @@ html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
   padding:7px 9px;background:var(--bg-normal);
   font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-normal);
 }
+
+/* 휴지통 항목 — 지운 것이라 번호를 안 매긴다 */
+.memo-no.is-trash{background:var(--neutral-300);color:var(--neutral-0)}
+.memo-undo{
+  flex:none;border:1px solid var(--line-normal);border-radius:9999px;
+  padding:3px 9px;background:none;cursor:pointer;
+  font:var(--label-3-medium);color:var(--label-alternative);
+}
+.memo-undo:hover{border-color:var(--memo-accent);color:var(--memo-accent)}
+.memo-trash,.memo-trash-empty{color:var(--label-alternative)!important}
