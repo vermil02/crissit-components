@@ -4,8 +4,18 @@
 <meta charset="utf-8">
 <title>crissit 컴포넌트 카탈로그</title>
 <!-- 깃허브 Pages 는 index.html 을 먼저 찾는다. 팀이 알고 있는 이름은
-     `카탈로그.html` 이라 파일명을 바꾸지 않고 여기서 넘긴다 -->
-<meta http-equiv="refresh" content="0; url=./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html">
+     `카탈로그.html` 이라 파일명을 바꾸지 않고 여기서 넘긴다.
+
+     ▸ 넘길 때 **물음표 뒷부분(?memo=…)과 #앵커를 같이 들고 가야** 한다.
+       meta refresh 는 그걸 떨어뜨린다 — 메모 서버 링크가 그래서 안 먹었다.
+       그래서 스크립트로 넘기고, meta 는 스크립트가 막힌 경우의 대비로만 둔다. -->
+<script>
+  (function () {
+    var to = "./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html";
+    location.replace(to + location.search + location.hash);
+  })();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html"></noscript>
 <link rel="canonical" href="./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html">
 <style>
   body{margin:0;display:grid;place-items:center;min-height:100vh;
