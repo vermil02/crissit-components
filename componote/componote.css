@@ -384,6 +384,8 @@ button.insp-tok:hover{text-decoration:underline}
   background:var(--neutral-300, #c9ccd0);
 }
 .memo-link-state:hover{border-color:var(--label-assistive, #a3a8ad)}
+/* 이름이 길면 줄여서 보인다 — 머리말이 밀려 「＋ 메모」가 넘치면 안 된다 */
+.memo-link-state{max-width:11em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 
 /* 연동됨 — 초록. 토큰에 없는 색이라 여기서만 쓴다(도구 UI 이고
    디자인 컴포넌트가 아니다). 「확인 필요」에 올리지 않는다 */
@@ -393,6 +395,11 @@ button.insp-tok:hover{text-decoration:underline}
 /* 끊김 — 메모 색(빨강)을 그대로 쓴다 */
 .memo-link-state.is-bad{color:var(--memo-accent);border-color:currentColor}
 .memo-link-state.is-bad::before{background:currentColor}
+
+/* 로그인 필요 — 고장이 아니라 **할 일이 있다**는 뜻이다. 그래서 빨강이
+   아니라 눈에 걸리는 노랑으로 두고, 눌러야 할 것임을 테두리로 알린다 */
+.memo-link-state.is-out{color:#8a5a00;border-color:#e8c86a;background:#fff8e6}
+.memo-link-state.is-out::before{background:#e0a020}
 
 /* 확인 중 — 깜빡여서 지금 뭔가 하고 있음을 알린다 */
 .memo-link-state.is-busy::before{animation:memo-blink 1s ease-in-out infinite}
@@ -436,6 +443,8 @@ button.insp-tok:hover{text-decoration:underline}
 .memo-text:focus{outline:2px solid var(--memo-accent);outline-offset:-1px;border-color:transparent}
 
 .memo-btns{display:flex;flex-wrap:wrap;gap:8px}
+/* 몸통 안에 놓는 버튼 줄 — 로그인처럼 칸 바로 밑에 있어야 하는 경우 */
+.memo-btns--inline{margin-top:14px}
 .memo-btns button,.memo-import{
   border:1px solid var(--line-normal, #e4e6e8);border-radius:var(--radius-xsmall, 4px);
   padding:6px 12px;background:var(--bg-normal, #ffffff);cursor:pointer;
@@ -444,6 +453,8 @@ button.insp-tok:hover{text-decoration:underline}
 .memo-btns button:hover,.memo-import:hover{border-color:var(--label-alternative, #7c8288)}
 .memo-save{background:var(--memo-accent)!important;border-color:var(--memo-accent)!important;color:#fff!important}
 .memo-del,.memo-clear{color:var(--memo-accent)!important}
+.memo-in-go{background:var(--memo-accent)!important;border-color:var(--memo-accent)!important;color:#fff!important}
+.memo-out{color:var(--label-alternative, #7c8288)!important}
 
 /* ---------- 목록 ---------- */
 .memo-list{list-style:none;margin:0;padding:0}
@@ -481,11 +492,13 @@ button.insp-tok:hover{text-decoration:underline}
    내 메모(빨강)와 구분하려고 색을 달리했다. 읽기만 된다 */
 .memo-pin.is-shared,
 .memo-no.is-shared{background:var(--neutral-900, #151617)}
+/* 남이 쓴 메모의 작성자. 「공유」 한 단어였을 때는 9px 모노스페이스로
+   충분했는데, 이제 사람 이름이 들어가므로 본문 서체로 바꿨다 */
 .memo-tag{
-  display:inline-block;padding:1px 6px;border-radius:9999px;
+  display:inline-block;padding:1px 7px;border-radius:9999px;
   background:var(--neutral-900, #151617);color:var(--neutral-0, #ffffff);
-  font:700 9px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
-  vertical-align:1px;
+  font:700 10px/1.7 inherit;
+  vertical-align:1px;white-space:nowrap;
 }
 .memo-ro{
   margin:0 0 10px;padding:10px 12px;

@@ -741,8 +741,19 @@
         서버를 안 붙였으면 저장소의 `memos.json` 을 대신 읽는다.
 
      서버를 붙이면(메모 열 아래 「서버 붙이기」) 내가 저장하는 즉시 ②가 되어
-     다른 사람에게도 보인다. 주소와 열쇠는 **저장소에 넣지 않고** 각자
-     브라우저에만 둔다 — 공개 저장소라 넣으면 누구나 글을 넣을 수 있다.
+     다른 사람에게도 보인다. 주소는 **저장소에 넣지 않고** 각자 브라우저에만
+     둔다.
+
+   누가 썼는지 — 이름 + 닉네임으로 들어온다
+     서버 명단에 이름↔닉네임이 있고, 맞으면 토큰을 받아 온다. 쓴 메모의
+     작성자는 **서버가 그 토큰에서 꺼내 찍는다** — 화면이 보낸 이름을 믿지
+     않으므로 남의 이름으로 쓸 수 없다.
+     ▸ 왜 열쇠 문자열이 아닌가 — 사람이 외울 수 있어야 하고, 링크가 새어도
+       글을 넣을 수 없어야 한다. 예전에는 링크에 열쇠가 실려 **링크 하나가
+       곧 통과증**이었다.
+     ▸ 닉네임은 약한 암호다. 그래서 매 요청에는 닉네임이 아니라 토큰이
+       실리고, 서버가 로그인 실패 횟수를 세어 찍어 맞히기를 막는다.
+     ▸ 명단에서 한 줄을 지우면 **그 사람 토큰만** 바로 무효가 된다.
 
    쓰는 법
      오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → **바로 쓰기 창**
@@ -779,11 +790,19 @@
   var KEY = "crissit-catalog-memo-v1";
   var SRV = "crissit-catalog-memo-server";   // 주소·열쇠를 이 브라우저에 저장한다
   var TRASH = "crissit-catalog-memo-trash";  // 지운 메모를 담아 두는 곳
+  var WHO = "crissit-catalog-memo-who";      // 로그인해 둔 이름과 토큰
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];      // 내 메모 (localStorage)
   var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
   var trash = [];      // 지운 메모 — 되살릴 수 있게 남겨 둔다
-  var srv = null;      // { url, key } — 서버를 안 붙였으면 null
+  var srv = null;      // { url, key } — 서버를 안 붙였으면 null. key 는 옛 링크용
+  /* 누구로 들어와 있나 — { name, token } 또는 null.
+     이름 + 닉네임을 서버 명단과 맞춰 받아 온 토큰이다. 메모의 작성자는
+     **서버가 이 토큰에서 꺼내 찍는다** — 화면이 보낸 이름은 믿지 않으므로
+     남의 이름으로 쓸 수 없다.
+     닉네임은 동료가 추측할 수 있는 약한 암호다. 그래서 여기 담기는 것이
+     닉네임이 아니라 토큰이고, 서버는 로그인 실패 횟수를 세어 막는다 */
+  var me = null;
   var srvState = "";   // 방금 일어난 일을 알리는 **한 번짜리** 문구
   /* 연동 상태 — 이쪽은 **늘 보인다.** srvState 는 떴다 사라지므로
      평소에 연동 여부를 알 수 없었다(2026-09-08 사용자 지적) */
@@ -847,6 +866,11 @@
     for (var j = 0; j < shared.length; j++) if (!mine[shared[j].id]) out.push(shared[j]);
     return out.concat(notes);
   }
+  /* 남이 쓴 메모의 꼬리표. 이름이 있으면 이름을, 없으면 「공유」.
+     이름이 비는 경우 — 옛 공용 열쇠로 올린 메모다(서버가 누구인지 모른다) */
+  function tagOf(n) {
+    return '<span class="memo-tag">' + esc((n && n.by) || "공유") + "</span>";
+  }
   function isMine(n) {
     for (var i = 0; i < notes.length; i++) if (notes[i].id === n.id) return true;
     return false;
@@ -861,8 +885,33 @@
      ──────────────────────────────────────────────────────── */
   function loadSrv() {
     try { srv = JSON.parse(localStorage.getItem(SRV) || "null"); } catch (e) { srv = null; }
-    if (srv && (!srv.url || !srv.key)) srv = null;
+    // 이제 **주소만 있으면 된다** — 들어가는 것은 로그인이 맡는다.
+    // `key` 는 옛 링크로 들어온 사람에게만 남아 있다
+    if (srv && !srv.url) srv = null;
+    try { me = JSON.parse(localStorage.getItem(WHO) || "null"); } catch (e) { me = null; }
+    if (me && (!me.name || !me.token)) me = null;
     fromLink();
+  }
+  function saveMe(v) {
+    me = v;
+    try {
+      if (v) localStorage.setItem(WHO, JSON.stringify(v));
+      else localStorage.removeItem(WHO);
+    } catch (e) { /* 저장이 막힌 경우 */ }
+  }
+
+  /* 요청에 실을 통과증. 로그인해 두면 토큰, 옛 링크로 들어왔으면 공용 열쇠.
+     ▸ **주소가 아니라 헤더로 보낸다** — 주소에 실으면 Cloudflare 접속
+       기록에 그대로 남는다 */
+  function bearer() {
+    if (me && me.token) return me.token;
+    return (srv && srv.key) || "";
+  }
+  function authHead(extra) {
+    var h = extra || {};
+    var t = bearer();
+    if (t) h.Authorization = "Bearer " + t;
+    return h;
   }
 
   /* 링크에 담아 온 설정 — `?memo=<주소>|<열쇠>`
@@ -883,7 +932,9 @@
     if (!m) { cleanUrl(); return; }
     var parts = decodeURIComponent(m[1]).split("|");
     var url = (parts[0] || "").trim(), key = (parts[1] || "").trim();
-    if (/^https:\/\//.test(url) && key) saveSrv({ url: url, key: key });
+    // 열쇠는 이제 **안 담는다.** 링크에는 주소만 있고, 받은 사람은 자기
+    // 이름·닉네임으로 들어온다. `|열쇠` 가 붙은 옛 링크도 아직 받는다
+    if (/^https:\/\//.test(url)) saveSrv(key ? { url: url, key: key } : { url: url });
 
     cleanUrl();
   }
@@ -908,7 +959,7 @@
   }
   function srvUrl(extra) {
     var u = srv.url.replace(/[?#].*$/, "").replace(/\/+$/, "");
-    return u + "?key=" + encodeURIComponent(srv.key) + (extra || "");
+    return u + (extra ? "?" + extra : "");
   }
 
   /* 서버 → 화면. 서버가 없으면 저장소의 memos.json 을 대신 읽는다 */
@@ -925,21 +976,33 @@
       } catch (e) { done(); }
       return;
     }
+    // 통과증이 없으면 서버를 부를 이유가 없다 — 401 만 받는다
+    if (!bearer()) { linkState = "out"; renderLink(); done(); return; }
     srvState = "불러오는 중…";
     linkState = "busy"; renderLink();
-    fetch(srvUrl()).then(function (r) {
-      if (r.status === 401) throw new Error("열쇠가 맞지 않습니다");
+    fetch(srvUrl(), { headers: authHead() }).then(function (r) {
+      // 401 은 "고장" 이 아니라 **아직 안 들어왔다** 는 뜻이다. 그래서 오류로
+      // 다루지 않고 로그인 화면으로 보낸다
+      if (r.status === 401) { r.noAuth = true; throw r; }
       if (!r.ok) throw new Error("서버가 " + r.status + " 로 답했습니다");
       return r.json();
     }).then(function (d) {
       shared = (d && d.notes) || [];
+      // 서버가 "너는 누구다" 를 같이 보내 준다 — 이쪽 저장값이 낡았을 때
+      // (명단에서 이름이 바뀐 경우 등) 서버 말을 따른다
+      if (me && d && d.you && d.you !== me.name) saveMe({ name: d.you, token: me.token });
       srvState = "";                      // 상태는 머리말 표시가 늘 보여 준다
       linkState = "ok"; linkAt = Date.now(); linkWhy = "";
       renderLink();
       done();
     }).catch(function (e) {
       srvState = "";
-      linkState = "bad"; linkWhy = why(e);
+      if (e && e.noAuth) {
+        saveMe(null);                     // 낡은 토큰이면 버린다
+        linkState = "out"; linkWhy = "";
+      } else {
+        linkState = "bad"; linkWhy = why(e);
+      }
       renderLink();
       done();
     });
@@ -961,12 +1024,13 @@
     if (!srv) return;
     fetch(srvUrl(), {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: authHead({ "content-type": "application/json" }),
       body: JSON.stringify(note)
     }).then(function (r) {
       srvState = r.ok ? "올렸습니다" : "올리지 못했습니다 (" + r.status + ")";
       // 올리기가 막혔으면 연동이 끊긴 것이다 — 머리말 표시도 같이 바꾼다
       if (r.ok) { linkState = "ok"; linkAt = Date.now(); linkWhy = ""; }
+      else if (r.status === 401) { saveMe(null); linkState = "out"; linkWhy = ""; }
       else { linkState = "bad"; linkWhy = "서버가 " + r.status + " 로 답했습니다"; }
       renderLink(); renderFootState();
     }).catch(function () {
@@ -977,7 +1041,9 @@
   }
   function drop(id) {
     if (!srv) return;
-    fetch(srvUrl("&id=" + encodeURIComponent(id)), { method: "DELETE" }).catch(function () {});
+    fetch(srvUrl("id=" + encodeURIComponent(id)), {
+      method: "DELETE", headers: authHead()
+    }).catch(function () {});
   }
 
   /* ── 핀 ───────────────────────────────────────────────── */
@@ -1035,7 +1101,7 @@
     if (readonly) {
       bodyEl.innerHTML =
         '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
-        '<p class="memo-ro"><span class="memo-tag">공유</span> ' + esc(note.text) + "</p>" +
+        '<p class="memo-ro">' + tagOf(note) + " " + esc(note.text) + "</p>" +
         (note.reply ? '<p class="memo-ro is-reply"><b>' + (note.done ? "처리했습니다" : "답글") + "</b><br>" + esc(note.reply) + "</p>" : "") +
         '<p class="memo-hint">저장소의 <code>memos.json</code> 에 들어 있는 메모라 여기서는 고칠 수 없습니다. 내용을 바꾸려면 그 파일을 고쳐 커밋하세요.</p>';
       footEl.innerHTML = '<div class="memo-btns"><button type="button" class="memo-cancel">목록으로</button></div>';
@@ -1098,7 +1164,7 @@
             (n.done ? "✓" : (i + 1)) + "</span>" +
             "<div><b>" + esc(n.text) + "</b>" +
             (n.reply ? '<span class="memo-reply">' + esc(n.reply) + "</span>" : "") +
-            '<span class="memo-meta">' + (mine ? "" : '<span class="memo-tag">공유</span> ') +
+            '<span class="memo-meta">' + (mine ? "" : tagOf(n) + " ") +
             esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
@@ -1121,9 +1187,14 @@
   }
 
   function hintText() {
-    if (srv) {
+    if (srv && me && me.name) {
       return "메모를 저장하면 <b>바로 서버로 올라가</b> 다른 사람에게도 보입니다. " +
-             "남이 쓴 것은 <span class=\"memo-tag\">공유</span> 로 표시되고 여기서는 고칠 수 없습니다.";
+             "쓴 메모에는 <b>" + esc(me.name) + "</b> 이름이 붙습니다. " +
+             "남이 쓴 것은 그 사람 이름으로 표시되고 여기서는 고칠 수 없습니다.";
+    }
+    if (srv) {
+      return "서버는 붙어 있는데 <b>아직 들어오지 않았습니다.</b> " +
+             "머리말의 <b>로그인 필요</b> 를 눌러 이름과 닉네임을 넣으면 메모가 함께 모입니다.";
     }
     return "<b>내가 쓴 메모는 이 브라우저에만 저장됩니다</b> — 다른 사람에게는 보이지 않습니다. " +
            "「JSON 내보내기」로 파일을 만들어 전달하거나, <b>「서버 붙이기」</b>로 자동으로 모이게 하세요.";
@@ -1134,15 +1205,25 @@
        busy  확인 중 — 서버를 읽고 있다
        ok    연동됨 — 마지막으로 읽어낸 시각을 함께 적는다
        bad   끊김 — 왜인지를 함께 적는다 (열쇠 · 서버 응답 · 인터넷) */
-  var LINK_TEXT = { off: "이 브라우저만", busy: "확인 중", ok: "연동됨", bad: "연동 끊김" };
+  var LINK_TEXT = {
+    off: "이 브라우저만",   // 서버를 안 붙였다
+    out: "로그인 필요",     // 서버는 있는데 아직 안 들어왔다
+    busy: "확인 중",
+    ok: "연동됨",
+    bad: "연동 끊김"
+  };
   function renderLink() {
     if (!col) return;
     var b = col.querySelector(".memo-link-state");
     if (!b) return;
     b.className = "memo-link-state is-" + linkState;
-    b.textContent = LINK_TEXT[linkState];
+    // 들어와 있으면 상태 대신 **이름**을 보여 준다 — 누구로 쓰고 있는지가
+    // 연동 여부보다 더 알고 싶은 것이다
+    b.textContent = (linkState === "ok" && me && me.name) ? me.name : LINK_TEXT[linkState];
     b.title =
-      linkState === "ok"   ? "서버와 연동되어 있습니다 (" + ago(linkAt) + " 확인) · 눌러서 설정" :
+      linkState === "ok"   ? (me && me.name ? me.name + " 으로 들어와 있습니다" : "서버와 연동되어 있습니다") +
+                             " (" + ago(linkAt) + " 확인) · 눌러서 바꾸기" :
+      linkState === "out"  ? "메모를 남기려면 이름과 닉네임으로 들어와 주세요 · 눌러서 로그인" :
       linkState === "bad"  ? linkWhy + " · 눌러서 설정" :
       linkState === "busy" ? "서버를 읽고 있습니다" :
                         "서버를 붙이지 않았습니다 — 내 메모는 이 브라우저에만 있습니다 · 눌러서 붙이기";
@@ -1176,31 +1257,113 @@
     p.classList.toggle("is-bad", /실패|못했/.test(srvState));
   }
 
+  /* ── 로그인 ───────────────────────────────────────────────
+     이름과 닉네임을 서버 명단과 맞춰 토큰을 받아 온다.
+     ▸ 왜 닉네임인가 — 열쇠 문자열을 사람이 다룰 일을 없애려는 것이다.
+       외울 수 있는 것이어야 하고, 그 대신 서버가 찍어 맞히기를 막는다.
+     ▸ 이름을 고를 목록으로 주지 않는다 — 누가 명단에 있는지가 그대로
+       드러난다. 서버도 "이름이 틀렸다/닉네임이 틀렸다" 를 구분해 주지 않는다 */
+  function openLogin(msg) {
+    view = "login";
+    bodyEl.innerHTML =
+      '<p class="memo-target">메모를 남기려면 들어와 주세요</p>' +
+      '<label class="memo-field">이름<input type="text" class="memo-in-name" autocomplete="off" ' +
+        'placeholder="예: 홍길동" value="' + esc(me ? me.name : "") + '"></label>' +
+      '<label class="memo-field">닉네임<input type="password" class="memo-in-pass" autocomplete="off" ' +
+        'placeholder="정해 받은 닉네임"></label>' +
+      (msg ? '<p class="memo-state is-bad">' + esc(msg) + "</p>" : "") +
+      /* 버튼을 칸 바로 밑에 둔다. 다른 화면처럼 아래(footEl)에 두면 패널이
+         길어서 칸에서 600px 쯤 떨어진다 — 두 칸 채우고 나서 한참 내려가
+         눌러야 한다 */
+      '<div class="memo-btns memo-btns--inline">' +
+      '<button type="button" class="memo-in-go">들어가기</button>' +
+      '<button type="button" class="memo-cancel">나중에</button>' +
+      "</div>" +
+      '<p class="memo-hint">쓴 메모에 <b>이름이 자동으로 붙습니다.</b> ' +
+      "닉네임을 모르면 관리하는 사람에게 물어보세요.</p>";
+    footEl.innerHTML = "";
+    editing = null;
+    bindLoginKeys();
+    var f = bodyEl.querySelector(".memo-in-" + (me && me.name ? "pass" : "name"));
+    if (f) f.focus();
+  }
+
+  function login() {
+    var nameEl = bodyEl.querySelector(".memo-in-name");
+    var passEl = bodyEl.querySelector(".memo-in-pass");
+    if (!nameEl || !passEl) return;
+    var name = nameEl.value.trim(), pass = passEl.value.trim();
+    if (!name || !pass) { openLogin("이름과 닉네임을 모두 넣어 주세요"); return; }
+    if (!srv) { openSrv(); return; }
+
+    linkState = "busy"; renderLink();
+    fetch(srvUrl("do=login"), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: name, pass: pass })
+    }).then(function (r) {
+      return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+    }).then(function (o) {
+      if (!o.ok || !o.d || !o.d.token) {
+        linkState = "out"; renderLink();
+        openLogin((o.d && o.d.error) || "들어가지 못했습니다");
+        return;
+      }
+      saveMe({ name: o.d.name || name, token: o.d.token });
+      pull(function () { renderCount(); renderPins(); openList(); });
+      startWatching();
+    }).catch(function (e) {
+      linkState = "out"; renderLink();
+      openLogin(why(e));
+    });
+  }
+
+  function logout() {
+    saveMe(null);
+    shared = [];
+    linkState = srv ? "out" : "off"; linkAt = 0; linkWhy = "";
+    renderLink(); renderCount(); renderPins();
+    openLogin("");
+  }
+
+  /* 닉네임 칸에서 엔터를 누르면 들어간다 — 로그인 화면에서 마우스로
+     버튼을 찾아 누르게 하는 것은 번거롭다 */
+  function bindLoginKeys() {
+    var f = bodyEl.querySelectorAll(".memo-in-name,.memo-in-pass");
+    for (var i = 0; i < f.length; i++) {
+      f[i].addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); login(); }
+      });
+    }
+  }
+
   function openSrv() {
     bodyEl.innerHTML =
       '<p class="memo-target">메모를 모을 서버</p>' +
       '<label class="memo-field">주소<input type="url" class="memo-srv-url" placeholder="https://…workers.dev" value="' +
       esc(srv ? srv.url : "") + '"></label>' +
-      '<label class="memo-field">열쇠<input type="text" class="memo-srv-key" placeholder="MEMO_KEY 값" value="' +
-      esc(srv ? srv.key : "") + '"></label>' +
-      '<p class="memo-hint">주소와 열쇠는 <b>이 브라우저에만</b> 저장됩니다. 저장소에는 넣지 않습니다 — 공개 저장소라 그러면 누구나 글을 넣을 수 있습니다.</p>';
+      (me && me.name ? '<p class="memo-hint"><b>' + esc(me.name) + '</b> 으로 들어와 있습니다. 쓰는 메모에 이 이름이 붙습니다.</p>' : "") +
+      '<p class="memo-hint">주소는 <b>이 브라우저에만</b> 저장됩니다. 저장소에는 넣지 않습니다. ' +
+      '들어가는 것은 <b>이름과 닉네임</b>이 맡습니다 — 열쇠를 다룰 일은 없습니다.</p>';
     footEl.innerHTML =
       '<div class="memo-btns">' +
       '<button type="button" class="memo-srv-save">연결</button>' +
       '<button type="button" class="memo-cancel">취소</button>' +
       (srv ? '<button type="button" class="memo-srv-link">보낼 링크 복사</button>' : "") +
+      (me ? '<button type="button" class="memo-out">나가기</button>' : "") +
       (srv ? '<button type="button" class="memo-srv-off">끊기</button>' : "") +
       "</div>";
     editing = null;
     view = "srv";
   }
 
-  /* 주소·열쇠가 담긴 링크를 만들어 클립보드에 넣는다.
-     이 링크를 받은 사람은 열기만 하면 연결이 끝난다 */
+  /* 보낼 링크 — **주소만** 담는다. 받은 사람은 열고 자기 이름·닉네임으로
+     들어온다. 열쇠를 담지 않으므로 이 링크가 새어도 글을 넣을 수 없다
+     (예전에는 `주소|열쇠` 였다 — 링크 하나가 곧 통과증이었다) */
   function shareLink() {
     if (!srv) return;
     var base = location.origin + location.pathname;
-    return base + "?memo=" + encodeURIComponent(srv.url + "|" + srv.key);
+    return base + "?memo=" + encodeURIComponent(srv.url);
   }
 
   /* 내 메모를 **이 브라우저에서만** 비운다. 서버 것은 건드리지 않는다.
@@ -1279,7 +1442,10 @@
   }
 
   /* ── 껍데기 ────────────────────────────────────────────── */
+  /* 없는 값을 `String()` 에 넣으면 화면에 "undefined" 가 그대로 찍힌다.
+     서버에서 온 메모는 어떤 화면이 만든 것인지 모르니 칸이 빌 수 있다 */
   function esc(s) {
+    if (s === null || s === undefined) return "";
     return String(s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
@@ -1375,7 +1541,16 @@
       var t = e.target;
       if (!t.closest) return;
 
-      if (t.closest(".memo-link-state")) { e.stopPropagation(); openSrv(); return; }
+      if (t.closest(".memo-link-state")) {
+        e.stopPropagation();
+        // 로그인이 필요하면 로그인으로, 이미 들어와 있으면 설정(끊기·바꾸기)으로
+        if (linkState === "out") openLogin("");
+        else openSrv();
+        return;
+      }
+      if (t.closest(".memo-in-go")) { login(); return; }
+      if (t.closest(".memo-relogin")) { openLogin(""); return; }
+      if (t.closest(".memo-out")) { logout(); return; }
       if (t.closest(".memo-add")) { e.stopPropagation(); openEditor(null, api.getPinned()); return; }
       if (t.closest(".memo-save")) { commit(); return; }
       if (t.closest(".memo-cancel")) { openList(); return; }
@@ -1389,18 +1564,18 @@
       if (t.closest(".memo-srv")) { openSrv(); return; }
       if (t.closest(".memo-srv-save")) {
         var u = col.querySelector(".memo-srv-url").value.trim();
-        var k = col.querySelector(".memo-srv-key").value.trim();
-        if (!/^https:\/\//.test(u) || !k) { alert("주소는 https:// 로 시작해야 하고, 열쇠도 있어야 합니다."); return; }
-        saveSrv({ url: u, key: k });
-        linkState = "busy"; renderLink();
-        pull(function () { renderCount(); renderPins(); openList(); });
+        if (!/^https:\/\//.test(u)) { alert("주소는 https:// 로 시작해야 합니다."); return; }
+        saveSrv({ url: u });          // 열쇠는 받지 않는다 — 로그인이 대신한다
+        renderLink();
+        if (bearer()) pull(function () { renderCount(); renderPins(); openList(); });
+        else openLogin("");
         startWatching();
         return;
       }
       if (t.closest(".memo-srv-link")) {
         var url = shareLink();
         var done = function (ok) {
-          srvState = ok ? "링크를 복사했습니다 — 이 링크를 받은 사람은 열기만 하면 연결됩니다"
+          srvState = ok ? "링크를 복사했습니다 — 받은 사람은 열고 자기 이름·닉네임으로 들어옵니다"
                         : "복사가 막혔습니다. 아래 칸의 링크를 직접 복사해 주세요";
           renderFootState();
         };
@@ -1488,7 +1663,7 @@
     addEventListener("load", renderPins);
 
     // 표시를 먼저 세운다 — pull 이 끝나기 전에도 「확인 중」이 보여야 한다
-    linkState = srv ? "busy" : "off";
+    linkState = !srv ? "off" : (bearer() ? "busy" : "out");
     renderLink();
 
     startWatching();
