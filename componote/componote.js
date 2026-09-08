@@ -883,11 +883,28 @@
      주소와 열쇠는 **저장소에 넣지 않는다** — 공개 저장소라 그러면 누구나
      글을 넣을 수 있다. 각자 브라우저에 한 번 넣어 두는 방식이다.
      ──────────────────────────────────────────────────────── */
+  /* 페이지가 알려 준 기본 서버 주소.
+     `window.componote.memoServer` 로 설정한다 — 이러면 **그냥 링크만 열어도**
+     로그인 화면이 뜬다. 예전에는 주소가 `?memo=…` 로 실려 와야 했다.
+
+     ▸ 주소를 페이지에 박아도 되는 이유 — 막는 것이 **로그인**이기 때문이다.
+       주소를 알아도 통과증 없이는 401 이고, 닉네임 찍어 맞히기는 서버가
+       10분에 10번으로 제한한다. 열쇠가 유일한 자물쇠였을 때는 주소를 아는
+       것만으로 글을 넣을 수 있어 숨겨야 했다. */
+  function pageSrv() {
+    var c = window.componote;
+    var u = c && c.memoServer;
+    return (typeof u === "string" && /^https:\/\//.test(u)) ? u : "";
+  }
+
   function loadSrv() {
     try { srv = JSON.parse(localStorage.getItem(SRV) || "null"); } catch (e) { srv = null; }
     // 이제 **주소만 있으면 된다** — 들어가는 것은 로그인이 맡는다.
     // `key` 는 옛 링크로 들어온 사람에게만 남아 있다
     if (srv && !srv.url) srv = null;
+    // 저장된 것이 없으면 페이지 기본값. 저장된 것이 있으면 그쪽을 존중한다
+    // — 옛 링크로 다른 서버에 붙여 둔 사람을 끊지 않으려는 것이다
+    if (!srv && pageSrv()) srv = { url: pageSrv() };
     try { me = JSON.parse(localStorage.getItem(WHO) || "null"); } catch (e) { me = null; }
     if (me && (!me.name || !me.token)) me = null;
     fromLink();
@@ -1153,6 +1170,19 @@
     return null;
   }
 
+  /* 서버가 붙어 있는데 아직 안 들어왔으면 **로그인 화면을 먼저** 보여 준다.
+     빈 목록을 보여 주면 "메모가 없구나" 로 읽힌다 — 실제로는 못 읽고 있는
+     것이다. 안 들어와도 이 브라우저에만 쓰는 것은 되므로 「나중에」가 있다 */
+  function openListOrLogin() {
+    if (srv && !bearer()) {
+      // 이미 로그인 화면이면 **아무것도 하지 않는다.** 다시 그리면 넣고
+      // 있던 이름이 날아가고, 목록으로 넘기면 로그인 화면이 덮인다
+      if (view !== "login") openLogin("");
+      return;
+    }
+    openList();
+  }
+
   /* ── 목록 ─────────────────────────────────────────────── */
   function openList() {
     var list = all();
@@ -1363,6 +1393,9 @@
   function shareLink() {
     if (!srv) return;
     var base = location.origin + location.pathname;
+    // 페이지에 이미 그 주소가 박혀 있으면 **주소만 담을 이유가 없다** —
+    // 그냥 페이지 링크를 준다. 받은 사람은 열고 로그인만 하면 된다
+    if (pageSrv() === srv.url) return base;
     return base + "?memo=" + encodeURIComponent(srv.url);
   }
 
@@ -1497,10 +1530,10 @@
       clearMine(true);                       // 물어보지 않는다 — 링크가 이미 뜻을 담고 있다
       srvState = had ? "이 브라우저의 내 메모 " + had + "개를 비웠습니다" : "비울 메모가 없었습니다";
     }
-    renderCount(); renderPins(); openList();
+    renderCount(); renderPins(); openListOrLogin();
     bind(panel);
     // 남이 쓴 메모는 네트워크라 늦게 온다. 오면 다시 그린다
-    pull(function () { renderCount(); renderPins(); openList(); });
+    pull(function () { renderCount(); renderPins(); openListOrLogin(); });
   }
 
   function bind(panel) {
@@ -1553,6 +1586,7 @@
       if (t.closest(".memo-out")) { logout(); return; }
       if (t.closest(".memo-add")) { e.stopPropagation(); openEditor(null, api.getPinned()); return; }
       if (t.closest(".memo-save")) { commit(); return; }
+      // 관문을 거치지 않는다 — 「나중에」를 눌렀는데 또 로그인이 뜨면 갇힌다
       if (t.closest(".memo-cancel")) { openList(); return; }
       if (t.closest(".memo-del")) {
         var gone = notes.filter(function (x) { return x.id === editing; });
@@ -1595,8 +1629,13 @@
         return;
       }
       if (t.closest(".memo-srv-off")) {
-        saveSrv(null); srvState = "";
-        linkState = "off"; linkAt = 0; linkWhy = ""; renderLink();
+        saveSrv(null); saveMe(null); srvState = "";
+        // 페이지에 기본 주소가 있으면 「끊기」는 로그아웃이 된다 — 주소는
+        // 페이지가 알고 있으므로 없앨 수가 없다
+        if (pageSrv()) { srv = { url: pageSrv() }; linkState = "out"; }
+        else { linkState = "off"; }
+        linkAt = 0; linkWhy = ""; shared = [];
+        renderLink(); renderCount(); renderPins();
         pull(function () { renderCount(); renderPins(); openList(); });
         return;
       }

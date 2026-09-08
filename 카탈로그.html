@@ -12,22 +12,22 @@
      지금 값: v=20260908g  (날짜 + 그날의 순번)
      ──────────────────────────────────────────────────────────── -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260908m">
-<link rel="stylesheet" href="css/base.css?v=20260908m">
-<link rel="stylesheet" href="css/icons.css?v=20260908m">
-<link rel="stylesheet" href="css/button.css?v=20260908m">
-<link rel="stylesheet" href="css/icon-button.css?v=20260908m">
-<link rel="stylesheet" href="css/chip.css?v=20260908m">
-<link rel="stylesheet" href="css/pagination.css?v=20260908m">
-<link rel="stylesheet" href="css/dropdown.css?v=20260908m">
-<link rel="stylesheet" href="css/drawer.css?v=20260908m">
-<link rel="stylesheet" href="css/heading.css?v=20260908m">
-<link rel="stylesheet" href="css/filter.css?v=20260908m">
-<link rel="stylesheet" href="css/gnb.css?v=20260908m">
-<link rel="stylesheet" href="css/footer.css?v=20260908m">
-<link rel="stylesheet" href="css/boardlist.css?v=20260908m">
+<link rel="stylesheet" href="css/tokens.css?v=20260908n">
+<link rel="stylesheet" href="css/base.css?v=20260908n">
+<link rel="stylesheet" href="css/icons.css?v=20260908n">
+<link rel="stylesheet" href="css/button.css?v=20260908n">
+<link rel="stylesheet" href="css/icon-button.css?v=20260908n">
+<link rel="stylesheet" href="css/chip.css?v=20260908n">
+<link rel="stylesheet" href="css/pagination.css?v=20260908n">
+<link rel="stylesheet" href="css/dropdown.css?v=20260908n">
+<link rel="stylesheet" href="css/drawer.css?v=20260908n">
+<link rel="stylesheet" href="css/heading.css?v=20260908n">
+<link rel="stylesheet" href="css/filter.css?v=20260908n">
+<link rel="stylesheet" href="css/gnb.css?v=20260908n">
+<link rel="stylesheet" href="css/footer.css?v=20260908n">
+<link rel="stylesheet" href="css/boardlist.css?v=20260908n">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260908m">
+<link rel="stylesheet" href="componote/componote.css?v=20260908n">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -151,19 +151,36 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260908m" defer></script>
-<script src="js/gnb-lang.js?v=20260908m" defer></script>
-<script src="js/kit.js?v=20260908m" defer></script>
+<script src="js/boardlist-main.js?v=20260908n" defer></script>
+<script src="js/gnb-lang.js?v=20260908n" defer></script>
+<script src="js/kit.js?v=20260908n" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
-<script>window.componote = { section: "section.sec", sectionTitle: "h2" };</script>
-<script src="componote/componote.js?v=20260908m" defer></script>
+<script>
+/* componote 설정
+     section·sectionTitle  메모에 "어느 구역인지" 를 적을 때 쓰는 선택자
+     memoServer            메모가 모이는 곳. 이 주소가 여기 있으면 **그냥 이
+                           링크만 열어도** 로그인 화면이 뜬다
+
+   ▸ 주소를 여기 적어도 되는 이유 — 막는 것이 **로그인**이다. 주소를 알아도
+     통과증 없이는 401 이고, 닉네임 찍어 맞히기는 서버가 10분에 10번으로
+     막는다. 예전에는 열쇠 하나가 자물쇠여서 주소를 아는 것만으로 글을 넣을
+     수 있었고, 그래서 주소를 저장소에 넣지 않았다.
+   ▸ **열쇠(MEMO_KEY)와 명단(MEMO_ROSTER)은 여전히 저장소에 넣지 않는다.**
+     그건 Cloudflare 변수에만 있다 */
+window.componote = {
+  section: "section.sec",
+  sectionTitle: "h2",
+  memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
+};
+</script>
+<script src="componote/componote.js?v=20260908n" defer></script>
 </head>
 <body>
 
 <div class="cat">
 <nav class="cat__nav">
   <h1>crissit 컴포넌트</h1>
-  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나옵니다.<br>고칠 곳은 <b>메모</b>로 핀을 꽂아<br>남겨 주세요.<br><br><b>설명</b> 버튼을 켜면 값의 출처와<br>판단 근거가 컴포넌트마다 붙습니다.</p>
+  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나옵니다.<br>고칠 곳은 <b>메모</b>로 핀을 꽂아<br>남겨 주세요 — 처음 열면<br><b>이름과 닉네임</b>을 묻습니다.<br>닉네임은 전달받으신 것을<br>넣으시면 됩니다.<br><br><b>설명</b> 버튼을 켜면 값의 출처와<br>판단 근거가 컴포넌트마다 붙습니다.</p>
 
   <div class="grp">기반</div>
   <a href="#tokens">디자인 토큰</a>
