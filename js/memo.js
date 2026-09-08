@@ -7,10 +7,16 @@
      가 늘 애매하다. 그래서 화면의 그 요소에 직접 핀을 꽂아 남기게 했다.
      핀 하나에 그 요소의 선택자·위치·그때의 값(색·글꼴·크기)이 같이 저장된다.
 
-   어디에 쌓이나
-     브라우저(localStorage)에 쌓이고, **JSON 파일로 내보내서** 전달한다.
-     서버가 없기 때문이다 — 이 카탈로그는 정적 파일 하나로 도는 문서다.
-     받은 JSON 은 다시 불러오면 핀이 그대로 되살아난다.
+   메모는 두 갈래다
+     ① **내 메모** — 내가 쓴 것. 이 브라우저(localStorage)에만 쌓인다.
+        다른 사람에게 보이려면 「JSON 내보내기」로 파일을 보내야 한다.
+     ② **공유 메모** — 서버(Cloudflare Worker)에 올라간 것.
+        카탈로그를 여는 **모든 사람에게 보인다**. 읽기만 되고 고칠 수는 없다.
+        서버를 안 붙였으면 저장소의 `memos.json` 을 대신 읽는다.
+
+     서버를 붙이면(메모 열 아래 「서버 붙이기」) 내가 저장하는 즉시 ②가 되어
+     다른 사람에게도 보인다. 주소와 열쇠는 **저장소에 넣지 않고** 각자
+     브라우저에만 둔다 — 공개 저장소라 넣으면 누구나 글을 넣을 수 있다.
 
    쓰는 법
      오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → 「＋ 메모」
@@ -38,8 +44,12 @@
   "use strict";
 
   var KEY = "crissit-catalog-memo-v1";
+  var SRV = "crissit-catalog-memo-server";   // 주소·열쇠를 이 브라우저에 저장한다
   var api = null;                 // window.catInspect — 검사기가 없으면 null
-  var notes = [];
+  var notes = [];      // 내 메모 (localStorage)
+  var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
+  var srv = null;      // { url, key } — 서버를 안 붙였으면 null
+  var srvState = "";   // 화면에 보여줄 연결 상태
   var layer, col, bodyEl, footEl, countBtn, toggleBtn, badgeEl;
   var editing = null;             // 지금 쓰고 있는 메모 id (새 메모면 null)
   var target = null;              // 새 메모를 붙일 요소
@@ -65,6 +75,89 @@
   }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
+  /* 화면에 그릴 목록 — 공유 메모가 먼저, 그 다음이 내 메모.
+     같은 id 가 양쪽에 있으면 **내 쪽이 이긴다**(내가 고쳐 둔 것이므로) */
+  function all() {
+    var mine = {};
+    for (var i = 0; i < notes.length; i++) mine[notes[i].id] = 1;
+    var out = [];
+    for (var j = 0; j < shared.length; j++) if (!mine[shared[j].id]) out.push(shared[j]);
+    return out.concat(notes);
+  }
+  function isMine(n) {
+    for (var i = 0; i < notes.length; i++) if (notes[i].id === n.id) return true;
+    return false;
+  }
+
+  /* ── 서버 (Cloudflare Worker) ─────────────────────────────
+     붙여 두면 메모가 **쓰는 즉시 서버로 올라가고**, 페이지를 열 때 남이 쓴
+     것까지 같이 내려온다. 안 붙이면 내 브라우저에만 쌓인다.
+
+     주소와 열쇠는 **저장소에 넣지 않는다** — 공개 저장소라 그러면 누구나
+     글을 넣을 수 있다. 각자 브라우저에 한 번 넣어 두는 방식이다.
+     ──────────────────────────────────────────────────────── */
+  function loadSrv() {
+    try { srv = JSON.parse(localStorage.getItem(SRV) || "null"); } catch (e) { srv = null; }
+    if (srv && (!srv.url || !srv.key)) srv = null;
+  }
+  function saveSrv(v) {
+    srv = v;
+    try {
+      if (v) localStorage.setItem(SRV, JSON.stringify(v));
+      else localStorage.removeItem(SRV);
+    } catch (e) { /* 저장이 막힌 경우 */ }
+  }
+  function srvUrl(extra) {
+    var u = srv.url.replace(/[?#].*$/, "").replace(/\/+$/, "");
+    return u + "?key=" + encodeURIComponent(srv.key) + (extra || "");
+  }
+
+  /* 서버 → 화면. 서버가 없으면 저장소의 memos.json 을 대신 읽는다 */
+  function pull(done) {
+    if (!srv) {
+      var url = "memos.json?t=" + Date.now();   // Pages 가 캐시하므로 매번 새로 받는다
+      try {
+        fetch(url).then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) { shared = (d && d.notes) || []; srvState = ""; done(); })
+          .catch(function () { done(); });
+      } catch (e) { done(); }
+      return;
+    }
+    srvState = "불러오는 중…";
+    fetch(srvUrl()).then(function (r) {
+      if (r.status === 401) throw new Error("열쇠가 맞지 않습니다");
+      if (!r.ok) throw new Error("서버가 " + r.status + " 로 답했습니다");
+      return r.json();
+    }).then(function (d) {
+      shared = (d && d.notes) || [];
+      srvState = "연결됨 · " + shared.length + "건";
+      done();
+    }).catch(function (e) {
+      srvState = "연결 실패 — " + e.message;
+      done();
+    });
+  }
+
+  /* 화면 → 서버. 실패해도 내 브라우저에는 이미 저장돼 있으니 잃지 않는다 */
+  function push(note) {
+    if (!srv) return;
+    fetch(srvUrl(), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(note)
+    }).then(function (r) {
+      srvState = r.ok ? "올렸습니다" : "올리지 못했습니다 (" + r.status + ")";
+      renderFootState();
+    }).catch(function () {
+      srvState = "올리지 못했습니다 — 인터넷이나 주소를 확인해 주세요";
+      renderFootState();
+    });
+  }
+  function drop(id) {
+    if (!srv) return;
+    fetch(srvUrl("&id=" + encodeURIComponent(id)), { method: "DELETE" }).catch(function () {});
+  }
+
   /* ── 핀 ───────────────────────────────────────────────── */
   function sectionOf(el) {
     var s = el.closest && el.closest("section.sec");
@@ -74,13 +167,13 @@
 
   function renderPins() {
     layer.innerHTML = "";
-    notes.forEach(function (n, i) {
+    all().forEach(function (n, i) {
       var el = api && api.resolve(n.sel);
       if (!el) return;                        // 마크업이 바뀌어 못 찾는 경우
       var r = el.getBoundingClientRect();
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "memo-pin" + (n.done ? " is-done" : "");
+      b.className = "memo-pin" + (isMine(n) ? "" : " is-shared");
       b.textContent = i + 1;
       b.title = n.text.slice(0, 60);
       b.style.left = (r.left + scrollX + r.width - 9) + "px";
@@ -90,17 +183,28 @@
     });
   }
   function renderCount() {
-    countBtn.textContent = notes.length;
-    countBtn.classList.toggle("is-some", notes.length > 0);
+    var n = all().length;
+    countBtn.textContent = n;
+    countBtn.classList.toggle("is-some", n > 0);
     // 열지 않아도 메모가 있는지 보이게 버튼에도 개수를 붙입니다
-    if (badgeEl) badgeEl.textContent = notes.length ? String(notes.length) : "";
+    if (badgeEl) badgeEl.textContent = n ? String(n) : "";
   }
 
   /* ── 메모 쓰기 ─────────────────────────────────────────── */
   function openEditor(note, el) {
+    // 공유 메모는 남이 쓴 것이라 여기서 고치지 않는다 — memos.json 에서 고친다
+    var readonly = !!(note && !isMine(note));
     editing = note ? note.id : null;
     target = el || (note && api && api.resolve(note.sel)) || null;
     var label = note ? note.label : (target && api ? api.label(target) : "");
+    if (readonly) {
+      bodyEl.innerHTML =
+        '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
+        '<p class="memo-ro"><span class="memo-tag">공유</span> ' + esc(note.text) + "</p>" +
+        '<p class="memo-hint">저장소의 <code>memos.json</code> 에 들어 있는 메모라 여기서는 고칠 수 없습니다. 내용을 바꾸려면 그 파일을 고쳐 커밋하세요.</p>';
+      footEl.innerHTML = '<div class="memo-btns"><button type="button" class="memo-cancel">목록으로</button></div>';
+      return;
+    }
     bodyEl.innerHTML =
       '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
       '<textarea class="memo-text" rows="5" placeholder="무엇을 어떻게 고쳤으면 하는지 적어 주세요">' +
@@ -138,17 +242,25 @@
       });
     }
     save();
+    push(editing ? found(editing) : notes[notes.length - 1]);
     openList();
+  }
+  function found(id) {
+    for (var i = 0; i < notes.length; i++) if (notes[i].id === id) return notes[i];
+    return null;
   }
 
   /* ── 목록 ─────────────────────────────────────────────── */
   function openList() {
-    var rows = notes.length
-      ? notes.map(function (n, i) {
+    var list = all();
+    var rows = list.length
+      ? list.map(function (n, i) {
+          var mine = isMine(n);
           return '<li class="memo-item" data-id="' + n.id + '">' +
-            '<span class="memo-no">' + (i + 1) + "</span>" +
+            '<span class="memo-no' + (mine ? "" : " is-shared") + '">' + (i + 1) + "</span>" +
             "<div><b>" + esc(n.text) + "</b>" +
-            '<span class="memo-meta">' + esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
+            '<span class="memo-meta">' + (mine ? "" : '<span class="memo-tag">공유</span> ') +
+            esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
       : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
@@ -156,11 +268,47 @@
     bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
     footEl.innerHTML =
       '<div class="memo-btns">' +
+      (srv ? '<button type="button" class="memo-refresh">새로 받기</button>' : "") +
       '<button type="button" class="memo-export">JSON 내보내기</button>' +
       '<label class="memo-import">불러오기<input type="file" accept="application/json,.json" hidden></label>' +
       (notes.length ? '<button type="button" class="memo-clear">전부 지우기</button>' : "") +
+      '<button type="button" class="memo-srv">' + (srv ? "서버 설정" : "서버 붙이기") + "</button>" +
       "</div>" +
-      '<p class="memo-hint">메모는 이 브라우저에만 쌓입니다. <b>JSON 으로 내보내 전달</b>하시면 받는 쪽에서 불러와 핀까지 그대로 볼 수 있습니다.</p>';
+      '<p class="memo-hint">' + hintText() + "</p>";
+    editing = null;
+    renderFootState();
+  }
+
+  function hintText() {
+    if (srv) {
+      return "메모를 저장하면 <b>바로 서버로 올라가</b> 다른 사람에게도 보입니다. " +
+             "남이 쓴 것은 <span class=\"memo-tag\">공유</span> 로 표시되고 여기서는 고칠 수 없습니다.";
+    }
+    return "<b>내가 쓴 메모는 이 브라우저에만 저장됩니다</b> — 다른 사람에게는 보이지 않습니다. " +
+           "「JSON 내보내기」로 파일을 만들어 전달하거나, <b>「서버 붙이기」</b>로 자동으로 모이게 하세요.";
+  }
+  function renderFootState() {
+    var p = footEl.querySelector(".memo-state");
+    if (!srvState) { if (p) p.remove(); return; }
+    if (!p) { p = document.createElement("p"); p.className = "memo-state"; footEl.appendChild(p); }
+    p.textContent = srvState;
+    p.classList.toggle("is-bad", /실패|못했/.test(srvState));
+  }
+
+  function openSrv() {
+    bodyEl.innerHTML =
+      '<p class="memo-target">메모를 모을 서버</p>' +
+      '<label class="memo-field">주소<input type="url" class="memo-srv-url" placeholder="https://…workers.dev" value="' +
+      esc(srv ? srv.url : "") + '"></label>' +
+      '<label class="memo-field">열쇠<input type="text" class="memo-srv-key" placeholder="MEMO_KEY 값" value="' +
+      esc(srv ? srv.key : "") + '"></label>' +
+      '<p class="memo-hint">주소와 열쇠는 <b>이 브라우저에만</b> 저장됩니다. 저장소에는 넣지 않습니다 — 공개 저장소라 그러면 누구나 글을 넣을 수 있습니다.</p>';
+    footEl.innerHTML =
+      '<div class="memo-btns">' +
+      '<button type="button" class="memo-srv-save">연결</button>' +
+      '<button type="button" class="memo-cancel">취소</button>' +
+      (srv ? '<button type="button" class="memo-srv-off">끊기</button>' : "") +
+      "</div>";
     editing = null;
   }
 
@@ -187,6 +335,7 @@
           for (var k = 0; k < notes.length; k++) if (notes[k].id === n.id) { i = k; break; }
           if (i >= 0) notes[i] = n; else notes.push(n);
         });
+        for (var q = 0; q < d.notes.length; q++) push(d.notes[q]);
         save(); openList();
       } catch (e) {
         alert("메모 파일이 아닌 것 같습니다. 「JSON 내보내기」로 만든 파일을 넣어 주세요.");
@@ -241,8 +390,11 @@
     api.dock().appendChild(toggleBtn);
     badgeEl = toggleBtn.querySelector(".memo-badge");
 
-    load(); renderCount(); renderPins(); openList();
+    load(); loadSrv();
+    renderCount(); renderPins(); openList();
     bind(panel);
+    // 남이 쓴 메모는 네트워크라 늦게 온다. 오면 다시 그린다
+    pull(function () { renderCount(); renderPins(); openList(); });
   }
 
   function bind(panel) {
@@ -274,20 +426,40 @@
       if (t.closest(".memo-save")) { commit(); return; }
       if (t.closest(".memo-cancel")) { openList(); return; }
       if (t.closest(".memo-del")) {
+        drop(editing);
         notes = notes.filter(function (x) { return x.id !== editing; });
         save(); openList(); return;
       }
+      if (t.closest(".memo-srv")) { openSrv(); return; }
+      if (t.closest(".memo-srv-save")) {
+        var u = col.querySelector(".memo-srv-url").value.trim();
+        var k = col.querySelector(".memo-srv-key").value.trim();
+        if (!/^https:\/\//.test(u) || !k) { alert("주소는 https:// 로 시작해야 하고, 열쇠도 있어야 합니다."); return; }
+        saveSrv({ url: u, key: k });
+        pull(function () { renderCount(); renderPins(); openList(); });
+        return;
+      }
+      if (t.closest(".memo-srv-off")) {
+        saveSrv(null); srvState = "";
+        pull(function () { renderCount(); renderPins(); openList(); });
+        return;
+      }
+      if (t.closest(".memo-refresh")) {
+        pull(function () { renderCount(); renderPins(); openList(); });
+        return;
+      }
       if (t.closest(".memo-export")) { exportJson(); return; }
       if (t.closest(".memo-clear")) {
-        if (confirm("메모 " + notes.length + "개를 전부 지웁니다. 되돌릴 수 없습니다.")) {
+        if (confirm("내가 쓴 메모 " + notes.length + "개를 전부 지웁니다. 되돌릴 수 없습니다.")) {
+          for (var k = 0; k < notes.length; k++) drop(notes[k].id);
           notes = []; save(); openList();
         }
         return;
       }
       var go = t.closest(".memo-go");
       if (go) {
-        var id = go.getAttribute("data-id"), n = null;
-        for (var i = 0; i < notes.length; i++) if (notes[i].id === id) { n = notes[i]; break; }
+        var id = go.getAttribute("data-id"), n = null, L = all();
+        for (var i = 0; i < L.length; i++) if (L[i].id === id) { n = L[i]; break; }
         var el = n && api.resolve(n.sel);
         if (!el) { alert("그 요소를 찾지 못했습니다. 마크업이 바뀐 것 같습니다."); return; }
         el.scrollIntoView({ block: "center" });
@@ -305,8 +477,8 @@
     layer.addEventListener("click", function (e) {
       var p = e.target.closest(".memo-pin");
       if (!p) return;
-      var id = p.getAttribute("data-id"), n = null;
-      for (var i = 0; i < notes.length; i++) if (notes[i].id === id) { n = notes[i]; break; }
+      var id = p.getAttribute("data-id"), n = null, L = all();
+      for (var i = 0; i < L.length; i++) if (L[i].id === id) { n = L[i]; break; }
       if (!n) return;
       var el = api.resolve(n.sel);
       if (el) api.pin(el);

@@ -139,3 +139,35 @@ html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
 .memo-go:hover{border-color:var(--insp-accent);color:var(--insp-accent)}
 .memo-empty{font:var(--label-2-medium);color:var(--label-assistive);padding:4px 0}
 .memo-hint{margin:10px 0 0;font:var(--label-3-medium);color:var(--label-assistive)}
+
+/* ---------- 공유 메모 ----------
+   저장소의 memos.json 에 들어 있어 **모두에게 보이는** 메모.
+   내 메모(빨강)와 구분하려고 색을 달리했다. 읽기만 된다 */
+.memo-pin.is-shared,
+.memo-no.is-shared{background:var(--neutral-900)}
+.memo-tag{
+  display:inline-block;padding:1px 6px;border-radius:9999px;
+  background:var(--neutral-900);color:var(--neutral-0);
+  font:700 9px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
+  vertical-align:1px;
+}
+.memo-ro{
+  margin:0 0 10px;padding:10px 12px;
+  border-radius:var(--radius-xsmall);background:var(--bg-normal);
+  font:var(--label-2-medium);color:var(--label-normal);
+  word-break:break-word;
+}
+
+/* ---------- 서버 설정 ---------- */
+.memo-field{display:block;margin:0 0 8px}
+.memo-field input{
+  display:block;width:100%;box-sizing:border-box;margin-top:4px;
+  border:1px solid var(--line-normal);border-radius:var(--radius-xsmall);
+  padding:7px 9px;background:var(--bg-normal);
+  font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-normal);
+}
+.memo-field input:focus{outline:2px solid var(--memo-accent);outline-offset:-1px;border-color:transparent}
+.memo-state{
+  margin:8px 0 0;font:var(--label-3-medium);color:var(--label-alternative);
+}
+.memo-state.is-bad{color:var(--memo-accent)}
