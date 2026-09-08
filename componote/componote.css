@@ -1,0 +1,462 @@
+/* ============================================================
+   componote 20260908 — 합친 파일 (build.py 가 만든다. 직접 고치지 말 것)
+   원본은 src/inspector.css · memo.css
+   컴포넌트 카탈로그 위에 얹어 값을 읽고 메모를 남기는 도구.
+   사용법 · 붙이는 법: README.md
+   ============================================================ */
+
+
+/* ─── src/inspector.css ─────────────────────────────── */
+/* ============================================================
+   검사기 — 카탈로그 전용 문서 UI
+   컴포넌트가 아니다. 실제 사이트에는 들어가지 않는다.
+
+   돋보기 버튼을 켜면 마우스가 가리키는 요소의 글꼴·색·여백을
+   오른쪽 패널에 보여준다. 값은 브라우저가 실제로 계산한 값이고,
+   그 값이 `tokens.css` 의 어떤 토큰과 같은지 옆에 붙여 준다.
+
+   ▸ 돋보기 글리프는 피그마 아이콘 라이브러리에 없다. 여기 것은
+     문서 UI 라서 직접 그렸다 — 컴포넌트에 쓰면 안 된다.
+   ============================================================ */
+
+:root{
+  --insp-w:340px;
+  --insp-accent:var(--purple-500, #543efa);   /* 문서 UI 지만 색은 팔레트를 따른다 */
+}
+
+/* ---------- 여는 버튼 ----------
+   검사와 메모를 따로 켠다. 값만 볼 때가 있고 메모만 볼 때가 있어서,
+   한 버튼이 둘을 같이 여는 건 늘 한쪽이 방해가 됐다 */
+.insp-dock{
+  position:fixed;right:20px;bottom:20px;z-index:9998;
+  display:flex;gap:8px;
+}
+.insp-on .insp-dock{right:calc(var(--insp-w) + 20px)}
+
+.insp-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  background:var(--bg-normal, #ffffff);color:var(--label-normal, #151617);
+  font:var(--label-2-bold, 700 14px/1.45 sans-serif);cursor:pointer;
+  box-shadow:0 6px 20px rgb(0 0 0 / .10);
+}
+.insp-toggle:hover{border-color:var(--label-alternative, #7c8288)}
+.insp-toggle svg{width:18px;height:18px;flex:none}
+.insp-show-main .insp-toggle{
+  background:var(--insp-accent);color:#fff;border-color:var(--insp-accent);
+}
+
+/* ---------- 오른쪽 패널 ----------
+   열(column) 두 개를 담는다 — 왼쪽이 검사, 오른쪽이 메모.
+   좁은 화면에서는 한 열로 접어 위아래로 쌓는다. 좌우로 쪼개면 둘 다
+   너무 좁아져서 값도 메모도 못 읽기 때문이다 */
+.insp-panel{
+  position:fixed;top:0;right:0;bottom:0;width:var(--insp-w);z-index:9997;
+  display:none;grid-template-columns:1fr;grid-template-rows:1fr;
+  background:var(--bg-normal, #ffffff);
+  border-left:1px solid var(--line-normal, #e4e6e8);
+  box-shadow:-8px 0 24px rgb(0 0 0 / .06);
+}
+.insp-on .insp-panel{display:grid}
+
+/* 둘 다 켜졌는데 화면이 좁으면 위아래로 **정확히 반씩** 나눈다.
+   내용 높이에 맡기면 메모 칸이 머리·발에 눌려 목록이 안 보인다 */
+.insp-two .insp-panel{grid-template-rows:1fr 1fr}
+
+/* 열은 켜진 것만 보인다 */
+.insp-col{display:none;flex-direction:column;min-height:0;min-width:0}
+.insp-show-main .insp-col--main{display:flex;overflow:hidden}
+.insp-show-memo .insp-col--memo{display:flex}
+
+/* 둘 다 켜졌을 때만 패널을 넓혀 좌우로 가른다.
+   하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다.
+
+   ▸ 기준을 1400px 로 잡았다. 노트북이 대개 1440(13" Air)·1512(14")·1728 이라
+     여기서 갈린다. 1400 미만이면 위아래로 쌓는다 — 340px 를 좌우로 쪼개면
+     170px 씩이라 값도 메모도 못 읽는다.
+     (본문은 1280 + 사이드바 220 이라 패널 680 을 밀어도 남는다) */
+@media (min-width:1400px){
+  .insp-two{--insp-w:680px}
+  .insp-two .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+  .insp-two .insp-col--memo{border-left:1px solid var(--line-normal, #e4e6e8);border-top:0;max-height:none}
+}
+/* 본문을 밀어서 패널이 가리지 않게 한다 */
+@media (min-width:1180px){
+  .insp-on .cat{padding-right:var(--insp-w)}
+}
+
+.insp-panel__head{
+  padding:16px 18px;border-bottom:1px solid var(--line-normal, #e4e6e8);
+  display:flex;align-items:center;gap:8px;
+}
+.insp-panel__head h2{font:var(--label-1-bold, 700 16px/1.5 sans-serif);margin:0;flex:1 0 auto}
+.insp-pin{
+  font:var(--label-3-bold, 700 12px/1.5 sans-serif);padding:3px 8px;border-radius:9999px;
+  background:var(--insp-accent);color:#fff;
+}
+.insp-panel__hint{
+  padding:12px 18px;font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-assistive, #a3a8ad);
+  border-bottom:1px solid var(--line-normal, #e4e6e8);
+}
+.insp-panel__body{flex:1 1 auto;overflow:auto;padding:4px 0 40px}
+
+.insp-grp{border-bottom:1px solid var(--line-normal, #e4e6e8);padding:14px 18px}
+.insp-grp:last-child{border-bottom:0}
+.insp-grp > h3{
+  font:var(--label-3-bold, 700 12px/1.5 sans-serif);color:var(--label-assistive, #a3a8ad);margin:0 0 10px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.insp-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:7px}
+.insp-row:last-child{margin-bottom:0}
+.insp-row > dt{
+  flex:0 0 66px;font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-assistive, #a3a8ad);
+  margin:0;padding-top:1px;
+}
+.insp-row > dd{
+  flex:1 1 auto;min-width:0;margin:0;
+  font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-normal, #151617);word-break:break-all;
+}
+.insp-sel{
+  font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--insp-accent);word-break:break-all;margin:0;
+}
+
+/* 토큰 이름 — 계산된 값이 tokens.css 의 어떤 이름과 같은지.
+   누르면 아래 정보창이 열린다 */
+.insp-toks{display:block}
+.insp-tok{
+  display:block;margin-top:3px;padding:0;border:0;background:none;
+  font:500 11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--insp-accent);text-align:left;cursor:pointer;
+}
+button.insp-tok:hover{text-decoration:underline}
+.insp-none{color:var(--label-disable, #c9ccd0);cursor:default}
+.insp-tok--extra{display:none}
+.insp-toks.is-open .insp-tok--extra{display:block}
+.insp-toks.is-open .insp-more{display:none}
+.insp-more{
+  display:inline-block;margin-top:4px;padding:1px 7px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;background:none;
+  font:600 10px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-alternative, #7c8288);cursor:pointer;
+}
+.insp-more:hover{border-color:var(--insp-accent);color:var(--insp-accent)}
+
+/* ---------- 토큰 정보창 — 패널 아래, 한 번에 하나만 ---------- */
+.insp-detail{
+  flex:0 0 auto;max-height:52%;overflow:auto;
+  border-top:2px solid var(--insp-accent);
+  background:var(--bg-alternative, #fafafa);
+}
+.insp-detail__head{
+  position:sticky;top:0;z-index:1;
+  display:flex;align-items:center;gap:8px;
+  padding:11px 18px;background:var(--bg-alternative, #fafafa);
+  border-bottom:1px solid var(--line-normal, #e4e6e8);
+}
+.insp-detail__head b{
+  flex:1 1 auto;min-width:0;word-break:break-all;
+  font:600 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--insp-accent);
+}
+.insp-x{
+  flex:none;border:0;background:none;padding:2px 4px;cursor:pointer;
+  font:12px/1 var(--font-sans, -apple-system, BlinkMacSystemFont, system-ui, sans-serif);color:var(--label-assistive, #a3a8ad);
+}
+.insp-x:hover{color:var(--label-normal, #151617)}
+.insp-detail__body{padding:14px 18px 18px}
+
+.insp-prev{margin:0 0 12px;border-radius:var(--radius-xsmall, 4px)}
+.insp-prev--color{height:44px;box-shadow:inset 0 0 0 1px rgb(0 0 0 / .12)}
+.insp-prev--type{
+  color:var(--label-normal, #151617);
+  white-space:nowrap;overflow:hidden;
+}
+.insp-cur{
+  font:600 11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-normal, #151617);
+}
+.insp-val{
+  font:500 11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-alternative, #7c8288);
+}
+.insp-detail .insp-arw{display:inline-block;margin:0 5px}
+.insp-bp{
+  display:inline-block;min-width:88px;
+  font:600 10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-assistive, #a3a8ad);
+}
+
+/* 색 견본 */
+.insp-sw{
+  display:inline-block;width:11px;height:11px;flex:none;
+  border-radius:2px;box-shadow:inset 0 0 0 1px rgb(0 0 0 / .18);
+  margin-right:5px;vertical-align:-1px;
+}
+.insp-copy{cursor:copy}
+
+/* ---------- 가리키는 요소 표시 ---------- */
+.insp-hl{
+  position:fixed;z-index:9996;pointer-events:none;display:none;
+  border:1px solid var(--insp-accent);
+  background:rgb(84 62 250 / .07);
+}
+.insp-on .insp-hl{display:block}
+/* 여백을 눈으로 보여준다 — padding 은 안쪽으로 초록, margin 은 바깥쪽으로 주황 */
+.insp-hl__pad,.insp-hl__mar{position:absolute;pointer-events:none}
+.insp-hl__pad{outline:1px dashed rgb(16 185 129 / .8);outline-offset:-1px}
+.insp-hl__mar{outline:1px dashed rgb(245 158 11 / .8)}
+
+/* ---------- 고르는 판 ----------
+   검사 중에 화면 전체를 덮어 마우스를 받는다. 비활성(disabled) 버튼도
+   고를 수 있게 하려는 것이다 — 자세한 이유는 js/inspector.js 참고 */
+.insp-catch{display:none}
+.insp-on .insp-catch{
+  display:block;position:fixed;inset:0;z-index:9994;
+  cursor:crosshair;background:transparent;
+}
+.insp-on .insp-panel,.insp-on .insp-dock{cursor:auto}
+.insp-on .insp-toggle,.insp-on .memo-toggle{cursor:pointer}
+
+/* 조상 사슬 — 버튼 안 <span> 을 집었을 때 위로 올라가는 길 */
+.insp-path{
+  margin:0 0 6px;font:500 11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-assistive, #a3a8ad);
+}
+.insp-up{
+  border:0;background:none;padding:0;cursor:pointer;
+  font:inherit;color:var(--label-alternative, #7c8288);
+}
+.insp-up:hover{color:var(--insp-accent);text-decoration:underline}
+.insp-arw{margin:0 4px;color:var(--label-disable, #c9ccd0)}
+
+/* 선언 문자열 안에 박힌 토큰 이름 — 줄 안에 그대로 흐르게 둔다 */
+.insp-tok--inline{display:inline;margin:0;vertical-align:baseline}
+
+/* 설명 켜고 끄기 버튼 — 검사·메모와 같은 부두에 선다 (js/annotations.js) */
+.notes-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  background:var(--bg-normal, #ffffff);color:var(--label-normal, #151617);
+  font:var(--label-2-bold, 700 14px/1.45 sans-serif);cursor:pointer;
+  box-shadow:0 6px 20px rgb(0 0 0 / .10);
+}
+.notes-toggle:hover{border-color:var(--label-alternative, #7c8288)}
+.notes-toggle svg{width:18px;height:18px;flex:none}
+.notes-toggle.is-on{
+  background:var(--neutral-900, #151617);color:var(--neutral-0, #ffffff);border-color:var(--neutral-900, #151617);
+}
+
+
+/* ─── src/memo.css ─────────────────────────────── */
+/* ============================================================
+   메모 — 카탈로그 전용 문서 UI (js/memo.js 와 짝)
+   컴포넌트가 아니다. 실제 사이트에는 들어가지 않는다.
+   ============================================================ */
+
+:root{
+  /* 메모는 컴포넌트가 아니라 문서 UI 라서 팔레트에 없는 색을 쓴다 —
+     디자인 색과 섞이면 안 되므로 일부러 다른 계열로 골랐다 */
+  --memo-accent:#e5484d;
+}
+
+/* ---------- 핀 ----------
+   요소의 오른쪽 위 모서리에 걸린다. 검사 모드를 꺼도 보인다 —
+   "여기 얘기 중" 이 계속 보여야 하기 때문이다 */
+.memo-layer{position:absolute;top:0;left:0;width:100%;height:0;z-index:9995}
+.memo-pin{
+  position:absolute;width:20px;height:20px;padding:0;
+  border:2px solid #fff;border-radius:9999px;
+  background:var(--memo-accent);color:#fff;cursor:pointer;
+  font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  box-shadow:0 2px 6px rgb(0 0 0 / .25);
+}
+.memo-pin:hover{transform:scale(1.15)}
+.memo-pin.is-done{background:var(--label-assistive, #a3a8ad)}
+
+/* ---------- 메모 열 ----------
+   검사 패널의 오른쪽 열. 좁은 화면에서는 아래로 내려와 쌓인다 */
+/* 화면이 좁아 위아래로 쌓일 때 — 절반씩 나눠 쓴다.
+   위쪽 검사 열과 헷갈리지 않게 경계선을 굵게 둔다 */
+.insp-col--memo{
+  border-top:2px solid var(--line-normal, #e4e6e8);
+  background:var(--bg-alternative, #fafafa);
+  min-height:0;
+}
+/* 검사 열이 꺼져 있으면 메모가 패널 전체를 쓴다 */
+html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
+/* 나란히 설 때는 위 경계선이 필요 없다 — 왼쪽 경계선이 대신한다 */
+
+/* 메모 여는 버튼 — 검사 버튼 옆에 선다 */
+.memo-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  background:var(--bg-normal, #ffffff);color:var(--label-normal, #151617);
+  font:var(--label-2-bold, 700 14px/1.45 sans-serif);cursor:pointer;
+  box-shadow:0 6px 20px rgb(0 0 0 / .10);
+}
+.memo-toggle:hover{border-color:var(--label-alternative, #7c8288)}
+.memo-toggle svg{width:18px;height:18px;flex:none}
+.insp-show-memo .memo-toggle{background:var(--memo-accent);color:#fff;border-color:var(--memo-accent)}
+/* 버튼 위의 개수 뱃지 — 열지 않아도 메모가 있는지 보인다 */
+.memo-toggle .memo-badge{
+  min-width:18px;height:18px;padding:0 5px;border-radius:9999px;
+  background:var(--memo-accent);color:#fff;
+  font:700 10px/18px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.insp-show-memo .memo-toggle .memo-badge{background:rgb(255 255 255 / .28)}
+.memo-toggle .memo-badge:empty{display:none}
+
+.memo-head{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;
+  padding:16px 18px;border-bottom:1px solid var(--line-normal, #e4e6e8);
+  background:var(--bg-alternative, #fafafa);
+}
+.memo-head h2{font:var(--label-1-bold, 700 16px/1.5 sans-serif);margin:0}
+.memo-count{
+  min-width:20px;height:20px;padding:0 6px;border-radius:9999px;
+  background:var(--neutral-200, #e4e6e8);color:var(--label-alternative, #7c8288);
+  text-align:center;
+  font:700 11px/20px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.memo-count.is-some{background:var(--memo-accent);color:#fff}
+
+/* 고정된 요소가 있을 때만 나타난다 */
+.memo-add{
+  margin-left:auto;border:0;border-radius:9999px;padding:4px 11px;
+  background:var(--memo-accent);color:#fff;cursor:pointer;
+  font:var(--label-3-bold, 700 12px/1.5 sans-serif);
+}
+.memo-add:hover{filter:brightness(1.08)}
+
+.memo-body{flex:1 1 auto;min-height:0;overflow:auto;padding:12px 18px}
+.memo-foot{
+  flex:0 0 auto;padding:12px 18px 16px;
+  border-top:1px solid var(--line-normal, #e4e6e8);background:var(--bg-alternative, #fafafa);
+}
+
+/* ---------- 메모 쓰기 ---------- */
+.memo-target{
+  margin:0 0 8px;word-break:break-all;
+  font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--insp-accent);
+}
+.memo-text{
+  width:100%;box-sizing:border-box;resize:vertical;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:var(--radius-xsmall, 4px);
+  padding:9px 10px;font:var(--label-2-medium, 500 14px/1.45 sans-serif);color:var(--label-normal, #151617);
+  background:var(--bg-normal, #ffffff);
+}
+.memo-text:focus{outline:2px solid var(--memo-accent);outline-offset:-1px;border-color:transparent}
+
+.memo-btns{display:flex;flex-wrap:wrap;gap:8px}
+.memo-btns button,.memo-import{
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:var(--radius-xsmall, 4px);
+  padding:6px 12px;background:var(--bg-normal, #ffffff);cursor:pointer;
+  font:var(--label-3-bold, 700 12px/1.5 sans-serif);color:var(--label-normal, #151617);
+}
+.memo-btns button:hover,.memo-import:hover{border-color:var(--label-alternative, #7c8288)}
+.memo-save{background:var(--memo-accent)!important;border-color:var(--memo-accent)!important;color:#fff!important}
+.memo-del,.memo-clear{color:var(--memo-accent)!important}
+
+/* ---------- 목록 ---------- */
+.memo-list{list-style:none;margin:0;padding:0}
+.memo-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--line-normal, #e4e6e8);
+}
+.memo-item:last-child{border-bottom:0}
+.memo-item > div{flex:1 1 auto;min-width:0}
+.memo-item b{
+  display:block;font:var(--label-2-medium, 500 14px/1.45 sans-serif);color:var(--label-normal, #151617);
+  word-break:break-word;
+}
+.memo-no{
+  flex:none;width:20px;height:20px;border-radius:9999px;
+  background:var(--memo-accent);color:#fff;text-align:center;
+  font:700 10px/20px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.memo-meta{
+  display:block;margin-top:3px;word-break:break-all;
+  font:500 10px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-assistive, #a3a8ad);
+}
+.memo-go{
+  flex:none;border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  padding:3px 9px;background:none;cursor:pointer;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-alternative, #7c8288);
+}
+.memo-go:hover{border-color:var(--insp-accent);color:var(--insp-accent)}
+.memo-empty{font:var(--label-2-medium, 500 14px/1.45 sans-serif);color:var(--label-assistive, #a3a8ad);padding:4px 0}
+.memo-hint{margin:10px 0 0;font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-assistive, #a3a8ad)}
+
+/* ---------- 공유 메모 ----------
+   저장소의 memos.json 에 들어 있어 **모두에게 보이는** 메모.
+   내 메모(빨강)와 구분하려고 색을 달리했다. 읽기만 된다 */
+.memo-pin.is-shared,
+.memo-no.is-shared{background:var(--neutral-900, #151617)}
+.memo-tag{
+  display:inline-block;padding:1px 6px;border-radius:9999px;
+  background:var(--neutral-900, #151617);color:var(--neutral-0, #ffffff);
+  font:700 9px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
+  vertical-align:1px;
+}
+.memo-ro{
+  margin:0 0 10px;padding:10px 12px;
+  border-radius:var(--radius-xsmall, 4px);background:var(--bg-normal, #ffffff);
+  font:var(--label-2-medium, 500 14px/1.45 sans-serif);color:var(--label-normal, #151617);
+  word-break:break-word;
+}
+
+/* ---------- 서버 설정 ---------- */
+.memo-field{display:block;margin:0 0 8px}
+.memo-field input{
+  display:block;width:100%;box-sizing:border-box;margin-top:4px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:var(--radius-xsmall, 4px);
+  padding:7px 9px;background:var(--bg-normal, #ffffff);
+  font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-normal, #151617);
+}
+.memo-field input:focus{outline:2px solid var(--memo-accent);outline-offset:-1px;border-color:transparent}
+.memo-state{
+  margin:8px 0 0;font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-alternative, #7c8288);
+}
+.memo-state.is-bad{color:var(--memo-accent)}
+
+/* 보낼 링크 — 복사가 막히는 브라우저를 위해 화면에도 띄운다 */
+.memo-link{
+  display:block;width:100%;box-sizing:border-box;margin-top:10px;
+  border:1px solid var(--memo-accent);border-radius:var(--radius-xsmall, 4px);
+  padding:7px 9px;background:var(--bg-normal, #ffffff);
+  font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-normal, #151617);
+}
+
+/* 휴지통 항목 — 지운 것이라 번호를 안 매긴다 */
+.memo-no.is-trash{background:var(--neutral-300, #c9ccd0);color:var(--neutral-0, #ffffff)}
+.memo-undo{
+  flex:none;border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  padding:3px 9px;background:none;cursor:pointer;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-alternative, #7c8288);
+}
+.memo-undo:hover{border-color:var(--memo-accent);color:var(--memo-accent)}
+.memo-trash,.memo-trash-empty{color:var(--label-alternative, #7c8288)!important}
+
+/* ---------- 처리된 메모 · 답글 ----------
+   고쳤다고 표시된 메모는 핀·번호를 죽이고 ✓ 로 바꾼다.
+   지우지 않는 이유 — 무엇을 요청했고 어떻게 처리했는지가 같이 남아야
+   나중에 "이거 왜 이렇게 됐지" 를 되짚을 수 있다 */
+.memo-pin.is-done{background:var(--label-assistive, #a3a8ad);box-shadow:0 1px 3px rgb(0 0 0 / .18)}
+.memo-no.is-done{background:var(--label-assistive, #a3a8ad)}
+.memo-item.is-done > div > b{color:var(--label-alternative, #7c8288);text-decoration:line-through}
+.memo-reply{
+  display:block;margin-top:5px;padding:6px 9px;
+  border-left:2px solid var(--label-assistive, #a3a8ad);
+  background:var(--bg-normal, #ffffff);border-radius:0 var(--radius-xsmall, 4px) var(--radius-xsmall, 4px) 0;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-normal, #151617);
+  word-break:break-word;
+}
+.memo-ro.is-reply{border-left:2px solid var(--label-assistive, #a3a8ad)}
+.memo-ro.is-reply b{font:var(--label-3-bold, 700 12px/1.5 sans-serif);color:var(--label-alternative, #7c8288)}
