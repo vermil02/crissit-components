@@ -57,6 +57,7 @@
     memo.css          ← 디자이너 메모(핀). 역시 카탈로그 전용
     memo.js           ← 같음
     annotations.js    ← 카탈로그 설명글 켜고 끄기. 역시 카탈로그 전용
+    gnb-lang.js       ← 언어 선택 드롭다운 여닫기 (실제 사이트에 들어간다)
   index.html          ← 깃허브 Pages 진입점. 카탈로그로 넘긴다
 ```
 

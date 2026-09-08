@@ -59,3 +59,70 @@
 
 /* 닫힌 상태 — 마크업을 지우지 않고 감춘다 */
 .dd[hidden]{display:none}
+
+/* ============================================================
+   언어 선택 드롭다운 — 피그마 `Dropdown_list` (2053:58997)
+   GNB·드로어의 언어 선택(지구본 + KR + 셰브론)을 눌렀을 때 뜨는 KR/EN 목록.
+
+   ▸ 위 `.dd`(연도·월 필터, 1010:17342)와 **이름이 같지만 다른 컴포넌트**다.
+     치수도 쓰임도 다르다 — 「확인 필요」에 올려 두었다.
+
+   실측 (원본 컴포넌트에서 직접 읽음)
+     패널 82×116 · 여백 위아래 10 좌우 20 · radius 4 · 그림자 Strong
+     항목 42×48 · Label1/Medium 16 · 가운데 정렬 (Button/Text 인스턴스)
+     Mode=White  배경 #ffffff(Background/Normal/Normal) · 글자 #151617(Label/Normal/Normal)
+     Mode=Black  배경 #000000(Background/Inverse/Normal) · 글자 #fafafa(Label/Inverse/Normal)
+
+   ⚠️ 여는 방식은 피그마에 없다 — 이 컴포넌트가 **어느 화면에도 배치돼 있지
+      않아서**(전 덤프 인스턴스 0개) 붙는 위치·정렬·셰브론 방향·닫는 조건이
+      그려져 있지 않다. 아래는 이쪽에서 정한 것이다. 「확인 필요」 참고.
+        · 버튼 바로 아래 8px 띄우고 왼쪽 맞춤 — 필터 드롭다운이 칩 아래 8 인 것과 맞췄다
+        · 열리면 셰브론이 위로 뒤집힌다 — Chip/Filter 의 Expand 와 맞췄다
+        · 드로어에서는 화면 아래쪽이라 위로 연다
+        · 바깥을 누르거나 Esc 로 닫는다
+
+   마크업
+     <div class="lang" data-lang>
+       <button class="gnb__lang" aria-expanded="false">
+         <i class="icon icon--20 i-earth"></i>
+         <span class="gnb__lang-group"><span class="gnb__lang-code">KR</span>
+           <i class="icon icon--16 i-chevron-down"></i></span>
+       </button>
+       <div class="dd-lang" role="listbox">
+         <button role="option" aria-selected="true">KR</button>
+         <button role="option" aria-selected="false">EN</button>
+       </div>
+     </div>
+   ============================================================ */
+.lang{position:relative}
+
+.dd-lang{
+  position:absolute;top:calc(100% + 8px);left:0;z-index:20;
+  display:none;flex-direction:column;
+  padding:10px 20px;
+  border-radius:var(--radius-xsmall);
+  background:var(--bg-normal);
+  box-shadow:var(--shadow-strong);
+}
+.lang.is-open .dd-lang{display:flex}
+
+.dd-lang > button{
+  display:flex;align-items:center;justify-content:center;
+  width:42px;height:48px;flex:none;
+  border:0;background:none;cursor:pointer;
+  font:var(--label-1-medium);color:var(--label-normal);
+  border-radius:var(--radius-xsmall);
+}
+/* Button/Text 인스턴스라 hover 에서 굵어진다. 폭이 42 로 고정이라 안 밀린다 */
+.dd-lang > button:hover{font-weight:700}
+
+/* 열렸을 때 셰브론 뒤집기 (이쪽에서 정함) */
+.lang.is-open .gnb__lang .icon.i-chevron-down,
+.lang.is-open .drawer__lang .icon.i-chevron-down{transform:rotate(180deg)}
+
+/* Mode=Black — 어두운 GNB 안에서 */
+.gnb--black .dd-lang{background:var(--bg-inverse)}
+.gnb--black .dd-lang > button{color:var(--label-inverse-normal)}
+
+/* 드로어는 화면 아래쪽에 있어 위로 연다 (이쪽에서 정함) */
+.drawer .dd-lang{top:auto;bottom:calc(100% + 8px)}
