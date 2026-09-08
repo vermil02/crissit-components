@@ -38,10 +38,18 @@
   "use strict";
 
   var ACCENT = "#543efa";
-  var panel, body, hint, detail, hl, hlPad, dock, toggle, probe, catcher;
-  /* 열마다 따로 켜고 끈다 — 값만 보고 싶을 때가 있고, 메모만 볼 때가 있다.
-     둘 중 하나라도 켜져 있으면 요소 고르기(마우스 따라다니기·클릭 고정)는 돈다 */
-  var showMain = false, showMemo = false;
+  var panel, body, hint, detail, hl, hlPad, hlTag, dock, toggle, probe, catcher;
+  /* ── 모드는 하나다 ─────────────────────────────────────────
+     전에는 「검사」·「메모」가 각각 **창 열기 + 고르기 켜기** 두 일을 같이 했다.
+     그래서 메모를 쓰려면 검사를 먼저 켜야 했고, 지금 무엇을 하는 중인지도
+     헷갈렸다. 라디오처럼 하나만 고르게 바꿨다.
+
+       ""      끔   — 고르기 판이 없다. 페이지를 그냥 쓸 수 있다
+       "main"  검사 — 고르면 값이 나온다. 테두리 보라 + 「검사」 라벨
+       "memo"  메모 — 고르면 **바로 쓰기로 들어간다**. 테두리 빨강 + 「메모」 라벨
+                      값도 같이 보여야 하니 검사 열이 함께 열린다
+     ──────────────────────────────────────────────────────── */
+  var mode = "";
   var on = false, pinned = null, hovered = null, rafId = 0;
   var pinListeners = [], showListeners = [];
 
@@ -375,6 +383,7 @@
     hl.style.display = "block";
     hl.style.left = r.left + "px"; hl.style.top = r.top + "px";
     hl.style.width = r.width + "px"; hl.style.height = r.height + "px";
+    hl.classList.toggle("is-low", r.top < 24);   // 위에 라벨 자리가 없으면 아래로
     var pt = parseFloat(cs.paddingTop), pr = parseFloat(cs.paddingRight),
         pb = parseFloat(cs.paddingBottom), pl = parseFloat(cs.paddingLeft);
     if (pt || pr || pb || pl) {
@@ -404,29 +413,38 @@
   }
 
   /* ── 켜고 끄기 ─────────────────────────────────────────── */
-  function setShow(which, v) {
-    if (which === "main") showMain = v; else showMemo = v;
+  /* 같은 모드를 다시 부르면 끈다 — 버튼을 다시 누르는 것이 곧 끄기다 */
+  function setMode(m) {
+    mode = (mode === m) ? "" : m;
     apply();
   }
   function apply() {
-    on = showMain || showMemo;
+    on = !!mode;
     var c = document.documentElement.classList;
     c.toggle("insp-on", on);
-    c.toggle("insp-show-main", showMain);
-    c.toggle("insp-show-memo", showMemo);
-    c.toggle("insp-two", showMain && showMemo);   // 둘 다면 패널이 넓어진다
-    toggle.setAttribute("aria-pressed", showMain ? "true" : "false");
+    c.toggle("insp-mode-main", mode === "main");
+    c.toggle("insp-mode-memo", mode === "memo");
+    // 메모 모드에서는 값도 같이 봐야 하므로 검사 열이 함께 열린다
+    c.toggle("insp-show-main", on);
+    c.toggle("insp-show-memo", mode === "memo");
+    c.toggle("insp-two", mode === "memo");
+    toggle.setAttribute("aria-pressed", mode === "main" ? "true" : "false");
+    if (hlTag) hlTag.textContent = mode === "memo" ? "메모" : "검사";
     for (var i = 0; i < showListeners.length; i++) {
-      try { showListeners[i](showMain, showMemo); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
+      try { showListeners[i](mode); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
     }
     if (!on) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); }
     setHint();
   }
-  function setOn(v) { setShow("main", v); }
+  function setOn(v) { mode = v ? "main" : ""; apply(); }
   function setHint() {
-    hint.innerHTML = pinned
-      ? '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기'
-      : "요소 위에 마우스를 올리면 값이 나옵니다. 클릭하면 고정됩니다 (비활성 버튼도 고를 수 있습니다)";
+    if (pinned) {
+      hint.innerHTML = '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기';
+    } else if (mode === "memo") {
+      hint.innerHTML = '<span class="insp-pin is-memo">메모</span> 고칠 곳을 클릭하면 바로 쓸 수 있습니다';
+    } else {
+      hint.innerHTML = "요소 위에 마우스를 올리면 값이 나옵니다. 클릭하면 고정됩니다 (비활성 버튼도 고를 수 있습니다)";
+    }
     // ▸ 알림은 반드시 innerHTML 을 쓴 **뒤에** — 메모가 여기에 버튼을 끼워 넣는데,
     //   먼저 부르면 그 버튼이 innerHTML 로 지워진다
     for (var i = 0; i < pinListeners.length; i++) {
@@ -486,6 +504,11 @@
     hlPad = document.createElement("div");
     hlPad.className = "insp-hl__pad";
     hl.appendChild(hlPad);
+    /* 무엇을 하는 중인지 테두리에 붙여 준다 — 색만으로는 헷갈린다 */
+    hlTag = document.createElement("span");
+    hlTag.className = "insp-hl__tag";
+    hlTag.textContent = "검사";
+    hl.appendChild(hlTag);
 
     dock.appendChild(toggle);
     document.body.appendChild(catcher);
@@ -503,7 +526,7 @@
   }
 
   function bind() {
-    toggle.addEventListener("click", function (e) { e.stopPropagation(); setShow("main", !showMain); });
+    toggle.addEventListener("click", function (e) { e.stopPropagation(); setMode("main"); });
 
     catcher.addEventListener("mousemove", function (e) {
       if (!on || pinned) return;
@@ -638,10 +661,10 @@
       return o;
     },
     isOn: function () { return on; },
-    /* 열을 켜고 끈다 — 메모 버튼이 이걸 쓴다 */
-    show: function (which, v) { setShow(which, v); },
-    isShown: function (which) { return which === "main" ? showMain : showMemo; },
-    onShow: function (fn) { showListeners.push(fn); },
+    /* 모드를 고른다 — 같은 것을 다시 부르면 꺼진다 (라디오) */
+    setMode: function (m) { setMode(m); },
+    getMode: function () { return mode; },
+    onMode: function (fn) { showListeners.push(fn); },
     dock: function () { return dock; },
     pin: function (el) { if (!on) setOn(true); pinned = el; render(el); setHint(); queue(); },
     getPinned: function () { return pinned; },
@@ -678,7 +701,7 @@
      브라우저에만 둔다 — 공개 저장소라 넣으면 누구나 글을 넣을 수 있다.
 
    쓰는 법
-     오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → 「＋ 메모」
+     오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → **바로 쓰기 창**
      핀을 누르면 그 메모가 열린다
      메모 열 아래 — 새로 받기 · JSON 내보내기 · 불러오기 · 내 메모 비우기 · 휴지통
 
@@ -687,8 +710,9 @@
    ▸ 서버에 붙어 있으면 **30초마다, 그리고 이 탭으로 돌아올 때마다**
      남이 쓴 메모를 알아서 받아 온다 — 새로고침하지 않아도 된다.
 
-   ▸ 「검사」와 따로 켜진다. 값을 보면서 메모를 쓰려면 둘 다 켜면
-     화면이 넓을 때 좌우로 나란히 선다.
+   ▸ 「검사」와 **라디오처럼 하나만** 켜진다. 메모 모드에서는 값도 같이
+     봐야 하므로 검사 열이 함께 열린다 — 넓은 화면이면 좌우로 나란히.
+   ▸ 고른 영역의 테두리 색과 라벨이 모드마다 다르다(검사=보라, 메모=빨강).
 
    저장 형태 (내보내기 파일)
      {
@@ -1203,17 +1227,30 @@
   function bind(panel) {
     toggleBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      api.show("memo", !api.isShown("memo"));
+      api.setMode("memo");
     });
-    api.onShow(function (main, memo) {
-      toggleBtn.setAttribute("aria-pressed", memo ? "true" : "false");
+    api.onMode(function (m) {
+      toggleBtn.setAttribute("aria-pressed", m === "memo" ? "true" : "false");
     });
 
-    // 고정된 요소가 바뀌면 메모 머리에 「＋ 메모」를 끼워 넣습니다
+    /* 고정된 요소가 바뀌면 —
+       ▸ 메모 모드면 **바로 쓰기로 들어간다.** 고르고 나서 「＋ 메모」를 또
+         누르게 하면 두 번 일하는 것이 된다. 다만 쓰던 글이 있으면 덮지 않는다
+       ▸ 검사 모드면 「＋ 메모」 버튼만 끼워 넣는다 — 값을 보다가 메모로
+         넘어갈 길은 남겨 둔다 */
     api.onPin(function (el) {
       var old = col.querySelector(".memo-add");
       if (old) old.remove();
       if (!el) return;
+
+      if (api.getMode() === "memo") {
+        // 쓰던 글이 있으면 지킨다. 빈 쓰기창은 새 대상으로 갈아 준다 —
+        // 안 그러면 다른 요소를 골랐는데 이전 대상에 쓰게 된다
+        var ta = bodyEl.querySelector(".memo-text");
+        if (view === "edit" && ta && ta.value.trim()) return;
+        openEditor(null, el);
+        return;
+      }
       var b = document.createElement("button");
       b.type = "button";
       b.className = "memo-add";

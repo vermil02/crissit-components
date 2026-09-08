@@ -43,7 +43,7 @@
 }
 .insp-toggle:hover{border-color:var(--label-alternative, #7c8288)}
 .insp-toggle svg{width:18px;height:18px;flex:none}
-.insp-show-main .insp-toggle{
+.insp-mode-main .insp-toggle{
   background:var(--insp-accent);color:#fff;border-color:var(--insp-accent);
 }
 
@@ -95,6 +95,7 @@
   font:var(--label-3-bold, 700 12px/1.5 sans-serif);padding:3px 8px;border-radius:9999px;
   background:var(--insp-accent);color:#fff;
 }
+.insp-pin.is-memo{background:var(--memo-accent, #e5484d)}
 .insp-panel__hint{
   padding:12px 18px;font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:var(--label-assistive, #a3a8ad);
   border-bottom:1px solid var(--line-normal, #e4e6e8);
@@ -204,6 +205,21 @@ button.insp-tok:hover{text-decoration:underline}
   background:rgb(84 62 250 / .07);
 }
 .insp-on .insp-hl{display:block}
+/* 지금 무엇을 하는 중인지 테두리에 붙인다.
+   검사는 보라, 메모는 빨강 — 색만으로는 헷갈려서 라벨도 같이 준다 */
+.insp-hl__tag{
+  position:absolute;left:-1px;top:-19px;
+  padding:1px 6px;border-radius:3px 3px 0 0;
+  background:var(--insp-accent);color:#fff;
+  font:700 10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:nowrap;
+}
+/* 위쪽에 자리가 없으면 아래로 내린다 */
+.insp-hl.is-low .insp-hl__tag{top:auto;bottom:-19px;border-radius:0 0 3px 3px}
+
+.insp-mode-memo .insp-hl{border-color:var(--memo-accent, #e5484d);background:rgb(229 72 77 / .07)}
+.insp-mode-memo .insp-hl__tag{background:var(--memo-accent, #e5484d)}
+
 /* 여백을 눈으로 보여준다 — padding 은 안쪽으로 초록, margin 은 바깥쪽으로 주황 */
 .insp-hl__pad,.insp-hl__mar{position:absolute;pointer-events:none}
 .insp-hl__pad{outline:1px dashed rgb(16 185 129 / .8);outline-offset:-1px}
@@ -301,14 +317,14 @@ html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
 }
 .memo-toggle:hover{border-color:var(--label-alternative, #7c8288)}
 .memo-toggle svg{width:18px;height:18px;flex:none}
-.insp-show-memo .memo-toggle{background:var(--memo-accent);color:#fff;border-color:var(--memo-accent)}
+.insp-mode-memo .memo-toggle{background:var(--memo-accent);color:#fff;border-color:var(--memo-accent)}
 /* 버튼 위의 개수 뱃지 — 열지 않아도 메모가 있는지 보인다 */
 .memo-toggle .memo-badge{
   min-width:18px;height:18px;padding:0 5px;border-radius:9999px;
   background:var(--memo-accent);color:#fff;
   font:700 10px/18px ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-.insp-show-memo .memo-toggle .memo-badge{background:rgb(255 255 255 / .28)}
+.insp-mode-memo .memo-toggle .memo-badge{background:rgb(255 255 255 / .28)}
 .memo-toggle .memo-badge:empty{display:none}
 
 .memo-head{
