@@ -25,13 +25,16 @@
 
 /* ---------- 메모 열 ----------
    검사 패널의 오른쪽 열. 좁은 화면에서는 아래로 내려와 쌓인다 */
+/* 화면이 좁아 위아래로 쌓일 때 — 절반씩 나눠 쓴다.
+   위쪽 검사 열과 헷갈리지 않게 경계선을 굵게 둔다 */
 .insp-col--memo{
-  border-top:1px solid var(--line-normal);
+  border-top:2px solid var(--line-normal);
   background:var(--bg-alternative);
-  max-height:46%;
+  min-height:0;
 }
 /* 검사 열이 꺼져 있으면 메모가 패널 전체를 쓴다 */
 html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
+/* 나란히 설 때는 위 경계선이 필요 없다 — 왼쪽 경계선이 대신한다 */
 
 /* 메모 여는 버튼 — 검사 버튼 옆에 선다 */
 .memo-toggle{

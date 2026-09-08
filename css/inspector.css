@@ -44,21 +44,30 @@
    너무 좁아져서 값도 메모도 못 읽기 때문이다 */
 .insp-panel{
   position:fixed;top:0;right:0;bottom:0;width:var(--insp-w);z-index:9997;
-  display:none;grid-template-columns:1fr;grid-template-rows:1fr auto;
+  display:none;grid-template-columns:1fr;grid-template-rows:1fr;
   background:var(--bg-normal);
   border-left:1px solid var(--line-normal);
   box-shadow:-8px 0 24px rgb(0 0 0 / .06);
 }
 .insp-on .insp-panel{display:grid}
 
+/* 둘 다 켜졌는데 화면이 좁으면 위아래로 **정확히 반씩** 나눈다.
+   내용 높이에 맡기면 메모 칸이 머리·발에 눌려 목록이 안 보인다 */
+.insp-two .insp-panel{grid-template-rows:1fr 1fr}
+
 /* 열은 켜진 것만 보인다 */
 .insp-col{display:none;flex-direction:column;min-height:0;min-width:0}
 .insp-show-main .insp-col--main{display:flex;overflow:hidden}
 .insp-show-memo .insp-col--memo{display:flex}
 
-/* 넓은 화면에서 **둘 다 켜졌을 때만** 패널을 넓혀 좌우로 가른다.
-   하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다 */
-@media (min-width:1600px){
+/* 둘 다 켜졌을 때만 패널을 넓혀 좌우로 가른다.
+   하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다.
+
+   ▸ 기준을 1400px 로 잡았다. 노트북이 대개 1440(13" Air)·1512(14")·1728 이라
+     여기서 갈린다. 1400 미만이면 위아래로 쌓는다 — 340px 를 좌우로 쪼개면
+     170px 씩이라 값도 메모도 못 읽는다.
+     (본문은 1280 + 사이드바 220 이라 패널 680 을 밀어도 남는다) */
+@media (min-width:1400px){
   .insp-two{--insp-w:680px}
   .insp-two .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
   .insp-two .insp-col--memo{border-left:1px solid var(--line-normal);border-top:0;max-height:none}
