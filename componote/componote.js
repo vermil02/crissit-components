@@ -1293,14 +1293,20 @@
        외울 수 있는 것이어야 하고, 그 대신 서버가 찍어 맞히기를 막는다.
      ▸ 이름을 고를 목록으로 주지 않는다 — 누가 명단에 있는지가 그대로
        드러난다. 서버도 "이름이 틀렸다/닉네임이 틀렸다" 를 구분해 주지 않는다 */
-  function openLogin(msg) {
+  function openLogin(msg, keep) {
     view = "login";
     bodyEl.innerHTML =
       '<p class="memo-target">메모를 남기려면 들어와 주세요</p>' +
       '<label class="memo-field">이름<input type="text" class="memo-in-name" autocomplete="off" ' +
-        'placeholder="예: 홍길동" value="' + esc(me ? me.name : "") + '"></label>' +
-      '<label class="memo-field">닉네임<input type="password" class="memo-in-pass" autocomplete="off" ' +
-        'placeholder="정해 받은 닉네임"></label>' +
+        'placeholder="예: 홍길동" value="' +
+        esc(keep ? keep.name : (me ? me.name : "")) + '"></label>' +
+      /* 닉네임은 **가리지 않는다.** password 칸에 한글을 넣으면 IME(한글 조합)이
+         온전히 안 들어가는 경우가 있고, 무엇보다 본인이 뭘 쳤는지 못 봐서
+         틀려도 못 잡는다(2026-09-08 실제로 막혔다). 닉네임은 애초에 동료가
+         추측할 수 있는 약한 값이라 가려서 얻는 것이 없다 */
+      '<label class="memo-field">닉네임<input type="text" class="memo-in-pass" ' +
+        'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" ' +
+        'placeholder="정해 받은 닉네임" value="' + esc(keep ? keep.pass : "") + '"></label>' +
       (msg ? '<p class="memo-state is-bad">' + esc(msg) + "</p>" : "") +
       /* 버튼을 칸 바로 밑에 둔다. 다른 화면처럼 아래(footEl)에 두면 패널이
          길어서 칸에서 600px 쯤 떨어진다 — 두 칸 채우고 나서 한참 내려가
@@ -1314,8 +1320,8 @@
     footEl.innerHTML = "";
     editing = null;
     bindLoginKeys();
-    var f = bodyEl.querySelector(".memo-in-" + (me && me.name ? "pass" : "name"));
-    if (f) f.focus();
+    var f = bodyEl.querySelector(".memo-in-" + ((keep || (me && me.name)) ? "pass" : "name"));
+    if (f) { f.focus(); if (f.select) f.select(); }
   }
 
   function login() {
@@ -1336,7 +1342,12 @@
     }).then(function (o) {
       if (!o.ok || !o.d || !o.d.token) {
         linkState = "out"; renderLink();
-        openLogin((o.d && o.d.error) || "들어가지 못했습니다");
+        /* 무엇을 보냈는지 되돌려 보여 준다 — 한글 조합이 덜 됐거나 빈칸이
+           섞인 것을 본인이 볼 수 있어야 고칠 수 있다. 서버는 이름·닉네임 중
+           무엇이 틀렸는지 알려주지 않으므로 이쪽에서 단서를 준다 */
+        openLogin(((o.d && o.d.error) || "들어가지 못했습니다") +
+                  " (보낸 값 — 이름 「" + name + "」 · 닉네임 「" + pass + "」)",
+                  { name: name, pass: pass });
         return;
       }
       saveMe({ name: o.d.name || name, token: o.d.token });
@@ -1362,7 +1373,9 @@
     var f = bodyEl.querySelectorAll(".memo-in-name,.memo-in-pass");
     for (var i = 0; i < f.length; i++) {
       f[i].addEventListener("keydown", function (e) {
-        if (e.key === "Enter") { e.preventDefault(); login(); }
+        // 한글을 조합하는 중(`한` 을 만들다 만 상태)의 엔터는 조합을 끝내려는
+        // 것이지 보내려는 것이 아니다. 여기서 보내면 덜 만들어진 글자가 간다
+        if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); login(); }
       });
     }
   }
