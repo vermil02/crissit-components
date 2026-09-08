@@ -12,29 +12,31 @@
      지금 값: v=20260908g  (날짜 + 그날의 순번)
      ──────────────────────────────────────────────────────────── -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260908g">
-<link rel="stylesheet" href="css/base.css?v=20260908g">
-<link rel="stylesheet" href="css/icons.css?v=20260908g">
-<link rel="stylesheet" href="css/button.css?v=20260908g">
-<link rel="stylesheet" href="css/icon-button.css?v=20260908g">
-<link rel="stylesheet" href="css/chip.css?v=20260908g">
-<link rel="stylesheet" href="css/pagination.css?v=20260908g">
-<link rel="stylesheet" href="css/dropdown.css?v=20260908g">
-<link rel="stylesheet" href="css/drawer.css?v=20260908g">
-<link rel="stylesheet" href="css/heading.css?v=20260908g">
-<link rel="stylesheet" href="css/filter.css?v=20260908g">
-<link rel="stylesheet" href="css/gnb.css?v=20260908g">
-<link rel="stylesheet" href="css/footer.css?v=20260908g">
-<link rel="stylesheet" href="css/boardlist.css?v=20260908g">
+<link rel="stylesheet" href="css/tokens.css?v=20260908h">
+<link rel="stylesheet" href="css/base.css?v=20260908h">
+<link rel="stylesheet" href="css/icons.css?v=20260908h">
+<link rel="stylesheet" href="css/button.css?v=20260908h">
+<link rel="stylesheet" href="css/icon-button.css?v=20260908h">
+<link rel="stylesheet" href="css/chip.css?v=20260908h">
+<link rel="stylesheet" href="css/pagination.css?v=20260908h">
+<link rel="stylesheet" href="css/dropdown.css?v=20260908h">
+<link rel="stylesheet" href="css/drawer.css?v=20260908h">
+<link rel="stylesheet" href="css/heading.css?v=20260908h">
+<link rel="stylesheet" href="css/filter.css?v=20260908h">
+<link rel="stylesheet" href="css/gnb.css?v=20260908h">
+<link rel="stylesheet" href="css/footer.css?v=20260908h">
+<link rel="stylesheet" href="css/boardlist.css?v=20260908h">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260908g">
+<link rel="stylesheet" href="componote/componote.css?v=20260908h">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
 .cat{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;align-items:start}
 .cat__nav{
   position:sticky;top:0;height:100vh;overflow:auto;
-  padding:32px 20px;border-right:1px solid var(--line-normal);
+  /* 아래 여백을 0 으로 둔다 — .cat__kit 이 스크롤판 맨 아래에 sticky 로
+     붙기 때문에, 여백이 남아 있으면 그만큼 떠 보인다 */
+  padding:32px 20px 0;border-right:1px solid var(--line-normal);
   background:var(--bg-normal);
 }
 .cat__nav h1{font:var(--label-1-bold);margin:0 0 4px}
@@ -43,6 +45,30 @@ body{background:var(--neutral-50)}
 .cat__nav a:hover{color:var(--label-normal)}
 .cat__nav .grp{margin-top:16px;font:var(--label-3-bold);color:var(--label-assistive);
   text-transform:uppercase;letter-spacing:.04em}
+/* 개발용 키트 받기 — 카탈로그 화면 UI 다. 컴포넌트가 아니다.
+   목차가 길어 스크롤되므로 목차판 **맨 아래에 붙여** 항상 보이게 둔다.
+   `position:fixed` 로 화면에 띄우지 않은 이유는 오른쪽 아래에 이미 검사·메모
+   버튼이 떠 있어 겹치기 때문이다 */
+.cat__kit{
+  position:sticky;bottom:0;
+  margin-top:28px;padding:16px 0 24px;
+  background:var(--bg-normal);
+  border-top:1px solid var(--line-normal);
+}
+.cat__kit button{
+  width:100%;border:0;border-radius:var(--radius-xsmall);cursor:pointer;
+  padding:10px 12px;background:var(--neutral-900);color:var(--neutral-0);
+  font:var(--label-2-bold);
+}
+.cat__kit button:hover:not(:disabled){background:var(--neutral-1000)}
+.cat__kit button:disabled{background:var(--neutral-300);cursor:default}
+.cat__kit .when{
+  display:flex;justify-content:space-between;gap:8px;
+  margin:8px 0 0;font:var(--label-3-medium);color:var(--label-assistive);
+}
+.cat__kit .when b{color:var(--label-alternative);font-weight:500}
+.cat__kit .what{margin:6px 0 0;font:var(--label-3-medium);color:var(--label-assistive);line-height:1.5}
+
 .cat__main{padding:48px 40px 160px;min-width:0}
 
 .sec{margin:0 0 64px;scroll-margin-top:24px}
@@ -122,11 +148,12 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260908g" defer></script>
-<script src="js/gnb-lang.js?v=20260908g" defer></script>
+<script src="js/boardlist-main.js?v=20260908h" defer></script>
+<script src="js/gnb-lang.js?v=20260908h" defer></script>
+<script src="js/kit.js?v=20260908h" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>window.componote = { section: "section.sec", sectionTitle: "h2" };</script>
-<script src="componote/componote.js?v=20260908g" defer></script>
+<script src="componote/componote.js?v=20260908h" defer></script>
 </head>
 <body>
 
@@ -164,6 +191,12 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="grp">참고</div>
   <a href="#icons">아이콘 · 로고</a>
   <a href="#gaps">확인 필요</a>
+
+  <div class="cat__kit">
+    <button type="button" data-kit-download>개발용 키트 받기</button>
+    <p class="when">컴포넌트 갱신<b data-kit-updated>—</b></p>
+    <p class="what">CSS · 아이콘 · 동작 스크립트를 zip 한 개로. 이 카탈로그 화면과 검토 도구는 빠집니다.</p>
+  </div>
 </nav>
 
 <main class="cat__main">
