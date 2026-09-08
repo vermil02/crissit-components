@@ -54,12 +54,23 @@ body{background:var(--neutral-50)}
 .lbl{font:var(--label-3-medium);color:var(--label-assistive);width:100%;margin:0 0 -8px}
 .spec{font:var(--label-3-medium);color:var(--label-assistive);margin:12px 0 0}
 
-/* 설명 켜고 끄기 — 값의 출처·판단 근거를 적은 글만 감춘다.
-   절 제목·카드 제목·표·행 이름은 내용이라 그대로 둔다 */
-.hide-notes .sec > .desc,
+/* ─── 글의 층을 셋으로 가른다 ───────────────────────────
+   .desc  한 줄 정의 — 이 컴포넌트가 무엇인가        · 항상 보임
+   .note  동작·정책 — 어떻게 움직이고 무엇이 규칙인가 · 항상 보임
+   .spec  치수·색 — 실제로 넣어야 할 값             · 항상 보임
+   .src   피그마 출처 — 노드 ID·변형 수             · 「설명」으로 켬
+   .aside 근거·이력 — 왜 이렇게 했나, 파일이 어떻게 어긋났나 · 「설명」으로 켬
+
+   앞의 셋은 **개발에 그대로 들어가는 내용**이라 감추면 안 된다.
+   뒤의 둘은 판단 과정이라, 모양만 보려는 사람에게는 방해가 된다 */
+.aside{
+  font:var(--label-3-medium);color:var(--label-assistive);
+  margin:8px 0 0;padding-left:10px;
+  border-left:2px solid var(--line-normal);
+}
+.card > .aside:first-of-type{margin-top:12px}
 .hide-notes .sec > .src,
-.hide-notes .card > .note,
-.hide-notes .card .spec{display:none}
+.hide-notes .aside{display:none}
 
 /* 아이콘 목록 — 이름 길이가 제각각이라 flex 로 늘어놓으면 두 줄로 넘어가는
    칸 때문에 아이콘 높이가 어긋난다. 격자로 깔면 줄 안에서 자동으로 맞는다 */
@@ -164,15 +175,15 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>② 의미 토큰 — 피그마 Semantic 스타일 1:1</h3>
-    <p class="note">변수 이름을 피그마 스타일 이름 그대로 옮겼다. 디자이너가 "Label/Normal/Alternative 바꿨어"라고 하면 그 이름으로 바로 찾힌다. 컴포넌트 CSS가 쓰는 짧은 이름(<code>--label-alternative</code> 등)은 이걸 가리키는 별칭이다.</p>
+    <p class="aside">변수 이름을 피그마 스타일 이름 그대로 옮겼다. 디자이너가 "Label/Normal/Alternative 바꿨어"라고 하면 그 이름으로 바로 찾힌다. 컴포넌트 CSS가 쓰는 짧은 이름(<code>--label-alternative</code> 등)은 이걸 가리키는 별칭이다.</p>
     <table class="tk"><tr><th>피그마 스타일</th><th>CSS 변수</th><th></th><th>어느 원시 값</th></tr><tr><td><code>Semantic/Primary/Normal</code></td><td><code>--semantic-primary-normal</code></td><td><div class="sw" style="background:#543efa"></div></td><td>Purple/500</td></tr><tr><td><code>Semantic/Label/Normal/Normal</code></td><td><code>--semantic-label-normal-normal</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900</td></tr><tr><td><code>Semantic/Label/Normal/Neutral</code></td><td><code>--semantic-label-normal-neutral</code></td><td><div class="sw" style="background:#414549"></div></td><td>Neutral/700</td></tr><tr><td><code>Semantic/Label/Normal/Alternative</code></td><td><code>--semantic-label-normal-alternative</code></td><td><div class="sw" style="background:#7c8288"></div></td><td>Neutral/500</td></tr><tr><td><code>Semantic/Label/Normal/Assistive</code></td><td><code>--semantic-label-normal-assistive</code></td><td><div class="sw" style="background:#a3a8ad"></div></td><td>Neutral/400</td></tr><tr><td><code>Semantic/Label/Normal/Disable</code></td><td><code>--semantic-label-normal-disable</code></td><td><div class="sw" style="background:#c9ccd0"></div></td><td>Neutral/300</td></tr><tr><td><code>Semantic/Label/Inverse/Strong</code></td><td><code>--semantic-label-inverse-strong</code></td><td><div class="sw" style="background:#ffffff"></div></td><td>Neutral/_0</td></tr><tr><td><code>Semantic/Label/Inverse/Normal</code></td><td><code>--semantic-label-inverse-normal</code></td><td><div class="sw" style="background:#fafafa"></div></td><td>Neutral/50</td></tr><tr><td><code>Semantic/Label/Inverse/Neutral</code></td><td><code>--semantic-label-inverse-neutral</code></td><td><div class="sw" style="background:#f5f6f7"></div></td><td>Neutral/100</td></tr><tr><td><code>Semantic/Label/Inverse/Alternative</code></td><td><code>--semantic-label-inverse-alternative</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Label/Inverse/Assistive</code></td><td><code>--semantic-label-inverse-assistive</code></td><td><div class="sw" style="background:#c9ccd0"></div></td><td>Neutral/300</td></tr><tr><td><code>Semantic/Label/Inverse/Disable</code></td><td><code>--semantic-label-inverse-disable</code></td><td><div class="sw" style="background:#a3a8ad"></div></td><td>Neutral/400</td></tr><tr><td><code>Semantic/Background/Normal/Normal</code></td><td><code>--semantic-background-normal-normal</code></td><td><div class="sw" style="background:#ffffff"></div></td><td>Neutral/_0</td></tr><tr><td><code>Semantic/Background/Normal/Alternative</code></td><td><code>--semantic-background-normal-alternative</code></td><td><div class="sw" style="background:#fafafa"></div></td><td>Neutral/50</td></tr><tr><td><code>Semantic/Background/Normal/Assistive</code></td><td><code>--semantic-background-normal-assistive</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Background/Inverse/Normal</code></td><td><code>--semantic-background-inverse-normal</code></td><td><div class="sw" style="background:#000000"></div></td><td>Neutral/_1000</td></tr><tr><td><code>Semantic/Background/Inverse/Alternative</code></td><td><code>--semantic-background-inverse-alternative</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900</td></tr><tr><td><code>Semantic/Background/Inverse/Assistive</code></td><td><code>--semantic-background-inverse-assistive</code></td><td><div class="sw" style="background:#2b2e31"></div></td><td>Neutral/800</td></tr><tr><td><code>Semantic/Line/Normal/Normal</code></td><td><code>--semantic-line-normal-normal</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Line/Normal/Alternative</code></td><td><code>--semantic-line-normal-alternative</code></td><td><div class="sw" style="background:#f5f6f7"></div></td><td>Neutral/100</td></tr><tr><td><code>Semantic/Line/Inverse/Normal</code></td><td><code>--semantic-line-inverse-normal</code></td><td><div class="sw" style="background:#414549"></div></td><td>Neutral/700</td></tr><tr><td><code>Semantic/Line/Inverse/Alternative</code></td><td><code>--semantic-line-inverse-alternative</code></td><td><div class="sw" style="background:#2b2e31"></div></td><td>Neutral/800</td></tr><tr><td><code>Semantic/Label/Normal</code></td><td><code>--semantic-label-normal</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900 — <b>2026-09-07 확정</b></td></tr><tr><td><code>Semantic/Line/Normal</code></td><td><code>--semantic-line-normal</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200 — <b>2026-09-07 확정</b></td></tr></table>
-    <p class="spec"><b>2026-09-07 확정</b> — 덤프에 같은 이름으로 값이 두 개씩 잡혔던 것이 정리됐다. <code>Semantic/Label/Normal</code> → <code>#151617</code> · <code>Semantic/Background/Normal/Alternative</code> → <code>#fafafa</code>. 낡은 쪽(<code>#171719</code> · <code>#f5f6f7</code>)은 다른 라이브러리의 동명 스타일이었다.
+    <p class="aside"><b>2026-09-07 확정</b> — 덤프에 같은 이름으로 값이 두 개씩 잡혔던 것이 정리됐다. <code>Semantic/Label/Normal</code> → <code>#151617</code> · <code>Semantic/Background/Normal/Alternative</code> → <code>#fafafa</code>. 낡은 쪽(<code>#171719</code> · <code>#f5f6f7</code>)은 다른 라이브러리의 동명 스타일이었다.
 <br>하위 없는 이름(<code>Label/Normal</code> · <code>Line/Normal</code>)도 하위 있는 것과 <b>같은 값으로 통일</b>했다. 갈려 보였던 것은 반영 안 된 옛 상태가 섞인 것이었다</p>
   </div>
 
   <div class="card">
     <h3>토큰이 아닌 색</h3>
-    <p class="note" style="margin:0">덤프에 나오지만 디자인 토큰이 아닌 것들이다. 옮기지 않았다.
+    <p class="aside" style="margin:0">덤프에 나오지만 디자인 토큰이 아닌 것들이다. 옮기지 않았다.
     <br>· <code>#8a38f5</code> — 피그마가 컴포넌트 세트 프레임에 그리는 <b>테두리</b>(에디터 UI)
     <br>· <code>#231f20</code> — 아이콘 SVG <b>원본 아트워크 색</b>. 인스턴스에서는 의미 색으로 덮인다. 이쪽은 <code>mask</code>로 깔아서 이 값을 아예 쓰지 않는다
     <br>· <code>#d9d9d9</code> · <code>#3e8cfa</code> · <code>#5fa8f7</code> · <code>#183c62</code> · <code>#222222</code> — 가이드 문서의 주석·일러스트 색</p>
@@ -269,8 +280,8 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <tr><td><code>Label 3/Medium</code></td><td>500</td><td>12px</td><td>1.5</td><td><span class="t-label-3">sm 버튼</span></td></tr>
       <tr><td><code>Label 3/Bold</code></td><td>700</td><td>12px</td><td>1.5</td><td><span class="t-label-3-b">sm 칩 · sm 페이지 번호</span></td></tr>
     </table>
-    <p class="spec"><code>Reading</code> 은 같은 크기에 <b>행간만 넓힌</b> 판이다 — 긴 문단에서 줄을 놓치지 않게 한다.<br>
-    정의서와 실제 텍스트 스타일이 어긋난 것이 둘 있다(<code>Display</code> · <code>Body 1/Reading</code>) — 「확인 필요」 참고. 토큰은 <b>정의서</b>를 따랐다</p>
+    <p class="spec"><code>Reading</code> 은 같은 크기에 <b>행간만 넓힌</b> 판이다 — 긴 문단에서 줄을 놓치지 않게 한다</p>
+    <p class="aside">정의서와 실제 텍스트 스타일이 어긋난 것이 둘 있다(<code>Display</code> · <code>Body 1/Reading</code>) — 「확인 필요」 참고. 토큰은 <b>정의서</b>를 따랐다</p>
   </div>
 </section>
 
@@ -302,7 +313,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>어두운 배경</h3>
-    <p class="note">피그마에 어두운 배경 변형이 따로 없다. <code>.sh--inverse</code>는 Label/Inverse 토큰으로 대응시킨 것이다(추정).</p>
+    <p class="aside">피그마에 어두운 배경 변형이 따로 없다. <code>.sh--inverse</code>는 Label/Inverse 토큰으로 대응시킨 것이다(추정).</p>
     <div class="on-dark">
       <header class="sh sh--inverse">
         <div class="sh__title">
@@ -356,7 +367,8 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>Icon</h3>
-    <p class="note">앞·뒤 아이콘은 <code>&lt;i class="icon"&gt;</code> 를 넣고 빼는 것으로 정한다. 별도 클래스가 없다.<br><b>어떤 아이콘이 들어갈지는 아직 정해지지 않았다</b> — 피그마의 아이콘 슬롯이 전부 자리표시자(<code>Icon/Normal/-</code>)라, 여기서도 점선 사각형을 그대로 뒀다.</p>
+    <p class="note">앞·뒤 아이콘은 <code>&lt;i class="icon"&gt;</code> 를 넣고 빼는 것으로 정한다. 별도 클래스가 없다.</p>
+    <p class="aside"><b>어떤 아이콘이 들어갈지는 아직 정해지지 않았다</b> — 피그마의 아이콘 슬롯이 전부 자리표시자(<code>Icon/Normal/-</code>)라, 여기서도 점선 사각형을 그대로 뒀다.</p>
     <div class="row">
       <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>None</span></button>
       <button class="btn btn--solid btn--primary btn--sm has-overlay"><i class="icon i-placeholder"></i><span>Leading</span></button>
@@ -964,7 +976,8 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
         </div>
       </div>
     </div>
-    <p class="spec">스크림 <code>#151617</code> 48% · 패널 384 우측 고정 · 실제 화면에서는 <code>.drawer</code>가 <code>position:fixed</code>다. 위 예시는 액자에 넣어 보려고 <code>.drawer--inline</code>을 붙인 것이다</p>
+    <p class="spec">스크림 <code>#151617</code> 48% · 패널 384 우측 고정</p>
+    <p class="aside">실제 화면에서는 <code>.drawer</code>가 <code>position:fixed</code>다. 위 예시는 액자에 넣어 보려고 <code>.drawer--inline</code>을 붙인 것이다</p>
   </div>
 </section>
 
@@ -1205,7 +1218,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
         <span class="bl-prog__ring" aria-hidden="true"></span>
       </button>
     </div>
-    <p class="spec">피그마 목업은 이 동작을 <b>4장의 정지 이미지</b>로 그려 뒀다(우상 → 우하 → 좌하 → 좌상). 그건 피그마가 움직임을 못 그려서 쓴 표현 방식이지 컴포넌트의 상태가 아니라, 코드에는 남기지 않았다 — 각도는 그냥 연속으로 돈다. 정의서 문구도 “차오르며”라 연속이 맞다</p>
+    <p class="aside">피그마 목업은 이 동작을 <b>4장의 정지 이미지</b>로 그려 뒀다(우상 → 우하 → 좌하 → 좌상). 그건 피그마가 움직임을 못 그려서 쓴 표현 방식이지 컴포넌트의 상태가 아니라, 코드에는 남기지 않았다 — 각도는 그냥 연속으로 돈다. 정의서 문구도 “차오르며”라 연속이 맞다</p>
   </div>
 
   <div class="card">
@@ -1399,7 +1412,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <span><i class="icon icon--24 i-play"></i><br><code style="font-size:10px">play</code></span>
       <span><i class="icon icon--24 i-placeholder"></i><br><code style="font-size:10px">placeholder</code></span>
     </div>
-    <p class="spec"><code>plus</code>는 피그마 세트 이름이 <code>Icon/Normal/Arrow Down</code>(38:4115)인데 그려진 모양은 <code>+</code>다<br>
+    <p class="aside"><code>plus</code>는 피그마 세트 이름이 <code>Icon/Normal/Arrow Down</code>(38:4115)인데 그려진 모양은 <code>+</code>다<br>
     <code>pause</code>·<code>play</code>는 세트 하나(<code>Icon/Normal/play</code>)의 두 변형이다 — <code>Auto On=False</code>가 막대 두 개, <code>Auto On=True</code>가 삼각형<br>
     <code>placeholder</code>는 <code>Icon/Normal/-</code>의 <code>Name=dummy</code>다. 아이콘이 아직 안 정해진 자리에 들어간다</p>
   </div>
@@ -1424,7 +1437,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <span><i class="icon icon--24 i-chip"></i><br><code style="font-size:10px">chip</code></span>
       <span><i class="icon icon--24 i-rocket"></i><br><code style="font-size:10px">rocket</code></span>
     </div>
-    <p class="spec"><code>soft</code>(분자·노드)와 <code>chip</code>(반도체)은 피그마에서 <b>둘 다 이름이 <code>Icon/Normal/Soft</code></b>인 별개 세트다 — 그린 모양대로 갈랐다<br>
+    <p class="aside"><code>soft</code>(분자·노드)와 <code>chip</code>(반도체)은 피그마에서 <b>둘 다 이름이 <code>Icon/Normal/Soft</code></b>인 별개 세트다 — 그린 모양대로 갈랐다<br>
     <code>rocket</code>은 세트 이름이 <code>Icon/Normal/Roket</code>, 변형 이름이 <code>Name=reset</code>으로 붙어 있다</p>
   </div>
 
@@ -1473,8 +1486,8 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <img src="assets/logo-crissit-color.svg" alt="crissit" style="height:19.2px">
       <code style="font-size:10px">logo-crissit-color.svg</code>
     </div>
-    <p class="spec">crissit 가로형 89×19.2 (GNB 기준) · 심볼 20.3×19.2 · 워드마크 83×19.2 · We the Realizers 165×64 (푸터 기준)<br>
-    가로형 아트보드는 148×40 인데 실제 그림은 148×32 이고 위아래 4씩 여백이 있다. 그대로 <code>mask</code>에 쓰면 로고가 작아져서 파일의 <code>viewBox</code>를 <code>0 4 148 32</code>로 잘라 두었다 — 그 비율(4.625:1)이 GNB 실측 89×19.2 와 정확히 맞는다<br>
+    <p class="spec">crissit 가로형 89×19.2 (GNB 기준) · 심볼 20.3×19.2 · 워드마크 83×19.2 · We the Realizers 165×64 (푸터 기준)</p>
+    <p class="aside">가로형 아트보드는 148×40 인데 실제 그림은 148×32 이고 위아래 4씩 여백이 있다. 그대로 <code>mask</code>에 쓰면 로고가 작아져서 파일의 <code>viewBox</code>를 <code>0 4 148 32</code>로 잘라 두었다 — 그 비율(4.625:1)이 GNB 실측 89×19.2 와 정확히 맞는다<br>
     피그마 변형은 <code>Type=Default</code>(심볼 보라+워드마크 검정) / <code>Dark</code>(전부 검정) / <code>White</code>(전부 흰색) 셋인데 <b>모양은 같고 색만 다르다</b>. 그래서 단색은 <code>mask</code> 한 파일로 처리하고, 두 색이 필요한 자리에만 <code>logo-crissit-color.svg</code>를 쓴다</p>
   </div>
 </section>
@@ -1500,7 +1513,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>정의서와 실제 스타일이 다른 것 — 활자</h3>
-    <p class="note">정의서(<code>Typography / Definition · 5:3334</code>)에 적힌 값과, 같은 파일의 텍스트 스타일에 실제로 저장된 값이 어긋난다. 토큰은 <b>정의서 쪽</b>을 따랐다.</p>
+    <p class="aside">정의서(<code>Typography / Definition · 5:3334</code>)에 적힌 값과, 같은 파일의 텍스트 스타일에 실제로 저장된 값이 어긋난다. 토큰은 <b>정의서 쪽</b>을 따랐다.</p>
     <table class="tk">
       <tr><th style="width:230px">항목</th><th>정의서</th><th>실제 스타일</th></tr>
       <tr><td><code>Display</code></td><td>Extra Bold <b>800</b> · lg <b>64</b> / md 48 / sm 36 · 행간 125% · 자간 -2%</td><td><code>Display 1</code> 스타일은 Bold <b>700</b> · <b>32</b>px · 행간 130%<br>→ 토큰 <code>--display-extrabold</code>는 정의서를 따랐다. 스타일을 정의서에 맞춰 고쳐야 한다</td></tr>
@@ -1510,7 +1523,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>이름과 그림이 어긋난 것 — 아이콘</h3>
-    <p class="note">아이콘 라이브러리(<code>Icon · 38:4019</code>)를 전수 대조한 결과다. 여기서는 <b>그려진 모양대로</b> 파일 이름을 붙였고, 피그마 쪽 이름을 고치면 그때 맞추면 된다.</p>
+    <p class="aside">아이콘 라이브러리(<code>Icon · 38:4019</code>)를 전수 대조한 결과다. 여기서는 <b>그려진 모양대로</b> 파일 이름을 붙였고, 피그마 쪽 이름을 고치면 그때 맞추면 된다.</p>
     <table class="tk">
       <tr><th style="width:230px">피그마 세트</th><th>실제 그림</th><th>필요한 결정</th></tr>
       <tr><td><code>Icon/Normal/Arrow Down</code> (38:4115)</td><td><b><code>+</code> (플러스)</b></td><td>같은 이름의 세트가 둘인데(38:4098 · 38:4115) 하나는 아래 화살표, 하나는 플러스다. 세트 이름을 <code>Plus</code>로 고쳐야 한다 → 여기서는 <code>i-plus</code></td></tr>
@@ -1523,7 +1536,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>중복·빈 세트</h3>
-    <p class="note">같은 이름의 세트가 둘씩 있고, 그림이 완전히 같다. 앞서 색 스타일에서 본 것과 같은 원인으로 보인다 — 라이브러리에서 떨어져 나온 사본이 파일 안에 남은 것이다.</p>
+    <p class="aside">같은 이름의 세트가 둘씩 있고, 그림이 완전히 같다. 앞서 색 스타일에서 본 것과 같은 원인으로 보인다 — 라이브러리에서 떨어져 나온 사본이 파일 안에 남은 것이다.</p>
     <table class="tk">
       <tr><th style="width:230px">항목</th><th>지금 상태</th><th>필요한 결정</th></tr>
       <tr><td><code>Icon/Guide/Desktop</code> · <code>Icon/Guide/Mobile</code></td><td>각각 세트 둘 (48:6857·1949:20019 / 48:6863·1949:20024)</td><td>그림이 완전히 같다. 한쪽을 지운다</td></tr>
