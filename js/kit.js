@@ -26,11 +26,18 @@
 (function () {
   "use strict";
 
-  /* 컴포넌트가 마지막으로 바뀐 날.
+  /* 컴포넌트가 마지막으로 바뀐 시점 (KST).
      **여기 한 곳만 고친다** — 버튼 옆 표기 · README · zip 파일명이 모두
      이 값을 쓴다. CSS·아이콘·스크립트를 고칠 때 `?v=` 와 함께 올린다.
-     받은 날짜가 아니라 **내용이 바뀐 날짜**여야 의미가 있다 */
-  var UPDATED = "2026-09-08";
+     받은 시각이 아니라 **내용이 바뀐 시각**이어야 의미가 있다.
+     날짜만으로는 같은 날 두 번 고쳤을 때 구분이 안 되므로 분까지 적는다 */
+  var UPDATED = "2026-09-08 15:10";
+
+  /* 파일명에 쓸 꼴 — 공백과 콜론은 파일명에서 다루기 나쁘다.
+     "2026-09-08 15:10" → "20260908-1510" */
+  function stamp() {
+    return UPDATED.replace(/\D/g, "").replace(/^(\d{8})(\d{4})$/, "$1-$2");
+  }
 
   /* ── CRC32 — zip 이 파일마다 요구한다 ─────────────────────── */
   var CRC = (function () {
@@ -122,14 +129,17 @@
   }
 
   function readme(list) {
-    var d = new Date().toISOString().slice(0, 10);
+    // 받은 시각 — 보는 사람의 시간대 그대로 찍는다
+    var n = new Date(), z = function (v) { return ("0" + v).slice(-2); };
+    var d = n.getFullYear() + "-" + z(n.getMonth() + 1) + "-" + z(n.getDate()) +
+            " " + z(n.getHours()) + ":" + z(n.getMinutes());
     return [
       "# crissit 컴포넌트 — 개발용 키트",
       "",
       "| | |",
       "|---|---|",
-      "| **컴포넌트 갱신** | " + UPDATED + " |",
-      "| 내려받은 날 | " + d + " |",
+      "| **컴포넌트 갱신** | " + UPDATED + " (KST) |",
+      "| 내려받은 시각 | " + d + " |",
       "",
       "카탈로그의 「개발용 키트 받기」로 만든 것. 갱신 날짜가 위와 다르면 새로 받으면 된다.",
       "",
@@ -209,8 +219,8 @@
         list.logos = bin.length - list.icons;
         files.unshift({ name: "README.md", data: enc.encode(readme(list)) });
 
-        // 같은 내용이면 언제 받아도 같은 이름이 나오도록 갱신 날짜를 쓴다
-        var name = "crissit-components-" + UPDATED + ".zip";
+        // 같은 내용이면 언제 받아도 같은 이름이 나오도록 갱신 시점을 쓴다
+        var name = "crissit-components-" + stamp() + ".zip";
         var a = document.createElement("a");
         a.href = URL.createObjectURL(zip(files));
         a.download = name;
