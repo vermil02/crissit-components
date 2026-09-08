@@ -33,6 +33,22 @@
 }
 .insp-on .insp-dock{right:calc(var(--insp-w) + 20px)}
 
+.insp-panelbtn{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;
+  border:1px solid var(--line-normal, #e4e6e8);border-radius:9999px;
+  background:var(--bg-normal, #ffffff);color:var(--label-normal, #151617);
+  font:var(--label-2-bold, 700 14px/1.45 sans-serif);cursor:pointer;
+  box-shadow:0 6px 20px rgb(0 0 0 / .10);
+}
+.insp-panelbtn:hover{border-color:var(--label-alternative, #7c8288)}
+.insp-panelbtn svg{width:18px;height:18px;flex:none}
+/* 열려 있으면 눌린 것으로 — 지금 도구를 쓰는 중이라는 표시다 */
+.insp-on .insp-panelbtn{
+  background:var(--neutral-900, #151617);color:var(--neutral-0, #ffffff);
+  border-color:var(--neutral-900, #151617);
+}
+
 .insp-toggle{
   display:inline-flex;align-items:center;gap:8px;
   height:44px;padding:0 16px;
@@ -60,14 +76,17 @@
 }
 .insp-on .insp-panel{display:grid}
 
-/* 둘 다 켜졌는데 화면이 좁으면 위아래로 **정확히 반씩** 나눈다.
-   내용 높이에 맡기면 메모 칸이 머리·발에 눌려 목록이 안 보인다 */
-.insp-two .insp-panel{grid-template-rows:1fr 1fr}
+/* 화면이 좁으면 위아래로 나눈다. **고른 모드 쪽을 크게** 준다 —
+   반씩 주면 지금 쓰는 칸이 늘 좁다 */
+.insp-on .insp-panel{grid-template-rows:1fr 1fr}
+.insp-mode-main .insp-panel{grid-template-rows:2fr 1fr}
+.insp-mode-memo .insp-panel{grid-template-rows:1fr 2fr}
 
-/* 열은 켜진 것만 보인다 */
+/* 열려 있으면 두 열이 다 보인다 — 메모를 쓰는 순간 필요한 것이 그 값이라,
+   갈라 두면 매번 오가야 한다. 무엇을 하겠다(모드)는 클릭 동작과 색만 바꾼다 */
 .insp-col{display:none;flex-direction:column;min-height:0;min-width:0}
-.insp-show-main .insp-col--main{display:flex;overflow:hidden}
-.insp-show-memo .insp-col--memo{display:flex}
+.insp-on .insp-col--main{display:flex;overflow:hidden}
+.insp-on .insp-col--memo{display:flex}
 
 /* 둘 다 켜졌을 때만 패널을 넓혀 좌우로 가른다.
    하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다.
@@ -77,9 +96,11 @@
      170px 씩이라 값도 메모도 못 읽는다.
      (본문은 1280 + 사이드바 220 이라 패널 680 을 밀어도 남는다) */
 @media (min-width:1400px){
-  .insp-two{--insp-w:680px}
-  .insp-two .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
-  .insp-two .insp-col--memo{border-left:1px solid var(--line-normal, #e4e6e8);border-top:0;max-height:none}
+  .insp-on{--insp-w:680px}
+  .insp-on .insp-panel,
+  .insp-mode-main .insp-panel,
+  .insp-mode-memo .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+  .insp-on .insp-col--memo{border-left:1px solid var(--line-normal, #e4e6e8);border-top:0;max-height:none}
 }
 /* 본문을 밀어서 패널이 가리지 않게 한다 */
 @media (min-width:1180px){
@@ -234,6 +255,7 @@ button.insp-tok:hover{text-decoration:underline}
   cursor:crosshair;background:transparent;
 }
 .insp-on .insp-panel,.insp-on .insp-dock{cursor:auto}
+.insp-on .insp-panelbtn{cursor:pointer}
 .insp-on .insp-toggle,.insp-on .memo-toggle{cursor:pointer}
 
 /* 조상 사슬 — 버튼 안 <span> 을 집었을 때 위로 올라가는 길 */
@@ -302,8 +324,7 @@ button.insp-tok:hover{text-decoration:underline}
   background:var(--bg-alternative, #fafafa);
   min-height:0;
 }
-/* 검사 열이 꺼져 있으면 메모가 패널 전체를 쓴다 */
-html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
+/* 좁은 화면에서 위아래로 쌓일 때만 위 경계선이 필요하다 */
 /* 나란히 설 때는 위 경계선이 필요 없다 — 왼쪽 경계선이 대신한다 */
 
 /* 메모 여는 버튼 — 검사 버튼 옆에 선다 */

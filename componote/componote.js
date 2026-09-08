@@ -38,18 +38,21 @@
   "use strict";
 
   var ACCENT = "#543efa";
-  var panel, body, hint, detail, hl, hlPad, hlTag, dock, toggle, probe, catcher;
-  /* ── 모드는 하나다 ─────────────────────────────────────────
-     전에는 「검사」·「메모」가 각각 **창 열기 + 고르기 켜기** 두 일을 같이 했다.
-     그래서 메모를 쓰려면 검사를 먼저 켜야 했고, 지금 무엇을 하는 중인지도
-     헷갈렸다. 라디오처럼 하나만 고르게 바꿨다.
+  var panel, body, hint, detail, hl, hlPad, hlTag, dock, panelBtn, toggle, probe, catcher;
+  /* ── 여닫기와 모드를 갈랐다 ─────────────────────────────────
+     처음에는 「검사」·「메모」 버튼이 **창 열기**와 **무엇을 하겠다**를 같이
+     맡고 있었다. 그래서 메모를 쓰려면 검사를 먼저 켜야 했다. 둘로 나눴다.
 
-       ""      끔   — 고르기 판이 없다. 페이지를 그냥 쓸 수 있다
-       "main"  검사 — 고르면 값이 나온다. 테두리 보라 + 「검사」 라벨
-       "memo"  메모 — 고르면 **바로 쓰기로 들어간다**. 테두리 빨강 + 「메모」 라벨
-                      값도 같이 보여야 하니 검사 열이 함께 열린다
+       open   패널을 열까 닫을까 — **도구 전체의 on/off** 다.
+              닫으면 고르기 판도 없어서 페이지를 그냥 쓸 수 있다.
+       mode   열려 있는 동안 **무엇을 하겠다** — "main"(검사) | "memo"(메모).
+              클릭했을 때의 동작과 테두리 색·라벨만 바뀐다. 끄는 값은 없다.
+
+     열리면 두 열이 늘 다 보인다 — 메모를 쓰는 순간 필요한 것이 그 값이라,
+     둘을 갈라 두면 매번 오가야 한다. 좁은 화면에서는 고른 모드 쪽을 크게 준다.
      ──────────────────────────────────────────────────────── */
-  var mode = "";
+  var open = false;
+  var mode = "main";
   var on = false, pinned = null, hovered = null, rafId = 0;
   var pinListeners = [], showListeners = [];
 
@@ -413,30 +416,38 @@
   }
 
   /* ── 켜고 끄기 ─────────────────────────────────────────── */
-  /* 같은 모드를 다시 부르면 끈다 — 버튼을 다시 누르는 것이 곧 끄기다 */
+  /* 패널을 열거나 닫는다 — 이것이 도구의 on/off 다 */
+  function setOpen(v) { open = !!v; apply(); }
+
+  /* 무엇을 하겠다를 고른다. 닫혀 있으면 **열면서** 그 모드로 —
+     닫힌 채로 모드만 바꿔 두면 눌러도 아무 일이 없는 것처럼 보인다 */
   function setMode(m) {
-    mode = (mode === m) ? "" : m;
+    mode = (m === "memo") ? "memo" : "main";
+    if (!open) open = true;
     apply();
   }
+
   function apply() {
-    on = !!mode;
+    on = open;
     var c = document.documentElement.classList;
-    c.toggle("insp-on", on);
+    c.toggle("insp-on", open);
     c.toggle("insp-mode-main", mode === "main");
     c.toggle("insp-mode-memo", mode === "memo");
-    // 메모 모드에서는 값도 같이 봐야 하므로 검사 열이 함께 열린다
-    c.toggle("insp-show-main", on);
-    c.toggle("insp-show-memo", mode === "memo");
-    c.toggle("insp-two", mode === "memo");
-    toggle.setAttribute("aria-pressed", mode === "main" ? "true" : "false");
+    if (panelBtn) {
+      panelBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      panelBtn.querySelector("span").textContent = open ? "패널 닫기" : "패널 열기";
+      panelBtn.title = open ? "오른쪽 패널을 닫습니다 (페이지를 그냥 쓸 수 있습니다)"
+                            : "오른쪽 패널을 엽니다";
+    }
+    toggle.setAttribute("aria-pressed", open && mode === "main" ? "true" : "false");
     if (hlTag) hlTag.textContent = mode === "memo" ? "메모" : "검사";
     for (var i = 0; i < showListeners.length; i++) {
-      try { showListeners[i](mode); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
+      try { showListeners[i](open ? mode : ""); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
     }
-    if (!on) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); }
+    if (!open) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); }
     setHint();
   }
-  function setOn(v) { mode = v ? "main" : ""; apply(); }
+  function setOn(v) { setOpen(v); }
   function setHint() {
     if (pinned) {
       hint.innerHTML = '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기';
@@ -460,6 +471,17 @@
 
     dock = document.createElement("div");
     dock.className = "insp-dock";
+
+    /* 패널 여닫기 — 도구의 on/off. 부두 맨 앞에 둔다 */
+    panelBtn = document.createElement("button");
+    panelBtn.type = "button";
+    panelBtn.className = "insp-panelbtn";
+    panelBtn.setAttribute("aria-expanded", "false");
+    panelBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/>' +
+      '<path d="M15 4v16" stroke="currentColor" stroke-width="2"/></svg><span>패널 열기</span>';
+    dock.appendChild(panelBtn);
 
     toggle = document.createElement("button");
     toggle.className = "insp-toggle";
@@ -526,6 +548,7 @@
   }
 
   function bind() {
+    panelBtn.addEventListener("click", function (e) { e.stopPropagation(); setOpen(!open); });
     toggle.addEventListener("click", function (e) { e.stopPropagation(); setMode("main"); });
 
     catcher.addEventListener("mousemove", function (e) {
@@ -660,10 +683,12 @@
       if (bt) o.배경색토큰 = sortNames(bt, "bg")[0];
       return o;
     },
-    isOn: function () { return on; },
-    /* 모드를 고른다 — 같은 것을 다시 부르면 꺼진다 (라디오) */
+    isOn: function () { return open; },
+    isOpen: function () { return open; },
+    setOpen: function (v) { setOpen(v); },
+    /* 무엇을 하겠다를 고른다 (라디오). 닫혀 있으면 열면서 그 모드로 */
     setMode: function (m) { setMode(m); },
-    getMode: function () { return mode; },
+    getMode: function () { return open ? mode : ""; },
     onMode: function (fn) { showListeners.push(fn); },
     dock: function () { return dock; },
     pin: function (el) { if (!on) setOn(true); pinned = el; render(el); setHint(); queue(); },
