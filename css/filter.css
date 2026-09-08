@@ -3,10 +3,15 @@
    보도자료 목록 위의 필터 줄과, 결과가 없을 때의 빈 화면.
 
    실측
-     필터 줄  좌우 벌림(space-between) · 왼쪽 여백 20
-       좌: 칩 2개(연도·월), 간격 32 — Chip/Filter lg
-       우: [초기화] Button/Text — reset 아이콘 18 + 글자 Label2/Medium 14
+     필터 줄  한 줄로 왼쪽 정렬 · 왼쪽 여백 20
+       칩 2개(연도·월) 간격 32 — Chip/Filter lg
+       그 **바로 오른쪽**에 [초기화] — 같은 간격 32
+       [초기화] Button/Text — reset 아이콘 18 + 글자 Label2/Medium 14
            #151617 · 간격 6 · 위아래 10
+
+     ▸ 피그마는 [초기화]를 줄 **맨 오른쪽**으로 밀어 둔다(space-between).
+       2026-09-08 결정으로 칩 바로 옆에 붙였다 — 칩을 고친 뒤 되돌리려면
+       눈과 손이 줄 끝까지 갔다 와야 했다
      필터 줄 ↔ 목록  간격 40
      Empty data  위 80 · 가운데 정렬 · Label1/Medium 16 · #7c8288
                  문구 "검색 결과가 없습니다."
@@ -15,25 +20,37 @@
      · 처음 상태 — [전체 연도] 활성 / [전체 월] 비활성
        (연도를 고르지 않으면 월을 고를 수 없다)
      · 연도를 고르면 칩 라벨이 "2026년"처럼 바뀌고,
-       [전체 월]이 활성화되고 [초기화]가 활성화된다
-     · [초기화]를 누르면 연도·월이 기본값으로 돌아간다
+       [전체 월]이 활성화되고 [초기화]가 **나타난다**
+     · [초기화]를 누르면 연도·월이 기본값으로 돌아가고 [초기화]는 다시 사라진다
+
+     ▸ 기본 상태(전체 연도·전체 월)에서는 [초기화]를 **감춘다** — 흐리게
+       두지 않고 아예 없앤다(2026-09-08 결정). 되돌릴 것이 없을 때 버튼이
+       자리만 차지하면, 누를 수 있는 것인지 판단하게 만든다.
+       감추는 것은 `.filter-bar--dirty` 로 정한다 — 필터가 걸렸는지는
+       화면이 아니라 그 페이지의 상태가 아는 것이므로 클래스로 받는다
      · 필터 결과가 없으면 Empty data 를 목록 자리에 넣는다
      · 목록은 한 번에 최대 10개, 넘으면 페이지네이션 (§3)
 
-   마크업
-     <div class="filter-bar">
+   마크업 — 필터가 걸렸으면 `filter-bar--dirty` 를 붙인다
+     <div class="filter-bar filter-bar--dirty">
        <div class="filter-bar__chips">…칩 2개…</div>
-       <button class="btn btn--text btn--md btn--assistive">
+       <button class="btn btn--text btn--md btn--assistive filter-bar__reset">
          <i class="icon icon--18 i-reset"></i><span>초기화</span>
        </button>
      </div>
    ============================================================ */
 
+/* 칩과 [초기화]가 한 줄에 나란히 선다. 간격도 칩 사이와 같은 32 —
+   같은 줄의 것들이라 간격이 다르면 초기화가 딴 무리처럼 보인다 */
 .filter-bar{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:24px;padding-left:var(--container-pad);
+  display:flex;align-items:center;
+  gap:32px;padding-left:var(--container-pad);
 }
 .filter-bar__chips{display:flex;align-items:center;gap:32px}
+
+/* [초기화]는 기본 상태에서 **없다.** 필터가 걸리면 나타난다 */
+.filter-bar__reset{display:none}
+.filter-bar--dirty .filter-bar__reset{display:inline-flex}
 
 /* [초기화]는 Button/Text md 그대로다. 다만 이 버튼은 hover 에
    굵어지지 않는다 — 아이콘 옆 글자가 밀리면 줄이 흔들린다 */
@@ -51,7 +68,7 @@
 }
 
 @media (max-width:767px){
-  .filter-bar{padding-left:0;flex-wrap:wrap;gap:16px}
+  .filter-bar{padding-left:0;flex-wrap:wrap;gap:20px}
   .filter-bar__chips{gap:20px}
   .empty{padding-top:48px}
 }

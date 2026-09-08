@@ -4,7 +4,8 @@
    Content/Boardlist/Common    (1008:7915) 변형 8 — 목록/그리드 카드
    Content/Boardlist/Recommand (1008:8040) 변형 2 — 제목만 있는 추천 줄
 
-   State=Hover 는 전부 카드 전체 불투명도 48% 다 (피그마 opacity 변수 48).
+   State=Hover — Common·Recommand 는 카드 전체 불투명도 48% 다(피그마 opacity
+   변수 48). **Main 은 피그마와 다르게 간다** — 아래 「Main hover」 절 참고.
 
    실측
    Main (Desktop lg, 1533×292)
@@ -53,9 +54,11 @@
      Recommand  최대 5건 (보여줄 목록을 직접 고른다)
    ============================================================ */
 
-/* 공통 — hover 는 카드 전체가 흐려진다 */
+/* 공통 — hover 는 카드 전체가 흐려진다.
+   **Main 은 빼 놓는다**(`:not(.bl-main)`) — 카드 안에 버튼이 있어서 전체를
+   흐리면 누를 버튼까지 같이 옅어진다. Main 은 아래에서 따로 정한다 */
 .bl{display:block;color:inherit;transition:opacity .15s ease}
-.bl:hover{opacity:var(--opacity-48)}
+.bl:not(.bl-main):hover{opacity:var(--opacity-48)}
 @media (prefers-reduced-motion:reduce){.bl{transition:none}}
 
 .bl__date{font:var(--body-2-medium);color:var(--label-alternative)}
@@ -101,6 +104,68 @@
 /* 보도자료가 1건뿐이면 이전·다음을 감춘다 (정의서 🅓).
    재생·일시정지 버튼은 그대로 남는다 */
 .bl-main--single .bl-main__nav-group{display:none}
+
+/* ------------------------------------------------------------
+   Main hover — 피그마와 다르게 간다 (2026-09-08 사용자 결정)
+
+   피그마 `State=Hover` 는 **카드 전체 불투명도 48%** 다. Main 에는 그게
+   안 맞는다 — 카드 안에 이전·다음·일시정지 버튼이 있어서, 카드를 흐리면
+   **지금 누르려는 버튼까지 같이 옅어진다.** 회색으로 죽은 것처럼 보인다.
+
+   그래서 둘로 갈랐다.
+     버튼        색이 **반전**된다 (흰 면·검은 아이콘 → 검은 면·흰 아이콘)
+     그 밖의 곳  **이미지가 아주 미세하게 커진다**(1.03) + 미디어 페이지로 간다
+
+   ▸ 버튼만 프로젝트 공통 hover 규칙(`.has-overlay` 검정 8% 막)에서 **벗어난다.**
+     막은 "눌릴 것"을 알리기에 약해서, 카드 안에서 유일하게 누를 수 있는 곳을
+     분명히 드러내려고 반전을 택했다. 「진해지기」도 후보였는데 Outlined 는
+     면이 투명해서 진해질 면이 없다.
+   ▸ Common·Recommand 는 그대로 48% 다. 그 카드들은 안에 버튼이 없다.
+   ------------------------------------------------------------ */
+
+/* 카드 전체를 덮는 링크. 버튼은 `z-index` 로 그 위에 올려 둔다.
+   ▸ 왜 이미지·본문을 링크로 감싸지 않았나 — 이미지는 왼쪽 칸, 버튼은 오른쪽
+     칸 맨 아래에 있어서 "버튼을 뺀 영역" 이 네모가 아니다. 감싸려면 배치를
+     바꿔야 해서, 배치는 그대로 두고 투명한 판을 덮었다.
+   ▸ 대가 — 이 판 위에서는 글자를 끌어 선택할 수 없다. 카드를 통째로 누르게
+     만드는 흔한 방식이 다 그렇다 */
+.bl-main{position:relative}
+.bl-main__hit{
+  position:absolute;inset:0;z-index:1;
+  border-radius:var(--radius-xsmall);
+}
+.bl-main__hit:focus-visible{outline:2px solid var(--primary-normal);outline-offset:2px}
+.bl-main__nav{position:relative;z-index:2}   /* 판보다 위 — 버튼이 눌린다 */
+
+/* 이미지 — 겉은 잘라 내고 안쪽만 키운다.
+   `.bl__img-zoom` 이 `background:inherit` 로 겉의 사진을 그대로 쓴다 —
+   마크업에서 이미지 주소를 두 번 적지 않게 하려는 것이다 */
+.bl-main .bl__img{overflow:hidden;position:relative}
+.bl-main .bl__img-zoom{
+  position:absolute;inset:0;
+  background:inherit;
+  transition:transform .4s ease;
+}
+.bl-main:hover .bl__img-zoom{transform:scale(1.03)}
+
+/* 버튼에 올렸을 때는 이미지를 키우지 않는다 — 지금 가리키는 것은 버튼이다.
+   `:has()` 를 못 읽는 브라우저에서는 이미지도 같이 커진다(해롭지 않다) */
+.bl-main:has(.bl-main__nav button:hover) .bl__img-zoom{transform:none}
+
+/* 버튼 — 색 반전. `.ibtn--outlined` 의 투명 면을 검게 채운다.
+   테두리가 inset box-shadow 라 면과 같은 색으로 덮어 테두리를 지운다 */
+.bl-main__nav .ibtn:hover:not(:disabled){
+  background:var(--neutral-1000);
+  color:var(--neutral-0);
+  box-shadow:inset 0 0 0 1px var(--neutral-1000);
+}
+.bl-main__nav .ibtn{transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+
+@media (prefers-reduced-motion:reduce){
+  .bl-main .bl__img-zoom,
+  .bl-main__nav .ibtn{transition:none}
+  .bl-main:hover .bl__img-zoom{transform:none}   /* 움직임을 원하지 않는 사람 */
+}
 
 /* ============================================================
    Common — Horizontal (목록형)

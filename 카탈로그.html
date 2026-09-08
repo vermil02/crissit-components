@@ -12,22 +12,22 @@
      지금 값: v=20260908g  (날짜 + 그날의 순번)
      ──────────────────────────────────────────────────────────── -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260908p">
-<link rel="stylesheet" href="css/base.css?v=20260908p">
-<link rel="stylesheet" href="css/icons.css?v=20260908p">
-<link rel="stylesheet" href="css/button.css?v=20260908p">
-<link rel="stylesheet" href="css/icon-button.css?v=20260908p">
-<link rel="stylesheet" href="css/chip.css?v=20260908p">
-<link rel="stylesheet" href="css/pagination.css?v=20260908p">
-<link rel="stylesheet" href="css/dropdown.css?v=20260908p">
-<link rel="stylesheet" href="css/drawer.css?v=20260908p">
-<link rel="stylesheet" href="css/heading.css?v=20260908p">
-<link rel="stylesheet" href="css/filter.css?v=20260908p">
-<link rel="stylesheet" href="css/gnb.css?v=20260908p">
-<link rel="stylesheet" href="css/footer.css?v=20260908p">
-<link rel="stylesheet" href="css/boardlist.css?v=20260908p">
+<link rel="stylesheet" href="css/tokens.css?v=20260908s">
+<link rel="stylesheet" href="css/base.css?v=20260908s">
+<link rel="stylesheet" href="css/icons.css?v=20260908s">
+<link rel="stylesheet" href="css/button.css?v=20260908s">
+<link rel="stylesheet" href="css/icon-button.css?v=20260908s">
+<link rel="stylesheet" href="css/chip.css?v=20260908s">
+<link rel="stylesheet" href="css/pagination.css?v=20260908s">
+<link rel="stylesheet" href="css/dropdown.css?v=20260908s">
+<link rel="stylesheet" href="css/drawer.css?v=20260908s">
+<link rel="stylesheet" href="css/heading.css?v=20260908s">
+<link rel="stylesheet" href="css/filter.css?v=20260908s">
+<link rel="stylesheet" href="css/gnb.css?v=20260908s">
+<link rel="stylesheet" href="css/footer.css?v=20260908s">
+<link rel="stylesheet" href="css/boardlist.css?v=20260908s">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260908p">
+<link rel="stylesheet" href="componote/componote.css?v=20260908s">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -134,6 +134,20 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 .demo-hover.has-overlay::after{opacity:var(--interaction-hover)}
 .demo-hover.btn--text{font-weight:700}
 .demo-hover.bl{opacity:var(--opacity-48)}
+/* 카탈로그 전용 — 이미지 자리가 단색 회색이라 1.03 확대가 눈에 안 보인다.
+   빗줄 무늬를 깔아 **움직이는 것을 볼 수 있게** 한다. 실제 사이트에서는
+   여기에 사진이 들어가므로 이 무늬는 카탈로그 화면 안에만 있다 */
+.bl-main .bl__img-zoom{
+  background-image:repeating-linear-gradient(45deg,
+    var(--neutral-200) 0 10px, var(--neutral-100) 10px 20px);
+}
+.bl-main .bl__img{position:relative}
+.bl-main .bl__img::after{
+  content:attr(data-label);
+  position:absolute;left:50%;top:50%;translate:-50% -50%;
+  font:var(--label-3-medium);color:var(--label-assistive);
+  pointer-events:none;
+}
 
 .frame{border:1px solid var(--line-normal);border-radius:var(--radius-medium);
   overflow:hidden;margin-bottom:16px;background:var(--bg-normal)}
@@ -151,9 +165,9 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260908p" defer></script>
-<script src="js/gnb-lang.js?v=20260908p" defer></script>
-<script src="js/kit.js?v=20260908p" defer></script>
+<script src="js/boardlist-main.js?v=20260908s" defer></script>
+<script src="js/gnb-lang.js?v=20260908s" defer></script>
+<script src="js/kit.js?v=20260908s" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -173,7 +187,7 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="componote/componote.js?v=20260908p" defer></script>
+<script src="componote/componote.js?v=20260908s" defer></script>
 </head>
 <body>
 
@@ -850,13 +864,13 @@ window.componote = {
 
   <div class="card">
     <h3>필터 줄 — 처음 상태</h3>
-    <p class="note">[전체 월]이 비활성이다. 초기화 버튼도 아직 누를 것이 없다.</p>
+    <p class="note">[전체 월]이 비활성이다. <b>초기화는 아예 없다</b> — 되돌릴 것이 없기 때문이다. 흐리게 두지 않고 감춘다.</p>
     <div class="filter-bar">
       <div class="filter-bar__chips">
         <button class="chip chip--lg"><span>전체 연도</span><i class="chip__caret"></i></button>
         <button class="chip chip--lg" disabled><span>전체 월</span><i class="chip__caret"></i></button>
       </div>
-      <button class="btn btn--text btn--md btn--assistive" disabled>
+      <button class="btn btn--text btn--md btn--assistive filter-bar__reset">
         <i class="icon icon--18 i-reset"></i><span>초기화</span>
       </button>
     </div>
@@ -864,18 +878,19 @@ window.componote = {
 
   <div class="card">
     <h3>필터 줄 — 연도를 고른 뒤</h3>
-    <p class="note">라벨이 <code>2024년</code>으로 바뀌고 초기화가 활성화됐다. 월은 여전히 <code>전체 월</code>이지만 이제 누를 수 있다.</p>
-    <div class="filter-bar">
+    <p class="note">라벨이 <code>2024년</code>으로 바뀌고, <b>초기화가 칩 바로 오른쪽에 나타났다</b>(간격도 칩 사이와 같은 32). 월은 여전히 <code>전체 월</code>이지만 이제 누를 수 있다.</p>
+    <div class="filter-bar filter-bar--dirty">
       <div class="filter-bar__chips">
         <button class="chip chip--lg"><span>2024년</span><i class="chip__caret"></i></button>
         <button class="chip chip--lg"><span>전체 월</span><i class="chip__caret"></i></button>
       </div>
-      <button class="btn btn--text btn--md btn--assistive">
+      <button class="btn btn--text btn--md btn--assistive filter-bar__reset">
         <i class="icon icon--18 i-reset"></i><span>초기화</span>
       </button>
     </div>
     <div class="empty">검색 결과가 없습니다.</div>
-    <p class="spec">필터 줄 좌우 벌림 · 왼쪽 여백 20 · 칩 간격 32 · 초기화 = Button/Text md + reset 아이콘 18 · 필터 줄↔목록 간격 40 · Empty 위 80, Label1/Medium 16 <code>#7c8288</code></p>
+    <p class="spec">필터 줄 왼쪽 정렬 한 줄 · 왼쪽 여백 20 · 칩 간격 32 · <b>초기화도 같은 간격 32</b>로 칩 바로 오른쪽 · 초기화 = Button/Text md + reset 아이콘 18 · 필터 줄↔목록 간격 40 · Empty 위 80, Label1/Medium 16 <code>#7c8288</code></p>
+    <p class="note"><b>피그마와 다르다.</b> 피그마는 초기화를 줄 <b>맨 오른쪽</b>으로 밀어 두고(space-between) 기본 상태에서는 <b>흐리게</b> 둔다. 여기서는 ① 칩 바로 옆에 붙이고 ② 기본 상태에서 <b>감춘다</b> — 2026-09-08 결정. 칩을 고친 뒤 되돌리려면 눈과 손이 줄 끝까지 갔다 와야 했고, 되돌릴 것이 없을 때 버튼이 자리만 차지하면 누를 수 있는지 판단하게 만든다.<br>감추는 것은 <code>.filter-bar--dirty</code> 가 정한다 — 필터가 걸렸는지는 화면이 아니라 그 페이지의 상태가 아는 것이라 클래스로 받는다.</p>
   </div>
 </section>
 
@@ -1270,6 +1285,18 @@ window.componote = {
     </div>
     <p class="spec">항목 간격 8 · md 40×40(글자 14 Bold, 숫자 칸 폭 32) · sm 32×32(12 Bold) · 활성 면 <code>#e4e6e8</code> radius 4 · 화살표 흰색 반투명이라 갈 페이지가 없으면 12%, 있으면 32%로 농도가 다르다</p>
   </div>
+
+  <div class="card">
+    <h3>1장뿐일 때 — 줄이 없다</h3>
+    <p class="note">넘길 곳이 없으면 <b>줄 자체를 감춘다.</b> <code>[◀ 1 ▶]</code> 이 남아 있으면 누를 수 있는 것인지 판단하게 만든다. 흐리게 두지 않고 아예 없앤다. 아래는 <code>.pgn--single</code> 이 붙은 것이라 <b>아무것도 안 보이는 게 맞다</b>.</p>
+    <nav class="pgn pgn--md pgn--single">
+      <button class="ibtn ibtn--bg ibtn--white ibtn--md has-overlay" disabled aria-label="이전 페이지"><i class="icon i-arrow-left"></i></button>
+      <button class="pgn__num is-active">1</button>
+      <button class="ibtn ibtn--bg ibtn--white ibtn--md has-overlay" disabled aria-label="다음 페이지"><i class="icon i-arrow-right"></i></button>
+    </nav>
+    <p class="spec">1장뿐이면 <code>.pgn--single</code> → <code>display:none</code>. 몇 장인지는 목록을 그리는 쪽이 정해서 붙인다 — 줄을 아예 그리지 않아도 된다</p>
+    <p class="note"><b>피그마에 없는 상태다.</b> 변형이 md·sm 둘뿐이라 「1장뿐일 때」가 없다 — 2026-09-08 결정으로 여기서 정했다.</p>
+  </div>
 </section>
 
 <!-- ══════════════ Board list / Main ══════════════ -->
@@ -1283,7 +1310,8 @@ window.componote = {
     <p class="note">그림이 아니라 <b>동작하는 것</b>이다. 8초에 한 번 넘어가고, 그 8초 동안 일시정지 버튼 테두리가 상단 중앙에서 시계방향으로 <b>연속으로</b> 한 바퀴 찬다. 일시정지를 누르면 차오르던 자리에 그대로 서고, 이전·다음을 누르면 처음부터 다시 센다. <b>마우스를 올리면 그 동안 멈추고, 치우면 이어서 돈다.</b> 화면 밖으로 나가거나 탭이 백그라운드로 가면 스스로 멈춘다.</p>
     <div data-bl-rotator data-interval="8000">
       <div class="bl bl-main" data-bl-slide>
-        <div class="bl__img"></div>
+        <a class="bl-main__hit" href="#bl-main" aria-label="기사 보기"></a>
+        <div class="bl__img" data-label="이미지 505×292"><span class="bl__img-zoom"></span></div>
         <div class="bl-main__body">
           <div class="bl-main__head">
             <div class="bl-main__text">
@@ -1295,10 +1323,10 @@ window.componote = {
           </div>
           <div class="bl-main__nav">
             <div class="bl-main__nav-group">
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
             </div>
-            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+            <button class="ibtn ibtn--outlined ibtn--lg bl-prog" data-bl-toggle>
               <i class="icon i-pause"></i>
               <span class="bl-prog__ring" aria-hidden="true"></span>
             </button>
@@ -1306,7 +1334,8 @@ window.componote = {
         </div>
       </div>
       <div class="bl bl-main" data-bl-slide hidden>
-        <div class="bl__img"></div>
+        <a class="bl-main__hit" href="#bl-main" aria-label="기사 보기"></a>
+        <div class="bl__img" data-label="이미지 505×292"><span class="bl__img-zoom"></span></div>
         <div class="bl-main__body">
           <div class="bl-main__head">
             <div class="bl-main__text">
@@ -1318,10 +1347,10 @@ window.componote = {
           </div>
           <div class="bl-main__nav">
             <div class="bl-main__nav-group">
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
             </div>
-            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+            <button class="ibtn ibtn--outlined ibtn--lg bl-prog" data-bl-toggle>
               <i class="icon i-pause"></i>
               <span class="bl-prog__ring" aria-hidden="true"></span>
             </button>
@@ -1329,7 +1358,8 @@ window.componote = {
         </div>
       </div>
       <div class="bl bl-main" data-bl-slide hidden>
-        <div class="bl__img"></div>
+        <a class="bl-main__hit" href="#bl-main" aria-label="기사 보기"></a>
+        <div class="bl__img" data-label="이미지 505×292"><span class="bl__img-zoom"></span></div>
         <div class="bl-main__body">
           <div class="bl-main__head">
             <div class="bl-main__text">
@@ -1341,10 +1371,10 @@ window.componote = {
           </div>
           <div class="bl-main__nav">
             <div class="bl-main__nav-group">
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
             </div>
-            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+            <button class="ibtn ibtn--outlined ibtn--lg bl-prog" data-bl-toggle>
               <i class="icon i-pause"></i>
               <span class="bl-prog__ring" aria-hidden="true"></span>
             </button>
@@ -1352,7 +1382,9 @@ window.componote = {
         </div>
       </div>
     </div>
-    <p class="spec">좌우 간격 48 · 이미지 폭 505 · 본문 위·아래 벌림 gap 48 · 제목 Title2/Bold 24(2줄 자름) · 요약 Body1/Regular 18(1줄 자름) · 배지 lg, 간격 8 · 아래 줄 = 이전·다음(간격 12) + 우측 일시정지 · State=Hover 는 카드 전체 불투명도 48%</p>
+    <p class="spec">좌우 간격 48 · 이미지 폭 505 · 본문 위·아래 벌림 gap 48 · 제목 Title2/Bold 24(2줄 자름) · 요약 Body1/Regular 18(1줄 자름) · 배지 lg, 간격 8 · 아래 줄 = 이전·다음(간격 12) + 우측 일시정지</p>
+    <p class="spec"><b>hover</b> — 버튼은 <b>색 반전</b>(검은 면·흰 아이콘) · 그 밖의 곳은 <b>이미지 1.03 확대</b>(0.4초) + 카드 전체가 미디어 페이지 링크. 버튼에 올린 동안에는 이미지를 키우지 않는다</p>
+    <p class="note"><b>피그마와 다르다.</b> 피그마 <code>State=Hover</code> 는 카드 전체 불투명도 48%인데, Main 은 카드 안에 버튼이 있어 전체를 흐리면 <b>누르려는 버튼까지 같이 옅어진다.</b> 그래서 버튼과 그 밖을 갈랐다 — 2026-09-08 결정. Common·Recommand 는 안에 버튼이 없어 48% 그대로다.</p>
   </div>
 
   <div class="card">
@@ -1362,7 +1394,7 @@ window.componote = {
       <span data-bl-slide class="t-title-2">1번 기사</span>
       <span data-bl-slide class="t-title-2" hidden>2번 기사</span>
       <span data-bl-slide class="t-title-2" hidden>3번 기사</span>
-      <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+      <button class="ibtn ibtn--outlined ibtn--lg bl-prog" data-bl-toggle>
         <i class="icon i-pause"></i>
         <span class="bl-prog__ring" aria-hidden="true"></span>
       </button>
@@ -1375,7 +1407,8 @@ window.componote = {
     <p class="note">기사가 하나면 이전·다음을 감추고 자동 전환도 돌지 않는다(정의서 🅓). 스크립트가 <code>data-bl-slide</code> 개수를 보고 <code>.bl-main--single</code> 을 스스로 붙인다 — 마크업에서 지울 필요가 없다.</p>
     <div data-bl-rotator>
       <div class="bl bl-main" data-bl-slide>
-        <div class="bl__img"></div>
+        <a class="bl-main__hit" href="#bl-main" aria-label="기사 보기"></a>
+        <div class="bl__img" data-label="이미지 505×292"><span class="bl__img-zoom"></span></div>
         <div class="bl-main__body">
           <div class="bl-main__head">
             <div class="bl-main__text">
@@ -1386,10 +1419,10 @@ window.componote = {
           </div>
           <div class="bl-main__nav">
             <div class="bl-main__nav-group">
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
-              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
             </div>
-            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+            <button class="ibtn ibtn--outlined ibtn--lg bl-prog" data-bl-toggle>
               <i class="icon i-pause"></i>
               <span class="bl-prog__ring" aria-hidden="true"></span>
             </button>
@@ -1644,7 +1677,7 @@ window.componote = {
 <!-- ══════════════ 확인 필요 ══════════════ -->
 <section class="sec" id="gaps">
   <h2>확인 필요</h2>
-  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>16건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
+  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>19건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것, 그리고 <b>있는 것을 일부러 버린</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
   <p class="src">검증 근거 · <code>가이드 / Content / Navigation / Action .f2h.json</code> (2026-09-07 내보냄) · <code>Definition / Icon / Logo .f2h.json</code> (2026-09-08 내보냄) — 색·여백·효과·활자·아이콘·컴포넌트 세트 변형을 전수 대조</p>
 
   <div class="card">
@@ -1659,6 +1692,30 @@ window.componote = {
       <tr><td>GNB CTA 버튼 라운드</td><td><code>Round=Normal</code> (다수 쪽)</td><td>28개 변형 중 <code>Desktop(xl) Mode=Black</code> 하나만 <code>Brand</code>다. 푸터를 Normal 로 바꾸셨으니 이것도 Normal 이 의도로 보이는데, 피그마에서 정리 필요</td></tr>
       <tr><td><b>아이콘이 정해진 컴포넌트가 거의 없다</b></td><td>자리표시자(점선 사각형)를 그대로 뒀다</td><td>아이콘 슬롯을 전수 확인한 결과, <b>버튼 계열 7개 세트는 실제 글리프가 하나도 없다</b> — Button/Solid 60 · Outlined 72 · Text 36 · Icon/Normal 6 · Icon/Outlined 12 · Icon/Solid 32 · Icon/Background 24 곳이 모두 <code>Icon/Normal/-</code>(<code>Name=dummy</code>)다. 메가메뉴 목록 항목의 <code>Type=link</code> 도 같다.<br><b>이제 라이브러리 64종을 전부 넣어 두었으니, 글리프가 정해지면 <code>i-*</code> 클래스만 바꾸면 된다.</b> 실제 글리프가 정해진 곳은 GNB(menu · earth · chevron)와 LNB/List 의 <code>Type=Blank</code>(↗) 뿐이다</td></tr>
     </table>
+  </div>
+
+  <div class="card">
+    <h3>피그마와 다르게 정한 것 — 3건</h3>
+    <p class="aside">피그마에 값이 <b>있는데도</b> 다르게 간 것들이다. 위의 「설계가 없는 것」과 다르다 — 저건 없어서 정한 것이고, 이건 <b>있는 것을 버린 것</b>이라 피그마 쪽도 같이 고쳐야 한다.</p>
+    <table class="tk">
+      <tr><th style="width:200px">항목</th><th>피그마</th><th>여기서 한 것 · 이유</th></tr>
+      <tr>
+        <td>Board list / Main<br>hover</td>
+        <td><code>State=Hover</code> = 카드 전체 불투명도 <b>48%</b></td>
+        <td>버튼은 <b>색 반전</b>(검은 면·흰 아이콘), 그 밖은 <b>이미지 1.03 확대</b> + 카드 전체가 미디어 페이지 링크.<br>이유 — Main 은 카드 안에 이전·다음·일시정지가 있어서 전체를 흐리면 <b>지금 누르려는 버튼까지 같이 옅어진다.</b> Common·Recommand 는 안에 버튼이 없어 48% 그대로 뒀다.<br>버튼만 프로젝트 공통 hover 규칙(<code>.has-overlay</code> 검정 8% 막)에서 벗어난다</td>
+      </tr>
+      <tr>
+        <td>Filter bar<br>초기화 위치·표시</td>
+        <td>줄 <b>맨 오른쪽</b>(space-between) · 기본 상태에서 <b>흐리게</b></td>
+        <td>칩 <b>바로 오른쪽</b>에 같은 간격 32 · 기본 상태에서 <b>감춤</b>(<code>.filter-bar--dirty</code> 로 켠다).<br>이유 — 칩을 고친 뒤 되돌리려면 눈과 손이 줄 끝까지 갔다 와야 했다. 되돌릴 것이 없을 때 버튼이 자리만 차지하면 누를 수 있는지 판단하게 만든다</td>
+      </tr>
+      <tr>
+        <td>Pagination<br>1장뿐일 때</td>
+        <td>그 상태가 <b>없다</b> (변형이 md·sm 둘뿐)</td>
+        <td>줄 자체를 <b>감춤</b>(<code>.pgn--single</code>).<br>이유 — 넘길 곳이 없는데 <code>[◀ 1 ▶]</code> 이 남아 있으면 누를 수 있는지 판단하게 만든다</td>
+      </tr>
+    </table>
+    <p class="aside">셋 다 <b>2026-09-08 결정</b>이다. 「흐리게 두지 않고 감춘다」가 두 건에 공통으로 적용됐다 — 할 수 없는 것은 자리도 차지하지 않는다.</p>
   </div>
 
   <div class="card">
