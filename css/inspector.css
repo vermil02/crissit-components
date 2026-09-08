@@ -191,9 +191,16 @@ button.insp-tok:hover{text-decoration:underline}
 .insp-hl__pad{outline:1px dashed rgb(16 185 129 / .8);outline-offset:-1px}
 .insp-hl__mar{outline:1px dashed rgb(245 158 11 / .8)}
 
-.insp-on,.insp-on body{cursor:crosshair}
-.insp-on .insp-panel,.insp-on .insp-toggle{cursor:auto}
-.insp-on .insp-toggle{cursor:pointer}
+/* ---------- 고르는 판 ----------
+   검사 중에 화면 전체를 덮어 마우스를 받는다. 비활성(disabled) 버튼도
+   고를 수 있게 하려는 것이다 — 자세한 이유는 js/inspector.js 참고 */
+.insp-catch{display:none}
+.insp-on .insp-catch{
+  display:block;position:fixed;inset:0;z-index:9994;
+  cursor:crosshair;background:transparent;
+}
+.insp-on .insp-panel,.insp-on .insp-dock{cursor:auto}
+.insp-on .insp-toggle,.insp-on .memo-toggle{cursor:pointer}
 
 /* 조상 사슬 — 버튼 안 <span> 을 집었을 때 위로 올라가는 길 */
 .insp-path{

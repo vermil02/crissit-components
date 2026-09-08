@@ -29,7 +29,7 @@
   "use strict";
 
   var ACCENT = "#543efa";
-  var panel, body, hint, detail, hl, hlPad, dock, toggle, probe;
+  var panel, body, hint, detail, hl, hlPad, dock, toggle, probe, catcher;
   /* 열마다 따로 켜고 끈다 — 값만 보고 싶을 때가 있고, 메모만 볼 때가 있다.
      둘 중 하나라도 켜져 있으면 요소 고르기(마우스 따라다니기·클릭 고정)는 돈다 */
   var showMain = false, showMemo = false;
@@ -381,7 +381,18 @@
   }
   function queue() { if (!rafId) rafId = requestAnimationFrame(follow); }
 
-  function ours(el) { return !!(el && el.closest && el.closest(".insp-panel,.insp-dock")); }
+  var OURS = ".insp-panel,.insp-dock,.insp-catch,.insp-hl,.memo-layer";
+  function ours(el) { return !!(el && el.closest && el.closest(OURS)); }
+
+  /* 덮개 아래에서 진짜 페이지 요소를 찾는다. 위에서부터 훑어
+     우리 UI 를 건너뛴 첫 번째가 사용자가 가리킨 것이다 */
+  function pageElementAt(x, y) {
+    var list = document.elementsFromPoint(x, y);
+    for (var i = 0; i < list.length; i++) {
+      if (!ours(list[i])) return list[i];
+    }
+    return null;
+  }
 
   /* ── 켜고 끄기 ─────────────────────────────────────────── */
   function setShow(which, v) {
@@ -406,7 +417,7 @@
   function setHint() {
     hint.innerHTML = pinned
       ? '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기'
-      : "요소 위에 마우스를 올리면 값이 나옵니다. 클릭하면 고정됩니다";
+      : "요소 위에 마우스를 올리면 값이 나옵니다. 클릭하면 고정됩니다 (비활성 버튼도 고를 수 있습니다)";
     // ▸ 알림은 반드시 innerHTML 을 쓴 **뒤에** — 메모가 여기에 버튼을 끼워 넣는데,
     //   먼저 부르면 그 버튼이 innerHTML 로 지워진다
     for (var i = 0; i < pinListeners.length; i++) {
@@ -427,7 +438,7 @@
     toggle.className = "insp-toggle";
     toggle.type = "button";
     toggle.setAttribute("aria-pressed", "false");
-    toggle.title = "요소의 글꼴·색·여백을 오른쪽에 보여줍니다 (마우스가 올라간 상태의 값이라 hover 값이 나옵니다)";
+    toggle.title = "요소의 글꼴·색·여백과 토큰 이름을 오른쪽에 보여줍니다";
     toggle.innerHTML =
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
       '<circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"/>' +
@@ -449,6 +460,18 @@
     detail.className = "insp-detail";
     detail.style.display = "none";
 
+    /* 화면 전체를 덮는 투명한 판. 검사 중에는 이 판이 마우스를 받는다.
+       ▸ 왜 필요한가 — `disabled` 버튼은 브라우저가 **클릭 이벤트를 아예
+         만들지 않는다.** 그래서 페이지에서 클릭을 가로채는 방식으로는
+         비활성 버튼을 고를 수가 없었다. 판을 덮고 그 아래 무엇이 있는지
+         좌표로 찾으면(`elementsFromPoint`) 비활성이든 뭐든 다 고를 수 있다.
+       ▸ 덤으로 두 가지가 같이 풀린다 — 페이지의 버튼·링크가 눌리지 않고,
+         마우스가 요소에 닿지 않으니 hover 가 아닌 **평소 값**이 보인다.
+       ▸ 핀(9995)·테두리(9996)·패널(9997)·버튼(9998)은 이 판(9994) 위에 있어
+         그대로 눌린다. 휠은 판이 스크롤 대상이 아니라서 페이지가 굴러간다 */
+    catcher = document.createElement("div");
+    catcher.className = "insp-catch";
+
     hl = document.createElement("div");
     hl.className = "insp-hl";
     hlPad = document.createElement("div");
@@ -456,6 +479,7 @@
     hl.appendChild(hlPad);
 
     dock.appendChild(toggle);
+    document.body.appendChild(catcher);
     document.body.appendChild(dock);
     document.body.appendChild(panel);
     document.body.appendChild(hl);
@@ -472,24 +496,26 @@
   function bind() {
     toggle.addEventListener("click", function (e) { e.stopPropagation(); setShow("main", !showMain); });
 
-    document.addEventListener("mousemove", function (e) {
+    catcher.addEventListener("mousemove", function (e) {
       if (!on || pinned) return;
-      var el = document.elementFromPoint(e.clientX, e.clientY);
-      if (!el || ours(el) || el === hovered) return;
+      var el = pageElementAt(e.clientX, e.clientY);
+      if (!el || el === hovered) return;
       hovered = el;
       render(el);
       queue();
     });
 
-    // 검사 중에는 클릭을 고정에 쓴다 — 링크가 눌리면 페이지가 바뀌어 버린다
-    document.addEventListener("click", function (e) {
-      if (!on || ours(e.target)) return;
-      e.preventDefault(); e.stopPropagation();
-      pinned = (pinned === e.target) ? null : e.target;
+    /* 덮개를 클릭하면 그 아래 요소를 고정한다. 페이지 쪽으로는 클릭이
+       가지 않으므로 버튼·링크가 눌릴 일이 없다 */
+    catcher.addEventListener("click", function (e) {
+      if (!on) return;
+      var el = pageElementAt(e.clientX, e.clientY);
+      if (!el) return;
+      pinned = (pinned === el) ? null : el;
       if (pinned) render(pinned);
       setHint();
       queue();
-    }, true);
+    });
 
     /* 패널 안 클릭 — 조상 이동 · 토큰 열기 · 접힌 이름 펴기 · 정보창 닫기.
        패널을 건드렸다는 건 이제 읽겠다는 뜻이라, 자동으로 고정한다.
