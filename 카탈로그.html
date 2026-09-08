@@ -74,12 +74,13 @@ body{background:var(--neutral-50)}
 
 /* 아이콘 목록 — 이름 길이가 제각각이라 flex 로 늘어놓으면 두 줄로 넘어가는
    칸 때문에 아이콘 높이가 어긋난다. 격자로 깔면 줄 안에서 자동으로 맞는다 */
-.iconset{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
+.iconset{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));
   gap:20px 8px;margin:0 0 20px}
 .iconset > span{display:flex;flex-direction:column;align-items:center;gap:8px;
   text-align:center;min-width:0}
+/* 가장 긴 이름(.i-chevron-right-sm-thick)이 한 줄에 들어가게 칸을 잡았다 */
 .iconset > span > code{font-size:10px;line-height:1.35;color:var(--label-alternative);
-  word-break:break-all}
+  white-space:nowrap}
 .on-dark{background:var(--neutral-900);border-radius:var(--radius-medium);padding:20px}
 .on-img{
   background:linear-gradient(135deg,#3a2f7a,#8f7ae6 60%,#c9ccd0);
@@ -334,12 +335,13 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>Variant</h3>
-    <p class="note">Primary 는 브랜드 보라, Assitive 는 먹색. 둘 다 글자는 밝은 색이다.</p>
+    <p class="note">Primary 는 브랜드 보라, Assistive 는 먹색. 둘 다 글자는 밝은 색이다.</p>
+    <p class="aside">피그마에서 이 축 값의 철자가 세트마다 다르다 — <code>Button/Solid</code>·<code>Button/Text</code>·<code>Button/Icon/Solid</code> 는 <code>Assitive</code>(s 하나 빠짐), <code>Button/Outlined</code>·<code>Info_btn</code> 은 <code>Assistive</code> 다. 여기서는 <b>맞는 철자</b>로 통일했다(<code>.btn--assistive</code>) — 「확인 필요」 참고</p>
     <div class="row">
       <button class="btn btn--solid btn--primary btn--md has-overlay"><span>텍스트</span></button>
       <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light"><span>텍스트</span></button>
     </div>
-    <p class="spec">Primary <code>#543efa</code> / Assitive <code>#151617</code> · 글자 <code>#fafafa</code></p>
+    <p class="spec">Primary <code>#543efa</code> / Assistive <code>#151617</code> · 글자 <code>#fafafa</code></p>
   </div>
 
   <div class="card">
@@ -442,13 +444,13 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
     <div class="row">
       <p class="lbl">Normal</p>
       <button class="btn btn--text btn--primary btn--lg"><span>Primary</span></button>
-      <button class="btn btn--text btn--assistive btn--lg"><span>Assitive</span></button>
+      <button class="btn btn--text btn--assistive btn--lg"><span>Assistive</span></button>
       <button class="btn btn--text btn--primary btn--lg" disabled><span>Disable</span></button>
     </div>
     <div class="row">
       <p class="lbl">Hover (고정 표시)</p>
       <button class="btn btn--text btn--primary btn--lg demo-hover"><span>Primary</span></button>
-      <button class="btn btn--text btn--assistive btn--lg demo-hover"><span>Assitive</span></button>
+      <button class="btn btn--text btn--assistive btn--lg demo-hover"><span>Assistive</span></button>
     </div>
     <div class="row">
       <p class="lbl">Size · Icon</p>
@@ -457,7 +459,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <button class="btn btn--text btn--primary btn--lg"><span>lg</span></button>
       <button class="btn btn--text btn--primary btn--lg"><span>Trailing</span><i class="icon i-placeholder"></i></button>
     </div>
-    <p class="spec">글자 Primary <code>#543efa</code> · Assitive <code>#151617</code> · Disable <code>#c9ccd0</code> · 좌우 여백 0 · 위아래 lg 12 / md 10 / sm 7</p>
+    <p class="spec">글자 Primary <code>#543efa</code> · Assistive <code>#151617</code> · Disable <code>#c9ccd0</code> · 좌우 여백 0 · 위아래 lg 12 / md 10 / sm 7</p>
   </div>
 </section>
 
@@ -505,7 +507,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <button class="ibtn ibtn--solid ibtn--primary ibtn--lg ibtn--round-all has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
     </div>
     <div class="row">
-      <p class="lbl">Assitive · Disable · Hover</p>
+      <p class="lbl">Assistive · Disable · Hover</p>
       <button class="ibtn ibtn--solid ibtn--assistive ibtn--lg has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
       <button class="ibtn ibtn--solid ibtn--assistive ibtn--lg ibtn--round-all has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
       <button class="ibtn ibtn--solid ibtn--primary ibtn--lg has-overlay has-overlay--light demo-hover"><i class="icon i-placeholder"></i></button>
@@ -1354,14 +1356,14 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="card">
     <h3>화살표</h3>
     <div class="iconset">
-      <span><i class="icon icon--24 i-arrow-left"></i><br><code style="font-size:10px">arrow-left</code></span>
-      <span><i class="icon icon--24 i-arrow-right"></i><br><code style="font-size:10px">arrow-right</code></span>
-      <span><i class="icon icon--24 i-arrow-up"></i><br><code style="font-size:10px">arrow-up</code></span>
-      <span><i class="icon icon--24 i-arrow-down"></i><br><code style="font-size:10px">arrow-down</code></span>
-      <span><i class="icon icon--24 i-arrow-left-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-arrow-right-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-arrow-up-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-arrow-down-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-left"></i><br><code style="font-size:10px">.i-arrow-left</code></span>
+      <span><i class="icon icon--24 i-arrow-right"></i><br><code style="font-size:10px">.i-arrow-right</code></span>
+      <span><i class="icon icon--24 i-arrow-up"></i><br><code style="font-size:10px">.i-arrow-up</code></span>
+      <span><i class="icon icon--24 i-arrow-down"></i><br><code style="font-size:10px">.i-arrow-down</code></span>
+      <span><i class="icon icon--24 i-arrow-left-thick"></i><br><code style="font-size:10px">.i-arrow-left-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-right-thick"></i><br><code style="font-size:10px">.i-arrow-right-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-up-thick"></i><br><code style="font-size:10px">.i-arrow-up-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-down-thick"></i><br><code style="font-size:10px">.i-arrow-down-thick</code></span>
     </div>
     <p class="spec">피그마 세트 <code>Icon/Normal/Arrow Left·Right·Up·Down</code> · 축 <code>Thick</code></p>
   </div>
@@ -1369,22 +1371,22 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="card">
     <h3>꺾쇠</h3>
     <div class="iconset">
-      <span><i class="icon icon--24 i-chevron-up"></i><br><code style="font-size:10px">chevron-up</code></span>
-      <span><i class="icon icon--24 i-chevron-down"></i><br><code style="font-size:10px">chevron-down</code></span>
-      <span><i class="icon icon--24 i-chevron-left"></i><br><code style="font-size:10px">chevron-left</code></span>
-      <span><i class="icon icon--24 i-chevron-right"></i><br><code style="font-size:10px">chevron-right</code></span>
-      <span><i class="icon icon--24 i-chevron-up-sm"></i><br><code style="font-size:10px">·-sm</code></span>
-      <span><i class="icon icon--24 i-chevron-down-sm"></i><br><code style="font-size:10px">·-sm</code></span>
-      <span><i class="icon icon--24 i-chevron-left-sm"></i><br><code style="font-size:10px">·-sm</code></span>
-      <span><i class="icon icon--24 i-chevron-right-sm"></i><br><code style="font-size:10px">·-sm</code></span>
-      <span><i class="icon icon--24 i-chevron-up-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-down-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-left-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-right-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-up-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-down-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-left-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
-      <span><i class="icon icon--24 i-chevron-right-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-up"></i><br><code style="font-size:10px">.i-chevron-up</code></span>
+      <span><i class="icon icon--24 i-chevron-down"></i><br><code style="font-size:10px">.i-chevron-down</code></span>
+      <span><i class="icon icon--24 i-chevron-left"></i><br><code style="font-size:10px">.i-chevron-left</code></span>
+      <span><i class="icon icon--24 i-chevron-right"></i><br><code style="font-size:10px">.i-chevron-right</code></span>
+      <span><i class="icon icon--24 i-chevron-up-sm"></i><br><code style="font-size:10px">.i-chevron-up-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-down-sm"></i><br><code style="font-size:10px">.i-chevron-down-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-left-sm"></i><br><code style="font-size:10px">.i-chevron-left-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-right-sm"></i><br><code style="font-size:10px">.i-chevron-right-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-up-thick"></i><br><code style="font-size:10px">.i-chevron-up-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-down-thick"></i><br><code style="font-size:10px">.i-chevron-down-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-left-thick"></i><br><code style="font-size:10px">.i-chevron-left-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-right-thick"></i><br><code style="font-size:10px">.i-chevron-right-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-up-sm-thick"></i><br><code style="font-size:10px">.i-chevron-up-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-down-sm-thick"></i><br><code style="font-size:10px">.i-chevron-down-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-left-sm-thick"></i><br><code style="font-size:10px">.i-chevron-left-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-right-sm-thick"></i><br><code style="font-size:10px">.i-chevron-right-sm-thick</code></span>
     </div>
     <p class="spec">피그마 세트 <code>Icon/Normal/Chevron Up·Down·Left·Right</code> · 축 <code>Thick</code> × <code>Small</code> = 변형 4개씩<br><code>Small=True</code>는 같은 20 틀 안에서 글리프만 작게 그린 판이다 — 글자 옆(언어 선택 등)에 쓴다</p>
   </div>
@@ -1392,25 +1394,25 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="card">
     <h3>조작</h3>
     <div class="iconset">
-      <span><i class="icon icon--24 i-check"></i><br><code style="font-size:10px">check</code></span>
-      <span><i class="icon icon--24 i-check-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-close"></i><br><code style="font-size:10px">close</code></span>
-      <span><i class="icon icon--24 i-close-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-menu"></i><br><code style="font-size:10px">menu</code></span>
-      <span><i class="icon icon--24 i-menu-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-plus"></i><br><code style="font-size:10px">plus</code></span>
-      <span><i class="icon icon--24 i-plus-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-expand"></i><br><code style="font-size:10px">expand</code></span>
-      <span><i class="icon icon--24 i-reset"></i><br><code style="font-size:10px">reset</code></span>
-      <span><i class="icon icon--24 i-share"></i><br><code style="font-size:10px">share</code></span>
-      <span><i class="icon icon--24 i-earth"></i><br><code style="font-size:10px">earth</code></span>
-      <span><i class="icon icon--24 i-blank"></i><br><code style="font-size:10px">blank</code></span>
-      <span><i class="icon icon--24 i-blank-auto"></i><br><code style="font-size:10px">blank-auto</code></span>
-      <span><i class="icon icon--24 i-filter"></i><br><code style="font-size:10px">filter</code></span>
-      <span><i class="icon icon--24 i-filter-active"></i><br><code style="font-size:10px">filter-active</code></span>
-      <span><i class="icon icon--24 i-pause"></i><br><code style="font-size:10px">pause</code></span>
-      <span><i class="icon icon--24 i-play"></i><br><code style="font-size:10px">play</code></span>
-      <span><i class="icon icon--24 i-placeholder"></i><br><code style="font-size:10px">placeholder</code></span>
+      <span><i class="icon icon--24 i-check"></i><br><code style="font-size:10px">.i-check</code></span>
+      <span><i class="icon icon--24 i-check-thick"></i><br><code style="font-size:10px">.i-check-thick</code></span>
+      <span><i class="icon icon--24 i-close"></i><br><code style="font-size:10px">.i-close</code></span>
+      <span><i class="icon icon--24 i-close-thick"></i><br><code style="font-size:10px">.i-close-thick</code></span>
+      <span><i class="icon icon--24 i-menu"></i><br><code style="font-size:10px">.i-menu</code></span>
+      <span><i class="icon icon--24 i-menu-thick"></i><br><code style="font-size:10px">.i-menu-thick</code></span>
+      <span><i class="icon icon--24 i-plus"></i><br><code style="font-size:10px">.i-plus</code></span>
+      <span><i class="icon icon--24 i-plus-thick"></i><br><code style="font-size:10px">.i-plus-thick</code></span>
+      <span><i class="icon icon--24 i-expand"></i><br><code style="font-size:10px">.i-expand</code></span>
+      <span><i class="icon icon--24 i-reset"></i><br><code style="font-size:10px">.i-reset</code></span>
+      <span><i class="icon icon--24 i-share"></i><br><code style="font-size:10px">.i-share</code></span>
+      <span><i class="icon icon--24 i-earth"></i><br><code style="font-size:10px">.i-earth</code></span>
+      <span><i class="icon icon--24 i-blank"></i><br><code style="font-size:10px">.i-blank</code></span>
+      <span><i class="icon icon--24 i-blank-auto"></i><br><code style="font-size:10px">.i-blank-auto</code></span>
+      <span><i class="icon icon--24 i-filter"></i><br><code style="font-size:10px">.i-filter</code></span>
+      <span><i class="icon icon--24 i-filter-active"></i><br><code style="font-size:10px">.i-filter-active</code></span>
+      <span><i class="icon icon--24 i-pause"></i><br><code style="font-size:10px">.i-pause</code></span>
+      <span><i class="icon icon--24 i-play"></i><br><code style="font-size:10px">.i-play</code></span>
+      <span><i class="icon icon--24 i-placeholder"></i><br><code style="font-size:10px">.i-placeholder</code></span>
     </div>
     <p class="aside"><code>plus</code>는 피그마 세트 이름이 <code>Icon/Normal/Arrow Down</code>(38:4115)인데 그려진 모양은 <code>+</code>다<br>
     <code>pause</code>·<code>play</code>는 세트 하나(<code>Icon/Normal/play</code>)의 두 변형이다 — <code>Auto On=False</code>가 막대 두 개, <code>Auto On=True</code>가 삼각형<br>
@@ -1420,22 +1422,22 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="card">
     <h3>내용 아이콘</h3>
     <div class="iconset">
-      <span><i class="icon icon--24 i-book"></i><br><code style="font-size:10px">book</code></span>
-      <span><i class="icon icon--24 i-book-fill"></i><br><code style="font-size:10px">·-fill</code></span>
-      <span><i class="icon icon--24 i-coins"></i><br><code style="font-size:10px">coins</code></span>
-      <span><i class="icon icon--24 i-coins-fill"></i><br><code style="font-size:10px">·-fill</code></span>
-      <span><i class="icon icon--24 i-company"></i><br><code style="font-size:10px">company</code></span>
-      <span><i class="icon icon--24 i-company-fill"></i><br><code style="font-size:10px">·-fill</code></span>
-      <span><i class="icon icon--24 i-graduation"></i><br><code style="font-size:10px">graduation</code></span>
-      <span><i class="icon icon--24 i-graduation-fill"></i><br><code style="font-size:10px">·-fill</code></span>
-      <span><i class="icon icon--24 i-heart"></i><br><code style="font-size:10px">heart</code></span>
-      <span><i class="icon icon--24 i-heart-fill"></i><br><code style="font-size:10px">·-fill</code></span>
-      <span><i class="icon icon--24 i-atom"></i><br><code style="font-size:10px">atom</code></span>
-      <span><i class="icon icon--24 i-server"></i><br><code style="font-size:10px">server</code></span>
-      <span><i class="icon icon--24 i-codeview"></i><br><code style="font-size:10px">codeview</code></span>
-      <span><i class="icon icon--24 i-soft"></i><br><code style="font-size:10px">soft</code></span>
-      <span><i class="icon icon--24 i-chip"></i><br><code style="font-size:10px">chip</code></span>
-      <span><i class="icon icon--24 i-rocket"></i><br><code style="font-size:10px">rocket</code></span>
+      <span><i class="icon icon--24 i-book"></i><br><code style="font-size:10px">.i-book</code></span>
+      <span><i class="icon icon--24 i-book-fill"></i><br><code style="font-size:10px">.i-book-fill</code></span>
+      <span><i class="icon icon--24 i-coins"></i><br><code style="font-size:10px">.i-coins</code></span>
+      <span><i class="icon icon--24 i-coins-fill"></i><br><code style="font-size:10px">.i-coins-fill</code></span>
+      <span><i class="icon icon--24 i-company"></i><br><code style="font-size:10px">.i-company</code></span>
+      <span><i class="icon icon--24 i-company-fill"></i><br><code style="font-size:10px">.i-company-fill</code></span>
+      <span><i class="icon icon--24 i-graduation"></i><br><code style="font-size:10px">.i-graduation</code></span>
+      <span><i class="icon icon--24 i-graduation-fill"></i><br><code style="font-size:10px">.i-graduation-fill</code></span>
+      <span><i class="icon icon--24 i-heart"></i><br><code style="font-size:10px">.i-heart</code></span>
+      <span><i class="icon icon--24 i-heart-fill"></i><br><code style="font-size:10px">.i-heart-fill</code></span>
+      <span><i class="icon icon--24 i-atom"></i><br><code style="font-size:10px">.i-atom</code></span>
+      <span><i class="icon icon--24 i-server"></i><br><code style="font-size:10px">.i-server</code></span>
+      <span><i class="icon icon--24 i-codeview"></i><br><code style="font-size:10px">.i-codeview</code></span>
+      <span><i class="icon icon--24 i-soft"></i><br><code style="font-size:10px">.i-soft</code></span>
+      <span><i class="icon icon--24 i-chip"></i><br><code style="font-size:10px">.i-chip</code></span>
+      <span><i class="icon icon--24 i-rocket"></i><br><code style="font-size:10px">.i-rocket</code></span>
     </div>
     <p class="aside"><code>soft</code>(분자·노드)와 <code>chip</code>(반도체)은 피그마에서 <b>둘 다 이름이 <code>Icon/Normal/Soft</code></b>인 별개 세트다 — 그린 모양대로 갈랐다<br>
     <code>rocket</code>은 세트 이름이 <code>Icon/Normal/Roket</code>, 변형 이름이 <code>Name=reset</code>으로 붙어 있다</p>
@@ -1444,11 +1446,11 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   <div class="card">
     <h3>가이드 문서 전용</h3>
     <div class="iconset">
-      <span><i class="icon icon--24 i-guide-desktop"></i><br><code style="font-size:10px">guide-desktop</code></span>
-      <span><i class="icon icon--24 i-guide-desktop-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-guide-mobile"></i><br><code style="font-size:10px">guide-mobile</code></span>
-      <span><i class="icon icon--24 i-guide-mobile-thick"></i><br><code style="font-size:10px">·-thick</code></span>
-      <span><i class="icon icon--24 i-guide-shift"></i><br><code style="font-size:10px">guide-shift</code></span>
+      <span><i class="icon icon--24 i-guide-desktop"></i><br><code style="font-size:10px">.i-guide-desktop</code></span>
+      <span><i class="icon icon--24 i-guide-desktop-thick"></i><br><code style="font-size:10px">.i-guide-desktop-thick</code></span>
+      <span><i class="icon icon--24 i-guide-mobile"></i><br><code style="font-size:10px">.i-guide-mobile</code></span>
+      <span><i class="icon icon--24 i-guide-mobile-thick"></i><br><code style="font-size:10px">.i-guide-mobile-thick</code></span>
+      <span><i class="icon icon--24 i-guide-shift"></i><br><code style="font-size:10px">.i-guide-shift</code></span>
     </div>
     <p class="spec">화면에 쓰는 아이콘이 아니라 디자인 가이드 안에서 브레이크포인트를 표시하는 그림이다. 실제 페이지에 쓸 일은 없다</p>
   </div>
@@ -1472,8 +1474,8 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
     <h3>로고</h3>
     <div class="row" style="align-items:center">
       <span style="text-align:center"><span class="logo-crissit"></span><br><code style="font-size:10px">.logo-crissit</code></span>
-      <span style="text-align:center"><span class="logo-crissit-symbol"></span><br><code style="font-size:10px">·-symbol</code></span>
-      <span style="text-align:center"><span class="logo-crissit-title"></span><br><code style="font-size:10px">·-title</code></span>
+      <span style="text-align:center"><span class="logo-crissit-symbol"></span><br><code style="font-size:10px">.logo-crissit-symbol</code></span>
+      <span style="text-align:center"><span class="logo-crissit-title"></span><br><code style="font-size:10px">.logo-crissit-title</code></span>
       <span style="text-align:center"><span class="logo-realizers" style="width:120px;height:46px"></span><br><code style="font-size:10px">.logo-realizers</code></span>
     </div>
     <div class="on-dark" style="margin-top:8px;color:var(--label-inverse-normal);display:flex;gap:24px;align-items:center;padding:12px">
@@ -1495,7 +1497,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 <!-- ══════════════ 확인 필요 ══════════════ -->
 <section class="sec" id="gaps">
   <h2>확인 필요</h2>
-  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>13건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
+  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>14건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
   <p class="src">검증 근거 · <code>가이드 / Content / Navigation / Action .f2h.json</code> (2026-09-07 내보냄) · <code>Definition / Icon / Logo .f2h.json</code> (2026-09-08 내보냄) — 색·여백·효과·활자·아이콘·컴포넌트 세트 변형을 전수 대조</p>
 
   <div class="card">
@@ -1522,7 +1524,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   </div>
 
   <div class="card">
-    <h3>이름과 그림이 어긋난 것 — 아이콘</h3>
+    <h3>이름이 어긋난 것 — 아이콘 · 버튼 축</h3>
     <p class="aside">아이콘 라이브러리(<code>Icon · 38:4019</code>)를 전수 대조한 결과다. 여기서는 <b>그려진 모양대로</b> 파일 이름을 붙였고, 피그마 쪽 이름을 고치면 그때 맞추면 된다.</p>
     <table class="tk">
       <tr><th style="width:230px">피그마 세트</th><th>실제 그림</th><th>필요한 결정</th></tr>
@@ -1530,6 +1532,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
       <tr><td><code>Icon/Normal/Soft</code> (327:7314 · 2821:50946)</td><td>분자·노드 / 반도체 칩 — <b>서로 다른 그림</b></td><td>이름이 같은 별개 세트다. 하나를 다른 이름으로 → 여기서는 <code>i-soft</code> · <code>i-chip</code></td></tr>
       <tr><td><code>Icon/Normal/Roket</code> (2821:50840)</td><td>로켓</td><td>세트 이름 철자가 <code>Roket</code>, 변형 이름이 <code>Name=reset</code>(다른 아이콘 이름)으로 붙어 있다 → 여기서는 <code>i-rocket</code></td></tr>
       <tr><td><code>Icon/Normal/play</code> (38:4122)</td><td><code>Auto On=False</code> 막대 두 개(일시정지) · <code>Auto On=True</code> 삼각형(재생)</td><td>축 이름이 방향과 반대로 읽힌다 — 자동 전환이 켜져 있으면(<code>Auto On=True</code>) 눌러서 멈추는 것이니 <b>일시정지</b>가 보여야 자연스럽다. 축을 뒤집을지 확인 필요</td></tr>
+      <tr><td><code>Assitive</code> 철자가 세트마다 다르다</td><td>버튼 축 값 하나가 두 철자로 갈려 있다</td><td><code>Button/Solid</code>(15) · <code>Button/Text</code>(11) · <code>Button/Icon/Solid</code>(16) 은 <b><code>Assitive</code></b>(s 하나 빠짐), <code>Button/Outlined</code>(12) · <code>Info_btn</code>(1) 은 <b><code>Assistive</code></b> 다. 코드는 맞는 철자로 통일했다(<code>.btn--assistive</code>) — 피그마 쪽도 맞춰 주시면 좋겠다</td></tr>
       <tr><td><code>Icon/Normal/Heart</code> (2821:50965)</td><td>빈 하트 / 채운 하트</td><td>축이 둘인데(<code>Name</code> · <code>Fill</code>) 항상 같이 움직인다(<code>heart+False</code> / <code>heartFill+True</code>). <code>Fill</code> 하나면 충분하다</td></tr>
     </table>
   </div>
