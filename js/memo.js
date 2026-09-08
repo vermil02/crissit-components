@@ -99,6 +99,31 @@
   function loadSrv() {
     try { srv = JSON.parse(localStorage.getItem(SRV) || "null"); } catch (e) { srv = null; }
     if (srv && (!srv.url || !srv.key)) srv = null;
+    fromLink();
+  }
+
+  /* 링크에 담아 온 설정 — `?memo=<주소>|<열쇠>`
+     디자이너에게 주소와 열쇠를 따로 설명하지 않아도 되게 하려는 것이다.
+     링크 하나만 보내면 그 사람 브라우저에 저장되고, 다음부터는 그냥 열면 된다.
+
+     ▸ 읽은 뒤 주소창에서 `?memo=…` 를 **바로 지운다** — 화면 공유나
+       북마크로 열쇠가 흘러가지 않게 하려는 것이다(주소는 이미 브라우저에
+       저장됐으니 지워도 연결은 유지된다).
+     ▸ 저장소에는 여전히 넣지 않는다. 링크를 받은 사람만 쓴다. */
+  function fromLink() {
+    var m = /[?&]memo=([^&#]+)/.exec(location.search);
+    if (!m) return;
+    var parts = decodeURIComponent(m[1]).split("|");
+    var url = (parts[0] || "").trim(), key = (parts[1] || "").trim();
+    if (/^https:\/\//.test(url) && key) saveSrv({ url: url, key: key });
+
+    // 주소창 청소 — 뒤로가기 기록도 남기지 않는다
+    try {
+      var clean = location.pathname +
+        location.search.replace(/([?&])memo=[^&#]*&?/, "$1").replace(/[?&]$/, "") +
+        location.hash;
+      history.replaceState(null, "", clean);
+    } catch (e) { /* 오래된 브라우저 */ }
   }
   function saveSrv(v) {
     srv = v;
@@ -307,9 +332,18 @@
       '<div class="memo-btns">' +
       '<button type="button" class="memo-srv-save">연결</button>' +
       '<button type="button" class="memo-cancel">취소</button>' +
+      (srv ? '<button type="button" class="memo-srv-link">보낼 링크 복사</button>' : "") +
       (srv ? '<button type="button" class="memo-srv-off">끊기</button>' : "") +
       "</div>";
     editing = null;
+  }
+
+  /* 주소·열쇠가 담긴 링크를 만들어 클립보드에 넣는다.
+     이 링크를 받은 사람은 열기만 하면 연결이 끝난다 */
+  function shareLink() {
+    if (!srv) return;
+    var base = location.origin + location.pathname;
+    return base + "?memo=" + encodeURIComponent(srv.url + "|" + srv.key);
   }
 
   function exportJson() {
@@ -437,6 +471,28 @@
         if (!/^https:\/\//.test(u) || !k) { alert("주소는 https:// 로 시작해야 하고, 열쇠도 있어야 합니다."); return; }
         saveSrv({ url: u, key: k });
         pull(function () { renderCount(); renderPins(); openList(); });
+        return;
+      }
+      if (t.closest(".memo-srv-link")) {
+        var link = shareLink();
+        var done = function (ok) {
+          srvState = ok ? "링크를 복사했습니다 — 이 링크를 받은 사람은 열기만 하면 연결됩니다"
+                        : "복사가 막혔습니다. 아래 칸의 링크를 직접 복사해 주세요";
+          renderFootState();
+        };
+        try {
+          navigator.clipboard.writeText(link).then(function () { done(true); }, function () { done(false); });
+        } catch (e) { done(false); }
+        // 복사가 막히는 브라우저를 위해 화면에도 띄워 준다
+        var box = col.querySelector(".memo-link");
+        if (!box) {
+          box = document.createElement("input");
+          box.className = "memo-link";
+          box.readOnly = true;
+          col.querySelector(".memo-body").appendChild(box);
+        }
+        box.value = link;
+        box.select();
         return;
       }
       if (t.closest(".memo-srv-off")) {

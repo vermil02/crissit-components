@@ -171,3 +171,11 @@ html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
   margin:8px 0 0;font:var(--label-3-medium);color:var(--label-alternative);
 }
 .memo-state.is-bad{color:var(--memo-accent)}
+
+/* 보낼 링크 — 복사가 막히는 브라우저를 위해 화면에도 띄운다 */
+.memo-link{
+  display:block;width:100%;box-sizing:border-box;margin-top:10px;
+  border:1px solid var(--memo-accent);border-radius:var(--radius-xsmall);
+  padding:7px 9px;background:var(--bg-normal);
+  font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-normal);
+}
