@@ -6,6 +6,8 @@
      · 남은 시간은 일시정지 버튼 테두리가 상단 중앙에서 시계방향으로
        **연속으로** 차오르며 표시된다 — 한 바퀴가 8초
      · 일시정지를 누르면 차오르던 테두리가 그 자리에서 멈춘다
+     · **마우스를 올리면 그 동안 멈추고, 치우면 이어서 돈다**
+       (2026-09-08 디자이너 요청. 읽는 도중에 넘어가 버리는 것을 막는다)
      · 기사가 1건뿐이면 이전·다음 버튼을 노출하지 않는다
 
    차오르는 모양은 css/boardlist.css 의 `.bl-prog` 가 CSS 애니메이션으로
@@ -57,6 +59,7 @@
 
     this.index = 0;
     this.paused = false;    // 사용자가 일시정지를 눌렀는가
+    this.hovered = false;   // 마우스가 카드 위에 있는가
     this.visible = true;    // 화면 안에 있는가
     this.timer = null;
     this.remaining = this.interval; // 이번 장에 남은 시간(ms)
@@ -89,7 +92,7 @@
 
   /* 지금 시계가 돌아야 하는 상태인가 */
   Rotator.prototype.shouldRun = function () {
-    return !this.single && !this.paused && this.visible &&
+    return !this.single && !this.paused && !this.hovered && this.visible &&
            !document.hidden && !reduceMotion.matches;
   };
 
@@ -107,6 +110,17 @@
       if (t.hasAttribute("data-bl-prev")) self.go(self.index - 1);
       else if (t.hasAttribute("data-bl-next")) self.go(self.index + 1);
       else { self.paused = !self.paused; self.sync(); }
+    });
+
+    /* 마우스를 올리면 멈춘다 — 읽는 도중에 넘어가 버리면 곤란하다.
+       치우면 남은 시간부터 이어서 돈다(되감지 않는다).
+       일시정지 버튼을 누른 것과는 별개다 — 버튼으로 멈춘 것은 마우스를
+       치워도 계속 멈춰 있어야 한다. 그래서 상태를 따로 둔다 */
+    this.root.addEventListener("mouseenter", function () {
+      self.hovered = true; self.sync();
+    });
+    this.root.addEventListener("mouseleave", function () {
+      self.hovered = false; self.sync();
     });
 
     // 화면 밖이면 센다고 배터리 쓸 이유가 없다
@@ -200,6 +214,8 @@
       // is-running = 애니메이션을 건다 / is-clock-paused = 그 자리에 세운다
       t.classList.toggle("is-running", !this.single && !reduceMotion.matches);
       t.classList.toggle("is-clock-paused", !run);
+      // 아이콘은 **버튼으로 멈췄을 때만** 바뀐다. 마우스를 올려 잠깐 선 것은
+      // 사용자가 멈춘 게 아니라서 ▶ 로 바꾸면 오해를 준다
       t.setAttribute("aria-pressed", this.paused ? "true" : "false");
       t.setAttribute("aria-label", this.paused ? "자동 전환 재생" : "자동 전환 일시정지");
 

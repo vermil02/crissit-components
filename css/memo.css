@@ -189,3 +189,20 @@ html:not(.insp-show-main) .insp-col--memo{border-top:0;max-height:none}
 }
 .memo-undo:hover{border-color:var(--memo-accent);color:var(--memo-accent)}
 .memo-trash,.memo-trash-empty{color:var(--label-alternative)!important}
+
+/* ---------- 처리된 메모 · 답글 ----------
+   고쳤다고 표시된 메모는 핀·번호를 죽이고 ✓ 로 바꾼다.
+   지우지 않는 이유 — 무엇을 요청했고 어떻게 처리했는지가 같이 남아야
+   나중에 "이거 왜 이렇게 됐지" 를 되짚을 수 있다 */
+.memo-pin.is-done{background:var(--label-assistive);box-shadow:0 1px 3px rgb(0 0 0 / .18)}
+.memo-no.is-done{background:var(--label-assistive)}
+.memo-item.is-done > div > b{color:var(--label-alternative);text-decoration:line-through}
+.memo-reply{
+  display:block;margin-top:5px;padding:6px 9px;
+  border-left:2px solid var(--label-assistive);
+  background:var(--bg-normal);border-radius:0 var(--radius-xsmall) var(--radius-xsmall) 0;
+  font:var(--label-3-medium);color:var(--label-normal);
+  word-break:break-word;
+}
+.memo-ro.is-reply{border-left:2px solid var(--label-assistive)}
+.memo-ro.is-reply b{font:var(--label-3-bold);color:var(--label-alternative)}

@@ -61,7 +61,6 @@
   --semantic-label-normal-disable:var(--neutral-300);      /* #c9ccd0 */
 
   /* ── Label / Inverse — 어두운 배경 위 글자 ── */
-  --semantic-label-inverse-strong:var(--neutral-0);        /* #ffffff */
   --semantic-label-inverse-normal:var(--neutral-50);       /* #fafafa */
   --semantic-label-inverse-neutral:var(--neutral-100);     /* #f5f6f7 */
   --semantic-label-inverse-alternative:var(--neutral-200); /* #e4e6e8 */
@@ -88,8 +87,6 @@
           Semantic/Line/Normal                    → #e4e6e8  (= Line/Normal/Normal)
           Semantic/Background/Normal/Alternative  → #fafafa
      배지 면도 #e4e6e8 하나로 통일했다 — chip.css 의 `.badge` 주석 참고 */
-  --semantic-label-normal:var(--neutral-900);   /* #151617 — 2026-09-07 확정 */
-  --semantic-line-normal:var(--neutral-200);    /* #e4e6e8 — 2026-09-07 확정 */
 
   /* ══════════════ 짧은 별칭 ══════════════
      컴포넌트 CSS 가 쓰는 이름. 위 의미 토큰을 가리킬 뿐이라
@@ -102,7 +99,6 @@
   --label-assistive:var(--semantic-label-normal-assistive);
   --label-disable:var(--semantic-label-normal-disable);
 
-  --label-inverse-strong:var(--semantic-label-inverse-strong);
   --label-inverse-normal:var(--semantic-label-inverse-normal);
   --label-inverse-neutral:var(--semantic-label-inverse-neutral);
   --label-inverse-alternative:var(--semantic-label-inverse-alternative);
@@ -163,7 +159,6 @@
   /* ══════════════ 라운드 ══════════════
      피그마 변수에 실제로 바인딩된 값 — 0 · 2 · 4 · 8 · 12 · 16 · 24 · 9999 */
   --radius-none:0;
-  --radius-2:2px;
   --radius-xsmall:4px;   /* Round=Normal 의 실제 값 */
   --radius-small:8px;
   --radius-medium:12px;
@@ -205,7 +200,6 @@
   --body-2-normal-medium:   500 16px/1.5  var(--font-sans);
   --body-2-normal-bold:     700 16px/1.5  var(--font-sans);
   --body-2-reading:         400 16px/1.75 var(--font-sans);
-  --body-3-normal-regular:  400 14px/1.55 var(--font-sans);
 
   /* 라벨 — 크기 고정. Medium·Bold 두 굵기 */
   --label-1-medium: 500 16px/1.5  var(--font-sans);   /* Button lg */

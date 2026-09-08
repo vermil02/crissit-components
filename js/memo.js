@@ -38,6 +38,7 @@
        "saved": "2026-09-08T…",
        "notes": [
          { "id": "…", "at": "…", "text": "여기 여백이 좁아요",
+           "done": true, "reply": "12 → 16 으로 고쳤습니다",
            "sel": "#btn-solid > div:nth-of-type(1) > …",
            "label": "button.btn.btn--solid.btn--primary",
            "section": "Button / Solid",
@@ -239,7 +240,7 @@
       var r = el.getBoundingClientRect();
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "memo-pin" + (isMine(n) ? "" : " is-shared");
+      b.className = "memo-pin" + (isMine(n) ? "" : " is-shared") + (n.done ? " is-done" : "");
       b.textContent = i + 1;
       b.title = n.text.slice(0, 60);
       b.style.left = (r.left + scrollX + r.width - 9) + "px";
@@ -267,6 +268,7 @@
       bodyEl.innerHTML =
         '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
         '<p class="memo-ro"><span class="memo-tag">공유</span> ' + esc(note.text) + "</p>" +
+        (note.reply ? '<p class="memo-ro is-reply"><b>' + (note.done ? "처리했습니다" : "답글") + "</b><br>" + esc(note.reply) + "</p>" : "") +
         '<p class="memo-hint">저장소의 <code>memos.json</code> 에 들어 있는 메모라 여기서는 고칠 수 없습니다. 내용을 바꾸려면 그 파일을 고쳐 커밋하세요.</p>';
       footEl.innerHTML = '<div class="memo-btns"><button type="button" class="memo-cancel">목록으로</button></div>';
       return;
@@ -323,9 +325,11 @@
     var rows = list.length
       ? list.map(function (n, i) {
           var mine = isMine(n);
-          return '<li class="memo-item" data-id="' + n.id + '">' +
-            '<span class="memo-no' + (mine ? "" : " is-shared") + '">' + (i + 1) + "</span>" +
+          return '<li class="memo-item' + (n.done ? " is-done" : "") + '" data-id="' + n.id + '">' +
+            '<span class="memo-no' + (mine ? "" : " is-shared") + (n.done ? " is-done" : "") + '">' +
+            (n.done ? "✓" : (i + 1)) + "</span>" +
             "<div><b>" + esc(n.text) + "</b>" +
+            (n.reply ? '<span class="memo-reply">' + esc(n.reply) + "</span>" : "") +
             '<span class="memo-meta">' + (mine ? "" : '<span class="memo-tag">공유</span> ') +
             esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
