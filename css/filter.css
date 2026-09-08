@@ -1,0 +1,57 @@
+/* ============================================================
+   Filter bar · Empty data — 피그마 News_main (1010:17244)
+   보도자료 목록 위의 필터 줄과, 결과가 없을 때의 빈 화면.
+
+   실측
+     필터 줄  좌우 벌림(space-between) · 왼쪽 여백 20
+       좌: 칩 2개(연도·월), 간격 32 — Chip/Filter lg
+       우: [초기화] Button/Text — reset 아이콘 18 + 글자 Label2/Medium 14
+           #151617 · 간격 6 · 위아래 10
+     필터 줄 ↔ 목록  간격 40
+     Empty data  위 80 · 가운데 정렬 · Label1/Medium 16 · #7c8288
+                 문구 "검색 결과가 없습니다."
+
+   정책 (미디어 기능 정의서 §2)
+     · 처음 상태 — [전체 연도] 활성 / [전체 월] 비활성
+       (연도를 고르지 않으면 월을 고를 수 없다)
+     · 연도를 고르면 칩 라벨이 "2026년"처럼 바뀌고,
+       [전체 월]이 활성화되고 [초기화]가 활성화된다
+     · [초기화]를 누르면 연도·월이 기본값으로 돌아간다
+     · 필터 결과가 없으면 Empty data 를 목록 자리에 넣는다
+     · 목록은 한 번에 최대 10개, 넘으면 페이지네이션 (§3)
+
+   마크업
+     <div class="filter-bar">
+       <div class="filter-bar__chips">…칩 2개…</div>
+       <button class="btn btn--text btn--md btn--assistive">
+         <i class="icon icon--18 i-reset"></i><span>초기화</span>
+       </button>
+     </div>
+   ============================================================ */
+
+.filter-bar{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:24px;padding-left:var(--container-pad);
+}
+.filter-bar__chips{display:flex;align-items:center;gap:32px}
+
+/* [초기화]는 Button/Text md 그대로다. 다만 이 버튼은 hover 에
+   굵어지지 않는다 — 아이콘 옆 글자가 밀리면 줄이 흔들린다 */
+.filter-bar .btn--text:hover{font-weight:500}
+
+/* 필터 줄 아래 목록까지 간격 40 */
+.filter-bar + *{margin-top:40px}
+
+/* ---------- Empty data ---------- */
+.empty{
+  display:flex;align-items:center;justify-content:center;
+  padding-top:80px;width:100%;
+  font:var(--label-1-medium);color:var(--label-alternative);
+  text-align:center;
+}
+
+@media (max-width:767px){
+  .filter-bar{padding-left:0;flex-wrap:wrap;gap:16px}
+  .filter-bar__chips{gap:20px}
+  .empty{padding-top:48px}
+}

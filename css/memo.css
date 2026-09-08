@@ -1,0 +1,107 @@
+/* ============================================================
+   메모 — 카탈로그 전용 문서 UI (js/memo.js 와 짝)
+   컴포넌트가 아니다. 실제 사이트에는 들어가지 않는다.
+   ============================================================ */
+
+/* ---------- 핀 ----------
+   요소의 오른쪽 위 모서리에 걸린다. 검사 모드를 꺼도 보인다 —
+   "여기 얘기 중" 이 계속 보여야 하기 때문이다 */
+.memo-layer{position:absolute;top:0;left:0;width:100%;height:0;z-index:9995}
+.memo-pin{
+  position:absolute;width:20px;height:20px;padding:0;
+  border:2px solid #fff;border-radius:9999px;
+  background:#e5484d;color:#fff;cursor:pointer;
+  font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  box-shadow:0 2px 6px rgb(0 0 0 / .25);
+}
+.memo-pin:hover{transform:scale(1.15)}
+.memo-pin.is-done{background:var(--label-assistive)}
+
+/* ---------- 패널 머리의 개수 단추 ---------- */
+.memo-count{
+  flex:none;border:1px solid var(--line-normal);border-radius:9999px;
+  padding:3px 10px;background:none;cursor:pointer;
+  font:var(--label-3-bold);color:var(--label-alternative);
+}
+.memo-count:hover{border-color:var(--label-alternative);color:var(--label-normal)}
+.memo-count.is-some{border-color:#e5484d;color:#e5484d}
+
+/* 고정된 요소가 있을 때만 나타나는 「＋ 메모」 */
+.memo-add{
+  margin-left:8px;border:0;border-radius:9999px;padding:3px 10px;
+  background:#e5484d;color:#fff;cursor:pointer;
+  font:var(--label-3-bold);
+}
+.memo-add:hover{filter:brightness(1.08)}
+
+/* ---------- 아래쪽 창 — 토큰 정보창과 같은 자리를 쓴다 ---------- */
+.memo-pane{
+  flex:0 0 auto;max-height:56%;overflow:auto;
+  border-top:2px solid #e5484d;background:var(--bg-alternative);
+}
+.memo-pane__head{
+  position:sticky;top:0;z-index:1;
+  display:flex;align-items:center;gap:8px;
+  padding:11px 18px;background:var(--bg-alternative);
+  border-bottom:1px solid var(--line-normal);
+}
+.memo-pane__head b{flex:1 1 auto;font:var(--label-2-bold);color:var(--label-normal)}
+.memo-x{
+  flex:none;border:0;background:none;padding:2px 4px;cursor:pointer;
+  font:12px/1 var(--font-sans);color:var(--label-assistive);
+}
+.memo-x:hover{color:var(--label-normal)}
+.memo-pane__body{padding:14px 18px 18px}
+
+.memo-target{
+  margin:0 0 8px;word-break:break-all;
+  font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--insp-accent);
+}
+.memo-text{
+  width:100%;box-sizing:border-box;resize:vertical;
+  border:1px solid var(--line-normal);border-radius:var(--radius-xsmall);
+  padding:9px 10px;font:var(--label-2-medium);color:var(--label-normal);
+  background:var(--bg-normal);
+}
+.memo-text:focus{outline:2px solid #e5484d;outline-offset:-1px;border-color:transparent}
+
+.memo-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.memo-btns button,.memo-import{
+  border:1px solid var(--line-normal);border-radius:var(--radius-xsmall);
+  padding:6px 12px;background:var(--bg-normal);cursor:pointer;
+  font:var(--label-3-bold);color:var(--label-normal);
+}
+.memo-btns button:hover,.memo-import:hover{border-color:var(--label-alternative)}
+.memo-save{background:#e5484d!important;border-color:#e5484d!important;color:#fff!important}
+.memo-del,.memo-clear{color:#e5484d!important}
+
+/* ---------- 목록 ---------- */
+.memo-list{list-style:none;margin:0 0 4px;padding:0}
+.memo-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--line-normal);
+}
+.memo-item > div{flex:1 1 auto;min-width:0}
+.memo-item b{
+  display:block;font:var(--label-2-medium);color:var(--label-normal);
+  word-break:break-word;
+}
+.memo-no{
+  flex:none;width:20px;height:20px;border-radius:9999px;
+  background:#e5484d;color:#fff;text-align:center;
+  font:700 10px/20px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.memo-meta{
+  display:block;margin-top:3px;word-break:break-all;
+  font:500 10px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--label-assistive);
+}
+.memo-go{
+  flex:none;border:1px solid var(--line-normal);border-radius:9999px;
+  padding:3px 9px;background:none;cursor:pointer;
+  font:var(--label-3-medium);color:var(--label-alternative);
+}
+.memo-go:hover{border-color:var(--insp-accent);color:var(--insp-accent)}
+.memo-empty{font:var(--label-2-medium);color:var(--label-assistive);padding:8px 0 12px}
+.memo-hint{margin:10px 0 0;font:var(--label-3-medium);color:var(--label-assistive)}

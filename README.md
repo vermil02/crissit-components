@@ -1,0 +1,276 @@
+# 컴포넌트 — 폴더 안내
+
+피그마 「자사 홈페이지 v2」의 **컴포넌트 페이지**와 **가이드 문서**를 바닐라 HTML/CSS로 미리
+옮겨 둔 것이다. 2026-09-07 기준. 실제 개발 스택이 정해지기 전에 준비해 두는 것이므로, 개발사가 React를 쓰든
+퍼블리싱을 하든 **토큰과 치수는 그대로 옮겨 쓸 수 있게** 만들었다.
+
+## 처음 보는 사람은
+
+**`카탈로그.html`을 브라우저로 연다.** 컴포넌트 21종의 모든 변형이 한 페이지에 다 있고,
+각 항목 아래 실측값(여백·글자·색)이 적혀 있다. 여기만 봐도 현황이 다 나온다.
+마지막 절에 **확인 필요 4건**과 **덤프로 바로잡은 7건**이 표로 정리되어 있다.
+
+> ⚠️ 파일을 그냥 더블클릭하면 열리지만, 크롬 확장 등 일부 환경에서는 `file://`이 막힌다.
+> 그럴 때는 이 폴더에서 아래 한 줄을 실행하고 `http://127.0.0.1:8765/카탈로그.html`을 연다.
+> `python3 -m http.server 8765 --bind 127.0.0.1`
+
+## 출처
+
+| 항목 | 값 |
+|---|---|
+| 피그마 파일 | 자사 홈페이지 v2 (`kBysZq3IEMqD884Ala7PHD`) |
+| 페이지 | 컴포넌트 (`1008:4618`) |
+| 가이드 | 가이드 (`1010:24317`) — `[Media_Web_Desktop]` · `[GNB_Reponsible]` 기능 및 정책 정의서 |
+| 실측 방식 | ① Figma MCP `get_variable_defs` · `get_design_context` → ② 로컬 f2h 덤프로 전수 재검증 |
+| 재검증 근거 | `~/Downloads/{가이드,Content,Navigation,Action}.f2h.json` — 피그마 REST 문서 전체(색·여백·효과·변형) |
+| Navigation 재내보냄 | 2026-09-07 08:16 UTC — **섹션이 재구성되어 노드 ID가 `1008:` → `1019:` 로 바뀌었다** |
+| 실측일 | 2026-09-07 |
+
+## 파일 구성
+
+```
+컴포넌트/
+  카탈로그.html        ← 정본. 전 변형을 눈으로 보는 페이지
+  css/
+    tokens.css        ← 색·타이포·라운드·레이아웃 변수. 여기가 단일 출처
+    base.css          ← 리셋 · 타이포 유틸 · 아이콘 슬롯 · 로고 · hover 오버레이
+    icons.css         ← 아이콘 이름 → 파일 매핑
+    button.css        ← Solid · Outlined · Text
+    icon-button.css   ← Normal · Outlined · Solid · Background
+    chip.css          ← Filter · Filter/Active · Content Badge
+    dropdown.css      ← Chip 을 펼쳤을 때 뜨는 목록 패널
+    filter.css        ← 필터 줄(연도·월 + 초기화) · Empty data
+    heading.css       ← 섹션·페이지 제목 블록
+    drawer.css        ← 모바일·태블릿 GNB 드로어
+    pagination.css
+    gnb.css           ← 바 · 언어선택 · 메가메뉴(LNB) · 모바일 햄버거
+    footer.css        ← 푸터 · CTA 블록(Section_Contact)
+    boardlist.css     ← Main · Common(가로·세로) · Recommand
+  js/
+    boardlist-main.js ← 대표 기사 자동 전환 + Progress 동작 (유일한 JS)
+  assets/             ← 피그마에서 내린 SVG (아이콘 64 · 로고 5). 라이브러리 전체를 받아 뒀다
+    inspector.css     ← 카탈로그에 붙은 검사기. 컴포넌트가 아니다
+    inspector.js      ← 같음
+```
+
+CSS 는 전부 모양만 담당한다. **동작이 있는 컴포넌트는 대표 기사 하나뿐**이고
+그 JS 도 시각을 세는 일만 한다 — 나머지(드로어 여닫기, 드롭다운 펼침, 칩 필터
+연동)는 상태 클래스(`.is-open` 등)만 정의해 뒀고 여닫는 코드는 개발 몫이다.
+
+## 컴포넌트 목록 — 피그마 노드와 변형 수
+
+| 그룹 | 컴포넌트 | 피그마 노드 | 변형 | CSS |
+|---|---|---|---|---|
+| Action | Button / Solid | `1008:5233` | 30 | `button.css` |
+| Action | Button / Outlined | `1008:5587` | 36 | `button.css` |
+| Action | Button / Text | `1008:5957` | 18 | `button.css` |
+| Action | Icon Button / Normal | `1008:6123` | 6 | `icon-button.css` |
+| Action | Icon Button / Outlined | `1008:6189` | 12 | `icon-button.css` |
+| Action | Icon Button / Solid | `1008:6308` | 32 | `icon-button.css` |
+| Action | Icon Button / Background | `1008:6479` | 24 | `icon-button.css` |
+| Action | Chip / Filter | `1008:6628` | 9 | `chip.css` |
+| Action | Chip / Filter / Active | `1008:6674` | 4 | `chip.css` |
+| Action | Dropdown list | `1010:17342` | — | `dropdown.css` |
+| Action | Filter bar · Empty data | `1010:17244` | — | `filter.css` |
+| 기반 | Section Heading | `1010:15042` | — | `heading.css` |
+| Navigation | GNB | `1019:15724` | 28 | `gnb.css` |
+| Navigation | GNB / LNB (메가메뉴) | `1019:15506` | 2 | `gnb.css` |
+| Navigation | Navigation / LNB / List | `1019:16302` | 10 | `gnb.css` |
+| Navigation | GNB 드로어 (모바일·태블릿) | `1010:18163`~`18175` | — | `drawer.css` |
+| Navigation | Footer | `1019:16386` | 8 | `footer.css` |
+| Navigation | Section_Contact (푸터 CTA) | `1019:15595` | 6 | `footer.css` |
+| Navigation | Pagination | `1019:16728` | 2 | `pagination.css` |
+| Navigation | Icon Button / Num | `1019:16745` | 4 | `pagination.css` |
+| Content | Board list / Main | `1008:7744` | 6 | `boardlist.css` |
+| Content | Board list / Common | `1008:7915` | 8 | `boardlist.css` |
+| Content | Board list / Recommand | `1008:8040` | 2 | `boardlist.css` |
+
+## 값을 어떻게 확정했나
+
+MCP 로 한 번 읽고, 피그마 REST 덤프(f2h)로 전수 대조해 확정했다.
+무엇이 언제 왜 바뀌었는지는 `_변경기록.md` 에 있다 — 개발에 넘길 때 읽을 필요는 없다.
+
+## 가이드 문서에서 가져온 정책
+
+컴포넌트 페이지에는 **모양**만 있고, 언제 무엇이 보이는지는 가이드 문서에 있다.
+아래는 CSS 주석과 카탈로그에 함께 적어 둔 것들이다 — 개발이 이걸 몰라서 다시 물어보는 일을
+줄이는 게 목적이다.
+
+**미디어(보도자료) 페이지** — `[Media_Web_Desktop] 기능 및 정책 정의서`
+
+- 대표 기사(Board list / Main)는 **최대 5건**, **8초마다** 다음 건으로 자동 전환된다
+- 남은 시간은 일시정지 버튼의 **테두리가 상단 중앙에서 시계방향으로 연속으로
+  차오르며** 표시된다 — 한 바퀴가 8초다 (`.bl-prog`). 피그마 목업이 4장인 것은
+  피그마가 움직임을 못 그려서 쓴 표현 방식이지 컴포넌트의 상태가 아니라,
+  코드에는 프레임을 남기지 않았다 — 각도가 그냥 연속으로 돈다
+- 일시정지를 누르면 아이콘이 `i-pause` → `i-play` 로 바뀐다
+- 이 동작은 `js/boardlist-main.js` 가 실제로 돌린다. 카드를 `[data-bl-rotator]` 로
+  감싸고 각 장에 `data-bl-slide` 를 붙이면 끝이고, 버튼은 `data-bl-prev` /
+  `data-bl-next` / `data-bl-toggle` 로 표시한다. 넘기는 방식을 직접 짜고 싶으면
+  `data-bl-slide` 를 빼면 `bl:next` 이벤트만 올라온다
+- 대표 기사 제목은 **2줄**, 요약은 **1줄**에서 자른다
+- 대표 기사가 **1건뿐이면 이전·다음 버튼을 감춘다** → `.bl-main--single`
+- 목록(Board list / Common)은 **한 번에 10건**, 넘으면 페이지네이션이 생긴다
+- 추천 소식(Recommand)은 **최대 5건**
+- 연도·월 필터는 서로 묶여 있다 — 연도를 고르지 않으면 월을 고를 수 없고,
+  연도를 고르면 월과 [초기화]가 함께 활성화된다
+- **올해는 현재 달까지만** 고를 수 있다 (9월이면 1~9월). 지난해는 12개월 전부
+- 드롭다운 목록이 **5개를 넘으면 스크롤바**가 생긴다
+- 필터 결과가 없으면 목록 자리에 `검색 결과가 없습니다.`(Empty data)가 들어간다
+
+**GNB 반응형** — `[GNB_Reponsible] 기능 및 정책 정의서`
+
+- 데스크톱은 바 아래로 펼쳐지는 **메가메뉴**(`gnb.css` 의 `.gnb__lnb`)
+- 태블릿·모바일은 **드로어**(`drawer.css`) — 다른 컴포넌트다
+  - 모바일(sm) 전체 폭, 스크림 없음 / 태블릿(md) 우측 384px + 스크림
+  - 1차 메뉴가 아코디언으로 열리고, 하위 항목은 **한 줄에 2칸**
+  - 외부 링크는 라벨 뒤에 `blank` 아이콘(↗)이 붙는다
+  - 하단에 언어 선택과 [문의하기]가 고정된다
+- 스크롤한 상태(`Scroll=True`)에서는 바 아래에 1px 선이 생긴다
+
+## 옮기면서 정한 것 — 왜 그렇게 했나
+
+몇 가지는 피그마 구조를 CSS로 1:1로 옮기면 깨진다. 그래서 결과가 같아지는 다른 방법을 썼다.
+개발에 넘길 때 이 여덟 개만 설명하면 된다.
+
+**1. hover는 색이 아니라 반투명 막이다.**
+피그마의 `Element/Interaction` 레이어를 `::after` 오버레이로 옮겼다. 밝은 면에는 검정 8%,
+어두운 면에는 흰색 8%(`.has-overlay--light`). 색을 변형별로 따로 정의하지 않아도 되고,
+버튼 색이 바뀌어도 hover 규칙은 그대로다.
+
+**2. 테두리는 `border`가 아니라 `inset box-shadow`다.**
+피그마 선은 면 안쪽에 그려져 크기를 늘리지 않는다. CSS `border`를 쓰면 위아래로 2px 커져
+lg 버튼이 48이 아니라 50이 된다. 버린 대안 — `box-sizing`으로 맞추기는 여백까지 어긋난다.
+
+**3. `Round=Brand`는 라운드가 아니라 `clip-path`다.**
+좌상·우하를 6px 사선으로 자른 모양이다(피그마 path `M126 42L120 48H0V6L6 0H126V42Z`).
+피그마는 이걸 SVG 배경 이미지로 내보내지만, 그러면 크기마다 파일이 따로 필요하다.
+`clip-path: polygon(...)`으로 하면 크기와 무관하게 한 규칙으로 끝난다.
+
+**4. 아이콘은 `<img>`가 아니라 CSS `mask`다.**
+`background:currentColor` + `mask:url(...)` 조합이라 **아이콘 색이 글자색을 따라간다.**
+밝은 배경·어두운 배경·비활성에 같은 파일 하나를 쓴다. 그래서 `assets/*.svg` 안의 `fill`
+값은 의미가 없다.
+아이콘 이름은 `css/icons.css`의 `.i-*` 클래스로 부른다 — HTML에 `style="--icon:url(...)"`을
+직접 쓰면 상대 경로가 HTML 기준이 아니라 그 변수를 쓴 CSS 파일 기준으로 풀려 404가 난다.
+
+**5. 아이콘은 시안이 아니라 라이브러리에서 받는다.**
+시안에서 아이콘 슬롯을 비워 둔 채 내보내면 `Icon/Normal/-`(점선 사각형)이 그대로 받아진다.
+그래서 아이콘 라이브러리(`Crissit_Main` Icon 페이지 `38:4019`)를 통째로 받아
+`assets/` 에 넣고 `css/icons.css` 에 `.i-*` 64개를 만들어 뒀다 — 이제 시안에서 받을 일이 없다.
+
+이름은 **그려진 모양대로** 붙였다. 피그마 세트 이름과 그림이 어긋난 곳이 셋 있기 때문이다
+(`Arrow Down` 인데 `+`, `Soft` 가 두 종류, `Roket` 의 변형 이름이 `reset`).
+`-thick` = `Thick=True` · `-sm` = `Small=True` · `-fill` = `Fill=True` 이고,
+기본 이름이 각 축의 False 쪽이다.
+
+**파일은 전부 24×24 틀로 맞춘다.** 피그마 아이콘 컴포넌트가 전부 24×24 이고 그 안의
+그림 크기는 제각각이다(`blank` 12×12 · `close` 16×16 · `menu` 24×24). 그림 덩어리만
+잘라 내면 `mask ... contain` 이 그걸 상자에 꽉 채워서 아이콘마다 크기가 어긋난다.
+
+**6. `[hidden]` 을 `!important` 로 못박았다.**
+브라우저 기본 규칙은 `[hidden]{display:none}` 인데 컴포넌트가 `display:flex` 를 주면
+명시도가 같아서 나중에 온 쪽이 이긴다 — 숨긴 줄 알았는데 그대로 보인다.
+대표 기사 슬라이드가 실제로 이 문제에 걸렸다. 스크립트로 여닫는 것이 전부 걸리므로
+`base.css` 에서 한 번만 못박았다.
+
+**7. 브레이크포인트마다 크기가 달라지는 것은 마크업에 크기 클래스를 붙이지 않는다.**
+GNB 햄버거가 태블릿 24 · 모바일 20 인데, 마크업에 `.ibtn--md` 를 붙여 두면
+미디어쿼리로 못 바꾼다 — `icon-button.css` 의 `.ibtn--normal.ibtn--md .icon`(클래스 3개)이
+`.gnb__toggle .icon`(2개)을 이기기 때문이다. 그래서 크기 클래스를 떼고 `gnb.css` 가
+`.gnb .gnb__toggle .icon` 로 정한다. 파일 순서에 기대지 않으려고 앞에 `.gnb` 를 붙였다.
+
+**8. 버튼 높이를 고정하지 않았다.**
+`height:48px`이 아니라 여백 + 글자 줄높이로 만든다. 피그마 치수(32/40/48)와 결과가 같고,
+글자가 길어지거나 번역으로 줄이 늘어나도 안 깨진다.
+
+## 값을 눈으로 확인하는 법 — 카탈로그의 검사기
+
+카탈로그를 열고 오른쪽 아래 **검사** 버튼을 켜면, 마우스가 가리키는 요소의
+**브라우저가 실제로 계산한 값**이 오른쪽 패널에 나온다 — 크기·여백·모서리,
+글꼴(서체·크기·굵기·행간·자간), 색(글자·배경·테두리), 그림자, 아이콘 클래스.
+
+핵심은 그 값이 **`tokens.css` 의 어떤 토큰인지** 같이 보여준다는 것이다.
+`#151617` 을 보면 `--label-normal` 이라고 붙여 주니 CSS 를 뒤질 일이 없다.
+같은 색에 이름이 여럿이면(`#fafafa` 는 배경 이름이기도 하고 어두운 바탕의
+글자 이름이기도 하다) **보고 있는 자리에 맞는 이름을 앞에** 올린다.
+
+- **토큰 이름을 누르면** 패널 아래에 그 토큰의 정보창이 열린다 — 한 번에 하나만 연다
+  - **거쳐 온 길**이 핵심이다. `--primary-normal → --semantic-primary-normal →
+    --purple-500 → #543efa` 처럼 별칭 사슬이 그대로 나온다. `tokens.css` 가 피그마의
+    3층(원시 변수 → 의미 스타일 → 노드)을 옮겨 놓은 것이라, 이 사슬이 곧
+    "피그마에서 어느 층의 이름인가" 다
+  - 미디어쿼리로 값이 바뀌는 토큰은 **화면 폭별 값**을 다 보여준다
+    (`--fs-display` → 기본 64px / ≤1279px 48px / ≤767px 36px)
+  - 선언 안에 박힌 `var(--fs-display)` 도 눌러서 그쪽으로 들어갈 수 있다
+  - 색이면 큰 견본, 활자면 실제 크기 미리보기가 붙는다
+- 이름이 넷 이상이면 셋만 펴고 나머지는 `+3` 으로 접는다. 누르면 다 펴진다
+- 클릭하면 그 요소에 **고정**된다. `↑` `↓` 로 부모·자식으로 옮기고 `Esc` 로 푼다
+  (패널 안을 건드리면 읽는 중이라 보고 자동으로 고정된다)
+- 마우스가 가리키는 요소를 잡으므로 버튼을 가리켜도 안쪽 `<span>` 이 잡힌다 —
+  패널 맨 위의 조상 사슬(`section › div.card › button.btn`)을 누르면 위로 올라간다
+- **마우스가 올라간 상태의 값**이다. 그래서 hover 로 굵기가 바뀌는 `Button/Text` 는
+  700 으로 나온다. 평소 값을 보려면 클릭해 고정한 뒤 마우스를 치운다
+- 검사 중에는 링크·버튼이 안 눌린다. 클릭을 고정에 쓰기 때문이다
+
+`css/inspector.css` · `js/inspector.js` 는 **카탈로그 전용 문서 UI** 다.
+실제 사이트에는 넣지 않는다.
+
+## 아직 확정 안 된 것 — 6건
+
+f2h 덤프로 재검증한 뒤 남은 것들이다. 셋은 **피그마에 설계가 없다는 것을 확인한** 항목이라,
+값을 못 읽은 게 아니라 **디자인 결정이 필요한** 상태다.
+
+- **배지 면이 낡은 토큰에 묶여 있다** — 피그마에서 배지 면은
+  `Semantic/Background/Normal/Alternative` 를 물고 있는데 그 확정값은 `#fafafa` 이고,
+  배지가 물고 있는 건 같은 이름의 낡은 라이브러리 스타일(`#f5f6f7`)이다.
+  낡은 참조를 확정값으로 바꾸면 배지가 흰 배경에서 안 보인다 —
+  `Background/Normal/Assistive`(`#e4e6e8`, Main 이 이미 쓰는 값)로 다시 묶는 게 자연스러워 보인다.
+  그때까지 `.badge` 는 `#f5f6f7` 을 직접 쓴다
+- **배지 면 색이 컴포넌트별로 다르다** — Common 은 `#f5f6f7`, Main 은 덮개 사각형이
+  하나 더 있어 `#e4e6e8`. `.badge` / `.badge--strong` 로 갈라 뒀다.
+  Main 쪽이 실수로 남은 레이어처럼 보인다 — 의도라면 배지 컴포넌트에 변형으로 넣는 게 맞다
+- **활자 정의서와 텍스트 스타일이 다르다 (2건)** — `Typography / Definition (5:3334)` 대조 결과
+  `Display` 는 정의서 800 · 64/125% 인데 스타일 `Display 1` 은 700 · 32/130%,
+  `Body 1/Reading` 은 정의서 18/175% 인데 스타일은 16/175% 다.
+  토큰은 **정의서**를 따랐다 — 스타일 쪽 정리가 필요하다
+- **Section Heading 태블릿·모바일** — 컴포넌트 세트에 `Breakpoint=Desktop (lg)` 변형 하나뿐이다.
+  지금 48 → 36 → 28px 로 축소해 뒀지만 이쪽에서 정한 값이다
+- **Section Heading 어두운 배경** — 같은 이유로 변형이 없다. `.sh--inverse`는 이쪽에서 정한 것
+- **Button/Text hover 폭 밀림** — 굵기가 Medium→Bold로 바뀌는 피그마 설계 그대로 뒀다.
+  나란히 놓으면 옆 요소가 밀린다. 그대로 갈지 폭을 미리 확보할지(`.btn--stable`)는 디자인 판단이다
+
+## 피그마 쪽에서 고쳐야 할 것 — 6건
+
+값을 못 읽은 게 아니라 **파일이 어긋나 있는** 경우다. 이쪽 코드는 다수 쪽을 따랐다.
+
+- **GNB CTA 버튼이 한 변형만 다르다** — 28개 변형 중 `Desktop(xl), Mode=Black, Scroll=False,
+  Expand=False, Background=True` 하나만 `Round=Brand`고 나머지 15개(+가이드 목업 13개,
+  드로어 4개)는 전부 `Round=Normal` 이다. 이쪽은 Normal 로 구현했다
+- **`Navigation/LNB/List` 의 `Mode` 이름이 반대다** — GNB·Footer 는 `Mode=White` 가 밝은
+  배경인데 이 컴포넌트는 `Mode=White` 가 어두운 배경용(밝은 글자)이다. 실제 조립을 보면
+  `GNB/LNB Mode=White`(흰 배경) 안에 `List Mode=Black` 이 들어간다.
+  이쪽은 헷갈리지 않게 **배경 기준**으로 갈랐다(`.gnb--black` 안이면 어두운 배경)
+
+- **아이콘 세트 이름과 그림이 어긋난다 (3건)** — `Icon/Normal/Arrow Down` 이 두 세트인데
+  `38:4115` 의 그림은 `+` 다. `Icon/Normal/Soft` 도 두 세트인데 하나는 분자, 하나는 반도체 칩이다.
+  `Icon/Normal/Roket` 은 변형 이름이 `Name=reset` 으로 붙어 있다.
+  이쪽은 그린 모양대로 `i-plus` · `i-soft` / `i-chip` · `i-rocket` 로 갈랐다
+- **중복 세트가 있다** — `Icon/Guide/Desktop`·`Icon/Guide/Mobile`·`Icon/color/-`·
+  `Logo Horizontal`·`Logo/Resource` 가 각각 두 벌씩이고 그림이 같다.
+  `Logo/Resource` 사본(`138:20289`)은 `Type=Symbol`·`Type=Title` 이 비어 있다
+- **`Icon/Normal/play` 의 축이 반대로 읽힌다** — `Auto On=False` 가 일시정지 막대,
+  `Auto On=True` 가 재생 삼각형이다. 자동 전환이 켜져 있을 때 일시정지가 보여야 자연스럽다.
+  이쪽은 그린 모양대로 `i-pause` · `i-play` 로 갈랐다
+- **`Icon/Normal/Heart` 의 축 둘이 항상 같이 움직인다** — `Name` 과 `Fill` 이 붙어 다닌다.
+  다른 아이콘처럼 `Fill` 하나면 충분하다
+
+## 이 폴더 밖과의 관계
+
+- `../와이어프레임/` — 회색 래더 와이어프레임. **색·타이포 체계가 다르다.** 저쪽은 "무엇이
+  들어가는가"를 정하는 단계의 산출물이고, 이 폴더는 확정된 디자인 시스템을 코드로 옮긴 것이다.
+  두 폴더의 토큰 이름을 섞지 않는다.
+- `../크리스아이티-사실대장.md` — 문구는 여기서만 꺼내 쓴다. 카탈로그에 들어간 회사 정보
+  (사업자 등록 번호·대표·주소)는 피그마 푸터에 적혀 있던 값을 그대로 옮긴 것이므로,
+  실제 사용 전에 사실대장과 대조한다.
+- `../효과-데모/안전하게-컴포넌트.html` — 모션 컴포넌트. 이 폴더의 정적 컴포넌트와 별개다.

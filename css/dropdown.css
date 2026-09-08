@@ -1,0 +1,61 @@
+/* ============================================================
+   Dropdown list — 피그마 Dropdown_list (1010:17342)
+   Chip/Filter 를 Expand 했을 때 아래에 뜨는 목록 패널.
+   행은 이미 있는 Chip/Filter/Active(`.chip-option`)를 그대로 쓴다.
+
+   실측
+     패널 208×232(5행) · 칩 아래 8px 띄움 · 여백 8 · radius 4
+     그림자 Strong(--shadow-strong) · 배경 흰색
+     행 폭 192 · 행 높이 40(lg) · 행 간격 4
+     스크롤바 폭 4 · 우측에서 2 · 라운드 · 5행 초과 시 노출
+
+   정책 (미디어 기능 정의서 §2)
+     · 연도 드롭다운은 2026~2023년으로 구성
+     · 목록이 5개를 넘으면 스크롤바가 생긴다
+     · 올해는 현재 달까지만 선택 가능 → 나머지 달은 `disabled`
+     · 연도를 고르면 [전체 월]이 Disable → Active 로 바뀌고
+       [초기화] 버튼이 활성화된다
+
+   마크업
+     <div class="dd-wrap">
+       <button class="chip chip--lg chip--expand">…</button>
+       <div class="dd" role="listbox">
+         <button class="chip-option chip-option--lg is-active has-overlay"><span>전체 연도</span></button>
+         <button class="chip-option chip-option--lg has-overlay"><span>2026년</span></button>
+         …
+       </div>
+     </div>
+   ============================================================ */
+
+.dd-wrap{position:relative;display:inline-block}
+
+.dd{
+  position:absolute;top:calc(100% + 8px);left:0;z-index:20;
+  display:flex;flex-direction:column;gap:4px;
+  width:208px;padding:8px;
+  background:var(--bg-normal);
+  border-radius:var(--radius-xsmall);
+  box-shadow:var(--shadow-strong);
+  /* 5행까지만 보이고 그 다음부터 스크롤 — lg 행 40 + 간격 4 */
+  max-height:calc(40px * 5 + 4px * 4 + 16px);
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.dd--md{max-height:calc(32px * 5 + 4px * 4 + 16px)}
+
+/* 패널 안의 행 — 폭은 패널에 맞추고(칩 기본 320 고정을 덮어쓴다),
+   flex:none 으로 못박는다. 안 그러면 항목이 max-height 를 넘길 때
+   flex 가 행을 눌러서 높이가 줄어든다 */
+.dd .chip-option{width:100%;flex:none}
+
+/* 스크롤바 — 폭 4, 우측에서 2 */
+.dd::-webkit-scrollbar{width:8px}
+.dd::-webkit-scrollbar-track{background:transparent}
+.dd::-webkit-scrollbar-thumb{
+  background:var(--line-normal);
+  border-radius:var(--radius-all);
+  border:2px solid transparent;background-clip:content-box;
+}
+.dd{scrollbar-width:thin;scrollbar-color:var(--line-normal) transparent}
+
+/* 닫힌 상태 — 마크업을 지우지 않고 감춘다 */
+.dd[hidden]{display:none}

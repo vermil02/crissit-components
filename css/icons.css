@@ -1,0 +1,121 @@
+/* ============================================================
+   아이콘 · 로고 — 이름 하나에 파일 하나
+   출처: 피그마 `Crissit_Main` Icon 페이지
+         Icon 38:4019 / Logo 38:4175 (f2h 덤프 2026-09-08)
+         아이콘 세트 38개 · 글리프 64종 (중복 제외) · 로고 6종
+
+   쓰는 법:  <i class="icon icon--20 i-arrow-right"></i>
+             크기 클래스를 안 주면 부모 컴포넌트가 정한 크기를 따른다.
+
+   ▸ 왜 인라인 style 이 아니라 클래스인가
+     `style="--icon:url(assets/x.svg)"` 처럼 HTML 안에서 상대 경로를 주면
+     브라우저가 그 경로를 HTML 기준이 아니라 var() 를 쓴 CSS 파일 기준으로
+     풀어버린다(css/assets/x.svg → 404). 그래서 선언과 사용을 같은 폴더의
+     CSS 안에 둔다.
+
+   ▸ 파일 안의 fill 은 `currentColor` 로 바꿔 두었다. CSS mask 로 깔면
+     색은 어차피 글자색에서 오고, <img> 나 인라인으로 써도 색이 따라온다.
+     예외는 `logo-crissit-color.svg` 하나 — 원본 두 색을 그대로 지킨다.
+
+   ▸ **파일은 전부 24×24 틀이다.** 피그마 아이콘 컴포넌트가 전부 24×24 이고,
+     그 안에서 그림이 차지하는 크기는 아이콘마다 다르다 — 예를 들어
+     `blank`(↗)는 12×12, `close`(✕)는 16×16, `menu`는 24×24 를 다 쓴다.
+     그림 덩어리만 잘라 내면 `mask ... contain` 이 그걸 상자에 꽉 채워서
+     아이콘마다 크기가 제각각이 된다(↗ 가 67% 크게 나왔던 원인).
+     그래서 각 그림을 원래 자리에 그대로 둔 채 24×24 틀에 앉혀 두었다.
+     새 아이콘을 넣을 때도 24×24 틀로 맞춘다.
+
+   ▸ `-thick` 은 피그마 변형 `Thick=True`(선 굵은 판),
+     `-sm` 은 `Small=True`(작은 판), `-fill` 은 `Fill=True`(채운 판)이다.
+     기본 이름이 각 축의 False 쪽이다.
+   ============================================================ */
+
+/* ---------- 화살표 ---------- */
+.i-arrow-left         {--icon:url(../assets/icon-arrow-left.svg)}
+.i-arrow-left-thick   {--icon:url(../assets/icon-arrow-left-thick.svg)}
+.i-arrow-right        {--icon:url(../assets/icon-arrow-right.svg)}
+.i-arrow-right-thick  {--icon:url(../assets/icon-arrow-right-thick.svg)}
+.i-arrow-up           {--icon:url(../assets/icon-arrow-up.svg)}
+.i-arrow-up-thick     {--icon:url(../assets/icon-arrow-up-thick.svg)}
+.i-arrow-down         {--icon:url(../assets/icon-arrow-down.svg)}
+.i-arrow-down-thick   {--icon:url(../assets/icon-arrow-down-thick.svg)}
+
+/* ---------- 꺾쇠 ----------
+   `Small=True` 는 같은 20 틀 안에서 글리프만 작게 그린 판이다.
+   글자 옆에 붙일 때(언어 선택 등) 작은 판을 쓴다 */
+.i-chevron-up            {--icon:url(../assets/icon-chevron-up.svg)}
+.i-chevron-up-thick      {--icon:url(../assets/icon-chevron-up-thick.svg)}
+.i-chevron-up-sm         {--icon:url(../assets/icon-chevron-up-sm.svg)}
+.i-chevron-up-sm-thick   {--icon:url(../assets/icon-chevron-up-sm-thick.svg)}
+.i-chevron-down          {--icon:url(../assets/icon-chevron-down.svg)}
+.i-chevron-down-thick    {--icon:url(../assets/icon-chevron-down-thick.svg)}
+.i-chevron-down-sm       {--icon:url(../assets/icon-chevron-down-sm.svg)}
+.i-chevron-down-sm-thick {--icon:url(../assets/icon-chevron-down-sm-thick.svg)}
+.i-chevron-left          {--icon:url(../assets/icon-chevron-left.svg)}
+.i-chevron-left-thick    {--icon:url(../assets/icon-chevron-left-thick.svg)}
+.i-chevron-left-sm       {--icon:url(../assets/icon-chevron-left-sm.svg)}
+.i-chevron-left-sm-thick {--icon:url(../assets/icon-chevron-left-sm-thick.svg)}
+.i-chevron-right         {--icon:url(../assets/icon-chevron-right.svg)}
+.i-chevron-right-thick   {--icon:url(../assets/icon-chevron-right-thick.svg)}
+.i-chevron-right-sm      {--icon:url(../assets/icon-chevron-right-sm.svg)}
+.i-chevron-right-sm-thick{--icon:url(../assets/icon-chevron-right-sm-thick.svg)}
+
+/* ---------- 조작 ---------- */
+.i-check          {--icon:url(../assets/icon-check.svg)}
+.i-check-thick    {--icon:url(../assets/icon-check-thick.svg)}
+.i-close          {--icon:url(../assets/icon-close.svg)}
+.i-close-thick    {--icon:url(../assets/icon-close-thick.svg)}
+.i-menu           {--icon:url(../assets/icon-menu.svg)}
+.i-menu-thick     {--icon:url(../assets/icon-menu-thick.svg)}
+/* 세트 이름은 `Icon/Normal/Arrow Down`(38:4115)인데 그려진 글리프는 `+` 다.
+   그린 대로 이름을 붙였다 — 카탈로그 「확인 필요」에 올려 두었다 */
+.i-plus           {--icon:url(../assets/icon-plus.svg)}
+.i-plus-thick     {--icon:url(../assets/icon-plus-thick.svg)}
+.i-expand         {--icon:url(../assets/icon-expand.svg)}
+.i-reset          {--icon:url(../assets/icon-reset.svg)}   /* 초기화 ↺ */
+.i-share          {--icon:url(../assets/icon-share.svg)}
+.i-earth          {--icon:url(../assets/icon-earth.svg)}   /* 언어 선택 */
+.i-blank          {--icon:url(../assets/icon-blank.svg)}      /* 외부 링크 ↗ */
+.i-blank-auto     {--icon:url(../assets/icon-blank-auto.svg)} /* Auto On=True 판 */
+.i-filter         {--icon:url(../assets/icon-filter.svg)}
+.i-filter-active  {--icon:url(../assets/icon-filter-active.svg)}
+/* 세트 이름은 `Icon/Normal/play` 하나인데 변형 둘의 글리프가 다르다 —
+   `Auto On=False` 가 막대 두 개(일시정지), `Auto On=True` 가 삼각형(재생).
+   그려진 대로 이름을 붙였다 */
+.i-pause          {--icon:url(../assets/icon-pause.svg)}
+.i-play           {--icon:url(../assets/icon-play.svg)}
+/* 아이콘 자리가 아직 안 정해진 곳에 두는 점선 사각형.
+   피그마 `Icon/Normal/-` 의 `Name=dummy` 가 이것이다 */
+.i-placeholder    {--icon:url(../assets/icon-placeholder.svg)}
+
+/* ---------- 내용 아이콘 (사업·소개 영역) ----------
+   `Fill=True` 는 같은 글리프를 면으로 채운 판이다 */
+.i-book             {--icon:url(../assets/icon-book.svg)}
+.i-book-fill        {--icon:url(../assets/icon-book-fill.svg)}
+.i-coins            {--icon:url(../assets/icon-coins.svg)}
+.i-coins-fill       {--icon:url(../assets/icon-coins-fill.svg)}
+.i-company          {--icon:url(../assets/icon-company.svg)}
+.i-company-fill     {--icon:url(../assets/icon-company-fill.svg)}
+.i-graduation       {--icon:url(../assets/icon-graduation.svg)}
+.i-graduation-fill  {--icon:url(../assets/icon-graduation-fill.svg)}
+.i-heart            {--icon:url(../assets/icon-heart.svg)}
+.i-heart-fill       {--icon:url(../assets/icon-heart-fill.svg)}
+.i-atom             {--icon:url(../assets/icon-atom.svg)}
+.i-server           {--icon:url(../assets/icon-server.svg)}
+.i-codeview         {--icon:url(../assets/icon-codeview.svg)}
+/* 세트 이름이 둘 다 `Icon/Normal/Soft` 인데 글리프가 다르다.
+   327:7314 = 분자·노드 / 2821:50947 = 반도체 칩. 그린 대로 갈랐다 */
+.i-soft             {--icon:url(../assets/icon-soft.svg)}
+.i-chip             {--icon:url(../assets/icon-chip.svg)}
+/* 세트 이름은 `Icon/Normal/Roket`, 변형 이름은 `Name=reset` 으로 붙어 있다.
+   글리프는 로켓이다 */
+.i-rocket           {--icon:url(../assets/icon-rocket.svg)}
+
+/* ---------- 가이드 문서 전용 ----------
+   화면에 쓰는 아이콘이 아니라 디자인 가이드 안에서 브레이크포인트를
+   표시하는 그림이다. 실제 페이지에 쓸 일은 없다 */
+.i-guide-desktop       {--icon:url(../assets/icon-guide-desktop.svg)}
+.i-guide-desktop-thick {--icon:url(../assets/icon-guide-desktop-thick.svg)}
+.i-guide-mobile        {--icon:url(../assets/icon-guide-mobile.svg)}
+.i-guide-mobile-thick  {--icon:url(../assets/icon-guide-mobile-thick.svg)}
+.i-guide-shift         {--icon:url(../assets/icon-guide-shift.svg)}

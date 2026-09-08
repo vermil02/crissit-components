@@ -1,0 +1,1526 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>crissit 컴포넌트 카탈로그</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/icons.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="css/icon-button.css">
+<link rel="stylesheet" href="css/chip.css">
+<link rel="stylesheet" href="css/pagination.css">
+<link rel="stylesheet" href="css/dropdown.css">
+<link rel="stylesheet" href="css/drawer.css">
+<link rel="stylesheet" href="css/heading.css">
+<link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/gnb.css">
+<link rel="stylesheet" href="css/footer.css">
+<link rel="stylesheet" href="css/boardlist.css">
+<link rel="stylesheet" href="css/inspector.css">
+<link rel="stylesheet" href="css/memo.css">
+<style>
+/* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
+body{background:var(--neutral-50)}
+.cat{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;align-items:start}
+.cat__nav{
+  position:sticky;top:0;height:100vh;overflow:auto;
+  padding:32px 20px;border-right:1px solid var(--line-normal);
+  background:var(--bg-normal);
+}
+.cat__nav h1{font:var(--label-1-bold);margin:0 0 4px}
+.cat__nav .sub{font:var(--label-3-medium);color:var(--label-alternative);margin:0 0 24px}
+.cat__nav a{display:block;padding:5px 0;font:var(--label-2-medium);color:var(--label-alternative)}
+.cat__nav a:hover{color:var(--label-normal)}
+.cat__nav .grp{margin-top:16px;font:var(--label-3-bold);color:var(--label-assistive);
+  text-transform:uppercase;letter-spacing:.04em}
+.cat__main{padding:48px 40px 160px;min-width:0}
+
+.sec{margin:0 0 64px;scroll-margin-top:24px}
+.sec > h2{font:var(--title-1-bold);letter-spacing:-.01em;margin:0 0 6px}
+.sec > .desc{font:var(--label-1-medium);color:var(--label-alternative);margin:0 0 8px;max-width:60ch}
+.sec > .src{font:var(--label-3-medium);color:var(--label-assistive);margin:0 0 28px}
+
+.card{background:var(--bg-normal);border:1px solid var(--line-normal);
+  border-radius:var(--radius-large);padding:28px;margin-bottom:16px}
+.card > h3{font:var(--label-1-bold);margin:0 0 4px}
+.card > .note{font:var(--label-2-medium);color:var(--label-alternative);margin:0 0 20px;max-width:66ch}
+
+.row{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:0 0 20px}
+.row:last-child{margin-bottom:0}
+.lbl{font:var(--label-3-medium);color:var(--label-assistive);width:100%;margin:0 0 -8px}
+.spec{font:var(--label-3-medium);color:var(--label-assistive);margin:12px 0 0}
+
+/* 아이콘 목록 — 이름 길이가 제각각이라 flex 로 늘어놓으면 두 줄로 넘어가는
+   칸 때문에 아이콘 높이가 어긋난다. 격자로 깔면 줄 안에서 자동으로 맞는다 */
+.iconset{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
+  gap:20px 8px;margin:0 0 20px}
+.iconset > span{display:flex;flex-direction:column;align-items:center;gap:8px;
+  text-align:center;min-width:0}
+.iconset > span > code{font-size:10px;line-height:1.35;color:var(--label-alternative);
+  word-break:break-all}
+.on-dark{background:var(--neutral-900);border-radius:var(--radius-medium);padding:20px}
+.on-img{
+  background:linear-gradient(135deg,#3a2f7a,#8f7ae6 60%,#c9ccd0);
+  border-radius:var(--radius-medium);padding:20px;
+}
+
+/* 표 */
+table.tk{border-collapse:collapse;width:100%;font:var(--label-2-medium)}
+table.tk th{text-align:left;font:var(--label-2-bold);padding:8px 12px 8px 0;
+  border-bottom:1px solid var(--line-normal);color:var(--label-alternative);white-space:nowrap}
+table.tk td{padding:8px 12px 8px 0;border-bottom:1px solid var(--line-alternative);vertical-align:middle}
+table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--label-neutral)}
+.sw{width:36px;height:24px;border-radius:4px;box-shadow:inset 0 0 0 1px rgb(0 0 0 /.08)}
+
+/* hover 상태를 고정해서 보여주는 데모용 */
+.demo-hover.has-overlay::after{opacity:var(--interaction-hover)}
+.demo-hover.btn--text{font-weight:700}
+.demo-hover.bl{opacity:var(--opacity-48)}
+
+.frame{border:1px solid var(--line-normal);border-radius:var(--radius-medium);
+  overflow:hidden;margin-bottom:16px;background:var(--bg-normal)}
+.frame__cap{font:var(--label-3-medium);color:var(--label-assistive);
+  padding:8px 12px;border-bottom:1px solid var(--line-alternative);background:var(--neutral-50)}
+.frame--narrow{max-width:390px}
+
+@media (max-width:900px){
+  .cat{grid-template-columns:1fr}
+  .cat__nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line-normal)}
+  .cat__main{padding:32px 20px 120px}
+}
+</style>
+<script src="js/boardlist-main.js" defer></script>
+<script src="js/inspector.js" defer></script>
+<script src="js/memo.js" defer></script>
+</head>
+<body>
+
+<div class="cat">
+<nav class="cat__nav">
+  <h1>crissit 컴포넌트</h1>
+  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나온다.</p>
+
+  <div class="grp">기반</div>
+  <a href="#tokens">디자인 토큰</a>
+  <a href="#type">타이포</a>
+
+  <a href="#heading">Section Heading</a>
+
+  <div class="grp">Action</div>
+  <a href="#btn-solid">Button / Solid</a>
+  <a href="#btn-outlined">Button / Outlined</a>
+  <a href="#btn-text">Button / Text</a>
+  <a href="#ibtn">Icon Button</a>
+  <a href="#chip">Chip</a>
+  <a href="#dropdown">Dropdown list</a>
+  <a href="#filter">Filter bar · Empty</a>
+
+  <div class="grp">Navigation</div>
+  <a href="#gnb">GNB</a>
+  <a href="#drawer">GNB 드로어</a>
+  <a href="#footer">Footer</a>
+  <a href="#pgn">Pagination</a>
+
+  <div class="grp">Content</div>
+  <a href="#bl-main">Board list / Main</a>
+  <a href="#bl-common">Board list / Common</a>
+  <a href="#bl-rec">Board list / Recommand</a>
+
+  <div class="grp">참고</div>
+  <a href="#icons">아이콘 · 로고</a>
+  <a href="#gaps">확인 필요</a>
+</nav>
+
+<main class="cat__main">
+
+<!-- ══════════════ 토큰 ══════════════ -->
+<section class="sec" id="tokens">
+  <h2>디자인 토큰</h2>
+  <p class="desc">피그마는 색을 <b>3층</b>으로 관리한다. <code>tokens.css</code>가 그 구조를 그대로 옮긴 것이다 — <b>① 원시 변수</b>(값) → <b>② 의미 스타일</b>(역할) → <b>③ 화면</b>. 화면에서는 <b>②만</b> 쓴다.</p>
+  <p class="src">출처 · f2h 덤프의 <code>boundVariables</code>·<code>styles</code> 전수 대조 + <code>get_variable_defs</code></p>
+
+  <div class="card">
+    <h3>왜 ①을 직접 쓰지 않나</h3>
+    <p class="note" style="margin:0">같은 원시 값을 <b>여러 역할이 공유</b>하기 때문이다. <code>#e4e6e8</code> 하나가 세 역할에 걸려 있다 — <code>Background/Normal/Assistive</code> · <code>Label/Inverse/Alternative</code> · <code>Line/Normal/Normal</code>. 역할별로 이름을 따로 두지 않으면 나중에 <b>"선 색만 바꿔"가 불가능</b>해진다.</p>
+  </div>
+
+  <div class="card">
+    <h3>① 원시 팔레트</h3>
+    <p class="note">유채색은 Purple/500 하나뿐. 나머지는 중성 램프. <code>Neutral/600</code>은 이 네 섹션 어디에도 쓰이지 않는다.</p>
+    <table class="tk"><tr><th>변수</th><th>값</th><th></th><th>쓰임</th></tr><tr><td><code>--neutral-0</code></td><td><code>#ffffff</code></td><td><div class="sw" style="background:#ffffff"></div></td><td>기본 배경</td></tr><tr><td><code>--neutral-50</code></td><td><code>#fafafa</code></td><td><div class="sw" style="background:#fafafa"></div></td><td>어두운 면 위 글자</td></tr><tr><td><code>--neutral-100</code></td><td><code>#f5f6f7</code></td><td><div class="sw" style="background:#f5f6f7"></div></td><td>연한 구분선</td></tr><tr><td><code>--neutral-200</code></td><td><code>#e4e6e8</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>테두리·비활성 면</td></tr><tr><td><code>--neutral-300</code></td><td><code>#c9ccd0</code></td><td><div class="sw" style="background:#c9ccd0"></div></td><td>비활성 글자</td></tr><tr><td><code>--neutral-400</code></td><td><code>#a3a8ad</code></td><td><div class="sw" style="background:#a3a8ad"></div></td><td>보조 글자</td></tr><tr><td><code>--neutral-500</code></td><td><code>#7c8288</code></td><td><div class="sw" style="background:#7c8288"></div></td><td>날짜·설명</td></tr><tr><td><code>--neutral-700</code></td><td><code>#414549</code></td><td><div class="sw" style="background:#414549"></div></td><td>본문 보조</td></tr><tr><td><code>--neutral-800</code></td><td><code>#2b2e31</code></td><td><div class="sw" style="background:#2b2e31"></div></td><td>어두운 면의 보조 면·선</td></tr><tr><td><code>--neutral-900</code></td><td><code>#151617</code></td><td><div class="sw" style="background:#151617"></div></td><td>본문 기본</td></tr><tr><td><code>--neutral-1000</code></td><td><code>#000000</code></td><td><div class="sw" style="background:#000000"></div></td><td>푸터·GNB Black</td></tr><tr><td><code>--purple-500</code></td><td><code>#543efa</code></td><td><div class="sw" style="background:#543efa"></div></td><td><b>브랜드 액센트</b></td></tr></table>
+  </div>
+
+  <div class="card">
+    <h3>② 의미 토큰 — 피그마 Semantic 스타일 1:1</h3>
+    <p class="note">변수 이름을 피그마 스타일 이름 그대로 옮겼다. 디자이너가 "Label/Normal/Alternative 바꿨어"라고 하면 그 이름으로 바로 찾힌다. 컴포넌트 CSS가 쓰는 짧은 이름(<code>--label-alternative</code> 등)은 이걸 가리키는 별칭이다.</p>
+    <table class="tk"><tr><th>피그마 스타일</th><th>CSS 변수</th><th></th><th>어느 원시 값</th></tr><tr><td><code>Semantic/Primary/Normal</code></td><td><code>--semantic-primary-normal</code></td><td><div class="sw" style="background:#543efa"></div></td><td>Purple/500</td></tr><tr><td><code>Semantic/Label/Normal/Normal</code></td><td><code>--semantic-label-normal-normal</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900</td></tr><tr><td><code>Semantic/Label/Normal/Neutral</code></td><td><code>--semantic-label-normal-neutral</code></td><td><div class="sw" style="background:#414549"></div></td><td>Neutral/700</td></tr><tr><td><code>Semantic/Label/Normal/Alternative</code></td><td><code>--semantic-label-normal-alternative</code></td><td><div class="sw" style="background:#7c8288"></div></td><td>Neutral/500</td></tr><tr><td><code>Semantic/Label/Normal/Assistive</code></td><td><code>--semantic-label-normal-assistive</code></td><td><div class="sw" style="background:#a3a8ad"></div></td><td>Neutral/400</td></tr><tr><td><code>Semantic/Label/Normal/Disable</code></td><td><code>--semantic-label-normal-disable</code></td><td><div class="sw" style="background:#c9ccd0"></div></td><td>Neutral/300</td></tr><tr><td><code>Semantic/Label/Inverse/Strong</code></td><td><code>--semantic-label-inverse-strong</code></td><td><div class="sw" style="background:#ffffff"></div></td><td>Neutral/_0</td></tr><tr><td><code>Semantic/Label/Inverse/Normal</code></td><td><code>--semantic-label-inverse-normal</code></td><td><div class="sw" style="background:#fafafa"></div></td><td>Neutral/50</td></tr><tr><td><code>Semantic/Label/Inverse/Neutral</code></td><td><code>--semantic-label-inverse-neutral</code></td><td><div class="sw" style="background:#f5f6f7"></div></td><td>Neutral/100</td></tr><tr><td><code>Semantic/Label/Inverse/Alternative</code></td><td><code>--semantic-label-inverse-alternative</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Label/Inverse/Assistive</code></td><td><code>--semantic-label-inverse-assistive</code></td><td><div class="sw" style="background:#c9ccd0"></div></td><td>Neutral/300</td></tr><tr><td><code>Semantic/Label/Inverse/Disable</code></td><td><code>--semantic-label-inverse-disable</code></td><td><div class="sw" style="background:#a3a8ad"></div></td><td>Neutral/400</td></tr><tr><td><code>Semantic/Background/Normal/Normal</code></td><td><code>--semantic-background-normal-normal</code></td><td><div class="sw" style="background:#ffffff"></div></td><td>Neutral/_0</td></tr><tr><td><code>Semantic/Background/Normal/Alternative</code></td><td><code>--semantic-background-normal-alternative</code></td><td><div class="sw" style="background:#fafafa"></div></td><td>Neutral/50</td></tr><tr><td><code>Semantic/Background/Normal/Assistive</code></td><td><code>--semantic-background-normal-assistive</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Background/Inverse/Normal</code></td><td><code>--semantic-background-inverse-normal</code></td><td><div class="sw" style="background:#000000"></div></td><td>Neutral/_1000</td></tr><tr><td><code>Semantic/Background/Inverse/Alternative</code></td><td><code>--semantic-background-inverse-alternative</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900</td></tr><tr><td><code>Semantic/Background/Inverse/Assistive</code></td><td><code>--semantic-background-inverse-assistive</code></td><td><div class="sw" style="background:#2b2e31"></div></td><td>Neutral/800</td></tr><tr><td><code>Semantic/Line/Normal/Normal</code></td><td><code>--semantic-line-normal-normal</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200</td></tr><tr><td><code>Semantic/Line/Normal/Alternative</code></td><td><code>--semantic-line-normal-alternative</code></td><td><div class="sw" style="background:#f5f6f7"></div></td><td>Neutral/100</td></tr><tr><td><code>Semantic/Line/Inverse/Normal</code></td><td><code>--semantic-line-inverse-normal</code></td><td><div class="sw" style="background:#414549"></div></td><td>Neutral/700</td></tr><tr><td><code>Semantic/Line/Inverse/Alternative</code></td><td><code>--semantic-line-inverse-alternative</code></td><td><div class="sw" style="background:#2b2e31"></div></td><td>Neutral/800</td></tr><tr><td><code>Semantic/Label/Normal</code></td><td><code>--semantic-label-normal</code></td><td><div class="sw" style="background:#151617"></div></td><td>Neutral/900 — <b>2026-09-07 확정</b></td></tr><tr><td><code>Semantic/Line/Normal</code></td><td><code>--semantic-line-normal</code></td><td><div class="sw" style="background:#e4e6e8"></div></td><td>Neutral/200 — <b>2026-09-07 확정</b></td></tr></table>
+    <p class="spec"><b>2026-09-07 확정</b> — 덤프에 같은 이름으로 값이 두 개씩 잡혔던 것이 정리됐다. <code>Semantic/Label/Normal</code> → <code>#151617</code> · <code>Semantic/Background/Normal/Alternative</code> → <code>#fafafa</code>. 낡은 쪽(<code>#171719</code> · <code>#f5f6f7</code>)은 다른 라이브러리의 동명 스타일이었다.
+<br>하위 없는 이름(<code>Label/Normal</code> · <code>Line/Normal</code>)도 하위 있는 것과 <b>같은 값으로 통일</b>했다. 갈려 보였던 것은 반영 안 된 옛 상태가 섞인 것이었다</p>
+  </div>
+
+  <div class="card">
+    <h3>토큰이 아닌 색</h3>
+    <p class="note" style="margin:0">덤프에 나오지만 디자인 토큰이 아닌 것들이다. 옮기지 않았다.
+    <br>· <code>#8a38f5</code> — 피그마가 컴포넌트 세트 프레임에 그리는 <b>테두리</b>(에디터 UI)
+    <br>· <code>#231f20</code> — 아이콘 SVG <b>원본 아트워크 색</b>. 인스턴스에서는 의미 색으로 덮인다. 이쪽은 <code>mask</code>로 깔아서 이 값을 아예 쓰지 않는다
+    <br>· <code>#d9d9d9</code> · <code>#3e8cfa</code> · <code>#5fa8f7</code> · <code>#183c62</code> · <code>#222222</code> — 가이드 문서의 주석·일러스트 색</p>
+  </div>
+
+  <div class="card">
+    <h3>라운드</h3>
+    <p class="note">피그마 변수에 실제로 바인딩된 값은 0 · 2 · 4 · 8 · 12 · 16 · 24 · 9999 다. <code>Round=Normal</code>은 4px(0이 아니다). <code>Round=Brand</code>는 라운드가 아니라 좌상·우하를 6px 사선으로 자른 도형이라 <b>변수가 아니다</b>.</p>
+    <div class="row">
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-none)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-2)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-xsmall)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-small)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-medium)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-large)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-xlarge)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);border-radius:var(--radius-all)"></div>
+      <div style="width:96px;height:56px;background:var(--purple-500);clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)"></div>
+    </div>
+    <p class="spec">0 · 2 · XSmall 4 · Small 8 · Medium 12 · Large 16 · XLarge 24 · All 9999 · Brand 6px 컷</p>
+  </div>
+
+  <div class="card">
+    <h3>상호작용 오버레이</h3>
+    <p class="note">hover 는 색을 바꾸지 않고 <b>반투명 막을 덮는다</b>. 밝은 면에는 검정 <b>8%</b>, 어두운 면에는 흰색 <b>12%</b> — 농도가 다르다.</p>
+    <div class="row">
+      <button class="btn btn--solid btn--primary btn--md has-overlay"><span>기본</span></button>
+      <button class="btn btn--solid btn--primary btn--md has-overlay demo-hover"><span>hover (검정 8%)</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light"><span>기본</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light demo-hover"><span>hover (흰색 12%)</span></button>
+    </div>
+    <p class="spec">피그마 opacity 변수에 바인딩된 값 — 0 · 0.08 · 0.12 · 0.32 · 0.48 · 0.6 · 1</p>
+  </div>
+</section>
+
+<!-- ══════════════ 타이포 ══════════════ -->
+<section class="sec" id="type">
+  <h2>타이포</h2>
+  <p class="desc">서체는 Pretendard 하나다. <b>제목 계열은 화면 폭에 따라 크기가 바뀌고, 본문·라벨은 세 구간 모두 같다.</b> 자간은 피그마에서 % 값이라 40px에 -1.5%면 -0.6px이 된다.</p>
+  <p class="src">정본 · 피그마 <code>Crissit_Main</code> Typography 페이지 <code>Definition · 5:3334</code> (f2h 덤프 2026-09-08) — 213개 노드 전수 대조</p>
+
+  <div class="card">
+    <h3>반응형 스케일</h3>
+    <p class="note">구간이 <b>lg ≥1280 · md 768–1279 · sm &lt;768</b> 이다. <b>컴포넌트의 구간(1280 / 1024 / 768)과 다르다</b> — 활자는 1280과 768에서만 꺾인다. 이 창을 좁히면 아래 「보기」가 실제로 따라 줄어든다.</p>
+    <table class="tk">
+      <tr><th style="width:110px">단계</th><th style="width:56px">lg</th><th style="width:56px">md</th><th style="width:56px">sm</th><th style="width:150px">행간 · 자간 · 굵기</th><th>쓰는 자리</th></tr>
+      <tr><td><code>Display</code></td><td><b>64</b></td><td>48</td><td>36</td><td>125% · -2% · Extra Bold 800</td><td>히어로 전용. <b>페이지당 1회</b></td></tr>
+      <tr><td><code>Heading 1</code></td><td><b>48</b></td><td>40</td><td>30</td><td>120% · -1.5% · Bold 700</td><td>섹션·페이지 타이틀</td></tr>
+      <tr><td><code>Heading 2</code></td><td><b>40</b></td><td>32</td><td>26</td><td>125% · -1.5% · Bold 700</td><td>섹션 부제목</td></tr>
+      <tr><td><code>Title 1</code></td><td><b>32</b></td><td>24</td><td>24</td><td>130% · -1% · Bold 700</td><td>서브 섹션 제목</td></tr>
+      <tr><td><code>Title 2</code></td><td><b>24</b></td><td>20</td><td>20</td><td>140% · -1% · Bold 700</td><td>카드·모듈·다이얼로그 제목</td></tr>
+      <tr><td><code>Title 3</code></td><td><b>20</b></td><td>18</td><td>18</td><td>150% · -1% · Semi Bold 600</td><td>리드문·강조 문장·소제목</td></tr>
+      <tr><td><code>Body 1</code></td><td colspan="3" style="text-align:center">18 (고정)</td><td>155% · 0 · 400~700</td><td>기본 본문</td></tr>
+      <tr><td><code>Body 2</code></td><td colspan="3" style="text-align:center">16 (고정)</td><td>150% · 0 · 400~700</td><td>보조 설명</td></tr>
+      <tr><td><code>Body 3</code></td><td colspan="3" style="text-align:center">14 (고정)</td><td>155% · 0 · Regular 400</td><td>캡션</td></tr>
+      <tr><td><code>Label 1 / 2 / 3</code></td><td colspan="3" style="text-align:center">16 / 14 / 12 (고정)</td><td>150 / 145 / 150% · 0 · Medium·Bold</td><td>버튼 lg / md / sm · 메뉴</td></tr>
+    </table>
+    <p class="spec">토큰은 크기만 따로 뺐다 — <code>--fs-display</code> · <code>--fs-h1</code> · <code>--fs-h2</code> · <code>--fs-t1</code> · <code>--fs-t2</code> · <code>--fs-t3</code>. 미디어쿼리는 이 여섯 개만 바꾸고, 굵기·행간을 담은 <code>--display-extrabold</code> 같은 토큰은 그대로 둔다</p>
+  </div>
+
+  <div class="card">
+    <h3>제목 계열</h3>
+    <table class="tk">
+      <tr><th style="width:150px">스타일</th><th style="width:120px">유틸</th><th>보기</th></tr>
+      <tr><td><code>Display</code></td><td><code>.t-display</code></td><td><span class="t-display">처음의 설계</span></td></tr>
+      <tr><td><code>Heading 1/Bold</code></td><td><code>.t-heading-1</code></td><td><span class="t-heading-1">상상을 현실로 만드는 사람들</span></td></tr>
+      <tr><td><code>Heading 2/Bold</code></td><td><code>.t-heading-2</code></td><td><span class="t-heading-2">성공적인 AX 도입</span></td></tr>
+      <tr><td><code>Title 1/Bold</code></td><td><code>.t-title-1</code></td><td><span class="t-title-1">회사를 소개합니다</span></td></tr>
+      <tr><td><code>Title 2/Bold</code></td><td><code>.t-title-2</code></td><td><span class="t-title-2">바이오·화학 AI 플랫폼</span></td></tr>
+      <tr><td><code>Title 3/SemiBold</code></td><td><code>.t-title-3</code></td><td><span class="t-title-3">현장의 문제를 나침반 삼아</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>본문 · 라벨</h3>
+    <table class="tk">
+      <tr><th style="width:180px">스타일</th><th style="width:150px">값</th><th>보기</th></tr>
+      <tr><td><code>Body 1/Regular</code></td><td>400 18 / 1.55</td><td><span class="t-body-1">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Medium</code></td><td>500 18 / 1.55</td><td><span class="t-body-1-md">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/SemiBold</code></td><td>600 18 / 1.55</td><td><span class="t-body-1-sb">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Bold</code></td><td>700 18 / 1.55</td><td><span class="t-body-1-b">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Reading</code></td><td>400 <b>18</b> / 1.75</td><td><span class="t-body-1-reading">긴 본문에 쓰는 넓은 줄높이</span></td></tr>
+      <tr><td><code>Body 2/Regular</code></td><td>400 16 / 1.5</td><td><span class="t-body-2">보조 설명에 쓴다</span></td></tr>
+      <tr><td><code>Body 2/Reading</code></td><td>400 16 / 1.75</td><td><span class="t-body-2-reading">보조 설명의 긴 문단</span></td></tr>
+      <tr><td><code>Body 3/Regular</code></td><td>400 14 / 1.55</td><td><span class="t-body-3">캡션·주석</span></td></tr>
+      <tr><td><code>Label 1/Medium</code></td><td>500 16 / 1.5</td><td><span class="t-label-1">GNB 메뉴 · lg 버튼</span></td></tr>
+      <tr><td><code>Label 1/Bold</code></td><td>700 16 / 1.5</td><td><span class="t-label-1-b">목록 카드 제목</span></td></tr>
+      <tr><td><code>Label 2/Medium</code></td><td>500 14 / 1.45</td><td><span class="t-label-2">푸터 법인 정보</span></td></tr>
+      <tr><td><code>Label 2/Bold</code></td><td>700 14 / 1.45</td><td><span class="t-label-2-b">푸터 메뉴 항목</span></td></tr>
+      <tr><td><code>Label 3/Medium</code></td><td>500 12 / 1.5</td><td><span class="t-label-3">sm 버튼</span></td></tr>
+      <tr><td><code>Label 3/Bold</code></td><td>700 12 / 1.5</td><td><span class="t-label-3-b">sm 칩 · sm 페이지 번호</span></td></tr>
+    </table>
+    <p class="spec">정의서와 실제 텍스트 스타일이 어긋난 것이 둘 있다(<code>Display</code> · <code>Body 1/Reading</code>) — 「확인 필요」 참고. 토큰은 <b>정의서</b>를 따랐다</p>
+  </div>
+</section>
+
+<!-- ══════════════ Section Heading ══════════════ -->
+<section class="sec" id="heading">
+  <h2>Section Heading</h2>
+  <p class="desc">페이지·섹션 제목 블록. 강조 줄(그라디언트)과 설명 줄을 켜고 끄는 것으로 세 가지 형태가 나온다.</p>
+  <p class="src">피그마 <code>Heading · 1010:15042</code> · 가이드 문서에서 발견</p>
+
+  <div class="card">
+    <h3>강조 줄 + 설명 줄</h3>
+    <p class="note">첫 줄만 그라디언트 글자다. 배경을 글자 모양으로 잘라내는 방식이라, 지원하지 않는 브라우저에서는 브랜드 보라 단색으로 보인다.</p>
+    <header class="sh">
+      <div class="sh__title">
+        <span class="sh__accent">처음의</span>
+        <span>설계를 만드는 조직</span>
+      </div>
+      <p class="sh__sub">조직의 위대함은 개인 혼자서는<br>불가능한 일을 가능하게 만드는 것에 있습니다.</p>
+    </header>
+    <p class="spec">제목 Heading1/Bold 48 / 1.2 / 자간 -1.5% · 두 줄 간격 8 · 블록 간격 24 · 설명 SemiBold 20 / 1.5 <code>#414549</code></p>
+  </div>
+
+  <div class="card">
+    <h3>제목 한 줄만 — 보도자료 페이지 형태</h3>
+    <header class="sh">
+      <div class="sh__title"><span>보도자료</span></div>
+    </header>
+  </div>
+
+  <div class="card">
+    <h3>어두운 배경</h3>
+    <p class="note">피그마에 어두운 배경 변형이 따로 없다. <code>.sh--inverse</code>는 Label/Inverse 토큰으로 대응시킨 것이다(추정).</p>
+    <div class="on-dark">
+      <header class="sh sh--inverse">
+        <div class="sh__title">
+          <span class="sh__accent">상상을</span>
+          <span>현실로 만드는 사람들</span>
+        </div>
+        <p class="sh__sub">우리는 현장의 문제를 나침반 삼아 상상을 현실로 만드는 사람들입니다.</p>
+      </header>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ Button / Solid ══════════════ -->
+<section class="sec" id="btn-solid">
+  <h2>Button / Solid</h2>
+  <p class="desc">배경색이 채워진 버튼. 가장 높은 시각 위계를 갖고, 강조해야 할 주요 액션에 쓴다.</p>
+  <p class="src">피그마 <code>Button/Solid · 1008:5233</code> · 변형 30 (Variant 2 × Size 3 × Round 3 × Disable 2)</p>
+
+  <div class="card">
+    <h3>Variant</h3>
+    <p class="note">Primary 는 브랜드 보라, Assitive 는 먹색. 둘 다 글자는 밝은 색이다.</p>
+    <div class="row">
+      <button class="btn btn--solid btn--primary btn--md has-overlay"><span>텍스트</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light"><span>텍스트</span></button>
+    </div>
+    <p class="spec">Primary <code>#543efa</code> / Assitive <code>#151617</code> · 글자 <code>#fafafa</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Size</h3>
+    <p class="note">높이를 고정하지 않는다 — 여백 + 글자 줄높이로 만들어진다. 그래서 글자가 길어져도 안 깨진다.</p>
+    <div class="row">
+      <button class="btn btn--solid btn--primary btn--sm has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+      <button class="btn btn--solid btn--primary btn--md has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+      <button class="btn btn--solid btn--primary btn--lg has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+    </div>
+    <p class="spec">sm 32(여백 7/10 · 글자 12 · 아이콘 16) · md 40(10/12 · 14 · 18) · lg 48(12/14 · 16 · 20)</p>
+  </div>
+
+  <div class="card">
+    <h3>Round</h3>
+    <p class="note">Brand 는 좌상·우하를 6px 사선으로 자른 브랜드 전용 모양이다. 푸터 CTA 버튼이 이걸 쓴다.</p>
+    <div class="row">
+      <button class="btn btn--solid btn--primary btn--md has-overlay"><span>Normal</span></button>
+      <button class="btn btn--solid btn--primary btn--md btn--round-all has-overlay"><span>All</span></button>
+      <button class="btn btn--solid btn--primary btn--md btn--round-brand has-overlay"><span>Brand</span></button>
+      <button class="btn btn--solid btn--assistive btn--md btn--round-brand has-overlay has-overlay--light"><span>Brand</span></button>
+    </div>
+    <p class="spec">Normal 4px · All 9999px · Brand <code>clip-path</code> 6px 컷</p>
+  </div>
+
+  <div class="card">
+    <h3>Icon</h3>
+    <p class="note">앞·뒤 아이콘은 <code>&lt;i class="icon"&gt;</code> 를 넣고 빼는 것으로 정한다. 별도 클래스가 없다.<br><b>어떤 아이콘이 들어갈지는 아직 정해지지 않았다</b> — 피그마의 아이콘 슬롯이 전부 자리표시자(<code>Icon/Normal/-</code>)라, 여기서도 점선 사각형을 그대로 뒀다.</p>
+    <div class="row">
+      <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>None</span></button>
+      <button class="btn btn--solid btn--primary btn--sm has-overlay"><i class="icon i-placeholder"></i><span>Leading</span></button>
+      <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>Trailing</span><i class="icon i-placeholder"></i></button>
+      <button class="btn btn--solid btn--primary btn--sm has-overlay"><i class="icon i-placeholder"></i><span>Both</span><i class="icon i-placeholder"></i></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Disable · Hover</h3>
+    <div class="row">
+      <p class="lbl">Disable = False / True</p>
+      <button class="btn btn--solid btn--primary btn--md has-overlay"><span>텍스트</span></button>
+      <button class="btn btn--solid btn--primary btn--md has-overlay" disabled><span>텍스트</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light"><span>텍스트</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light" disabled><span>텍스트</span></button>
+    </div>
+    <div class="row">
+      <p class="lbl">Interaction = Normal / Hover (아래 줄은 hover 를 고정해서 보여준 것)</p>
+      <button class="btn btn--solid btn--primary btn--md has-overlay demo-hover"><span>텍스트</span></button>
+      <button class="btn btn--solid btn--assistive btn--md has-overlay has-overlay--light demo-hover"><span>텍스트</span></button>
+    </div>
+    <p class="spec">비활성 면 <code>#e4e6e8</code> · 비활성 글자 <code>#a3a8ad</code></p>
+  </div>
+</section>
+
+<!-- ══════════════ Button / Outlined ══════════════ -->
+<section class="sec" id="btn-outlined">
+  <h2>Button / Outlined</h2>
+  <p class="desc">테두리만 있는 버튼. 상대적으로 덜 강조해야 할 액션에 쓴다. 변형이 셋(Primary·Secondary·Assistive)으로 Solid보다 하나 많다.</p>
+  <p class="src">피그마 <code>Button/Outlined · 1008:5587</code> · 변형 36</p>
+
+  <div class="card">
+    <h3>Variant</h3>
+    <p class="note">테두리와 글자색 조합만 다르다. Primary 는 둘 다 보라, Secondary 는 회색 선 + 보라 글자, Assistive 는 회색 선 + 먹색 글자.</p>
+    <div class="row">
+      <button class="btn btn--outlined btn--primary btn--md has-overlay"><span>Primary</span></button>
+      <button class="btn btn--outlined btn--secondary btn--md has-overlay"><span>Secondary</span></button>
+      <button class="btn btn--outlined btn--assistive btn--md has-overlay"><span>Assistive</span></button>
+      <button class="btn btn--outlined btn--primary btn--md has-overlay" disabled><span>Disable</span></button>
+    </div>
+    <p class="spec">선 Primary <code>#543efa</code> / 나머지 <code>#e4e6e8</code> · 글자 <code>#543efa</code> / <code>#543efa</code> / <code>#414549</code> / <code>#c9ccd0</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Size · Round · Icon</h3>
+    <div class="row">
+      <p class="lbl">Size</p>
+      <button class="btn btn--outlined btn--primary btn--sm has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+      <button class="btn btn--outlined btn--primary btn--md has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+      <button class="btn btn--outlined btn--primary btn--lg has-overlay"><i class="icon i-placeholder"></i><span>텍스트</span><i class="icon i-placeholder"></i></button>
+    </div>
+    <div class="row">
+      <p class="lbl">Round — Outlined 에는 Brand 가 없다</p>
+      <button class="btn btn--outlined btn--primary btn--md has-overlay"><span>Normal</span></button>
+      <button class="btn btn--outlined btn--primary btn--md btn--round-all has-overlay"><span>All</span></button>
+    </div>
+    <p class="spec">테두리는 <code>border</code> 가 아니라 <code>inset box-shadow</code> 다 — 피그마 선은 면 안쪽에 그려져 크기를 늘리지 않는데, CSS border 를 쓰면 위아래로 2px 커진다.</p>
+  </div>
+</section>
+
+<!-- ══════════════ Button / Text ══════════════ -->
+<section class="sec" id="btn-text">
+  <h2>Button / Text</h2>
+  <p class="desc">배경도 테두리도 없이 글자만 있는 버튼. 좌우 여백이 0이라 문장 안이나 GNB 메뉴처럼 촘촘한 곳에 쓴다.</p>
+  <p class="src">피그마 <code>Button/Text · 1008:5957</code> · 변형 18 (State 에 Hover 가 별도로 있다)</p>
+
+  <div class="card">
+    <h3>Variant · State</h3>
+    <p class="note">hover 는 색이 아니라 <b>굵기</b>가 바뀐다 — Medium 500 → Bold 700. 굵어지면서 폭이 늘어 옆 요소를 밀 수 있다.</p>
+    <div class="row">
+      <p class="lbl">Normal</p>
+      <button class="btn btn--text btn--primary btn--lg"><span>Primary</span></button>
+      <button class="btn btn--text btn--assistive btn--lg"><span>Assitive</span></button>
+      <button class="btn btn--text btn--primary btn--lg" disabled><span>Disable</span></button>
+    </div>
+    <div class="row">
+      <p class="lbl">Hover (고정 표시)</p>
+      <button class="btn btn--text btn--primary btn--lg demo-hover"><span>Primary</span></button>
+      <button class="btn btn--text btn--assistive btn--lg demo-hover"><span>Assitive</span></button>
+    </div>
+    <div class="row">
+      <p class="lbl">Size · Icon</p>
+      <button class="btn btn--text btn--primary btn--sm"><span>sm</span></button>
+      <button class="btn btn--text btn--primary btn--md"><span>md</span></button>
+      <button class="btn btn--text btn--primary btn--lg"><span>lg</span></button>
+      <button class="btn btn--text btn--primary btn--lg"><span>Trailing</span><i class="icon i-placeholder"></i></button>
+    </div>
+    <p class="spec">글자 Primary <code>#543efa</code> · Assitive <code>#151617</code> · Disable <code>#c9ccd0</code> · 좌우 여백 0 · 위아래 lg 12 / md 10 / sm 7</p>
+  </div>
+</section>
+
+<!-- ══════════════ Icon Button ══════════════ -->
+<section class="sec" id="ibtn">
+  <h2>Icon Button</h2>
+  <p class="desc">아이콘만으로 동작을 표시하는 버튼. 네 종류가 있고 쓰이는 자리가 다르다 — Normal은 GNB 햄버거, Outlined는 게시판 이전·다음, Solid는 강조 액션, Background는 이미지·영상 위.</p>
+  <p class="src">피그마 <code>Button/Icon/Normal 1008:6123 · Outlined 1008:6189 · Solid 1008:6308 · Background 1008:6479</code> · 변형 74</p>
+
+  <div class="card">
+    <h3>Normal — 면도 선도 없다</h3>
+    <p class="note">박스 크기가 아이콘 크기와 같다. hover 막만 아이콘보다 크게 퍼진다.</p>
+    <div class="row">
+      <button class="ibtn ibtn--normal ibtn--sm has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--normal ibtn--lg has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--normal ibtn--lg has-overlay demo-hover"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--normal ibtn--lg has-overlay" disabled><i class="icon i-placeholder"></i></button>
+    </div>
+    <p class="spec">sm 16 · md 20 · lg 24 · hover 막 <code>inset:-50%</code> radius 8</p>
+  </div>
+
+  <div class="card">
+    <h3>Outlined — 테두리</h3>
+    <div class="row">
+      <button class="ibtn ibtn--outlined ibtn--sm has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--outlined ibtn--md has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--outlined ibtn--lg has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--outlined ibtn--lg ibtn--round-all has-overlay"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--outlined ibtn--lg has-overlay demo-hover"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--outlined ibtn--lg has-overlay" disabled><i class="icon i-placeholder"></i></button>
+    </div>
+    <p class="spec">sm 32(여백 8) · md 40(10) · lg 48(12) · 선 <code>#e4e6e8</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Solid — 채운 면</h3>
+    <p class="note">유일하게 <code>xs</code>(24px)가 있다. 크기가 고정값이라 여백으로 만들지 않는다.</p>
+    <div class="row">
+      <p class="lbl">Primary · Size xs / sm / md / lg</p>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--xs has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--sm has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--md has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--lg has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--lg ibtn--round-all has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+    </div>
+    <div class="row">
+      <p class="lbl">Assitive · Disable · Hover</p>
+      <button class="ibtn ibtn--solid ibtn--assistive ibtn--lg has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--assistive ibtn--lg ibtn--round-all has-overlay has-overlay--light"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--lg has-overlay has-overlay--light demo-hover"><i class="icon i-placeholder"></i></button>
+      <button class="ibtn ibtn--solid ibtn--primary ibtn--lg has-overlay" disabled><i class="icon i-placeholder"></i></button>
+    </div>
+    <p class="spec">xs 24(아이콘 12) · sm 32(16) · md 40(20) · lg 48(24) · Round None 은 4px이다</p>
+  </div>
+
+  <div class="card">
+    <h3>Background — 반투명 면</h3>
+    <p class="note">이미지·영상 위에 얹는 버튼이라 배경이 반투명이다. Black은 검정 60%, White는 흰색 32%.</p>
+    <div class="on-img">
+      <div class="row" style="margin:0">
+        <button class="ibtn ibtn--bg ibtn--black ibtn--lg has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--black ibtn--lg ibtn--round-all has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--white ibtn--lg has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--white ibtn--lg ibtn--round-all has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--black ibtn--md has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--black ibtn--sm has-overlay"><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--black ibtn--lg has-overlay" disabled><i class="icon i-placeholder"></i></button>
+        <button class="ibtn ibtn--bg ibtn--white ibtn--lg has-overlay" disabled><i class="icon i-placeholder"></i></button>
+      </div>
+    </div>
+    <p class="spec">Black 검정 60% · White 흰색 32% · 비활성은 둘 다 12% + 아이콘 <code>#c9ccd0</code></p>
+  </div>
+</section>
+
+<!-- ══════════════ Chip ══════════════ -->
+<section class="sec" id="chip">
+  <h2>Chip</h2>
+  <p class="desc">상호작용으로 정보를 분류하거나 상태를 표시할 때 쓴다. 면도 테두리도 없이 굵은 글자 + 셰브론만으로 되어 있어, 목록 위 정렬·필터 트리거로 쓰인다.</p>
+  <p class="src">피그마 <code>Button/Chip/Filter 1008:6628</code> · <code>Chip/Filter/Active 1008:6674</code> · 변형 13</p>
+
+  <div class="card">
+    <h3>Filter — 트리거</h3>
+    <div class="row">
+      <p class="lbl">Size sm / md / lg</p>
+      <button class="chip chip--sm"><span>텍스트</span><i class="chip__caret"></i></button>
+      <button class="chip chip--md"><span>텍스트</span><i class="chip__caret"></i></button>
+      <button class="chip chip--lg"><span>텍스트</span><i class="chip__caret"></i></button>
+    </div>
+    <div class="row">
+      <p class="lbl">State Normal / Expand · Disable</p>
+      <button class="chip chip--md"><span>최신순</span><i class="chip__caret"></i></button>
+      <button class="chip chip--md chip--expand"><span>최신순</span><i class="chip__caret"></i></button>
+      <button class="chip chip--md" disabled><span>최신순</span><i class="chip__caret"></i></button>
+    </div>
+    <p class="spec">sm 24(위아래 3 · 글자 12 Bold) · md 32(6 · 14) · lg 40(8 · 16) · Expand 는 셰브론이 위로 뒤집힌다</p>
+  </div>
+
+  <div class="card">
+    <h3>Filter / Active — 펼쳐진 목록의 한 줄</h3>
+    <p class="note">선택된 줄은 진한 먹색, 나머지는 회색. 굵기는 둘 다 Bold다.</p>
+    <div style="display:inline-flex;flex-direction:column;border:1px solid var(--line-normal);border-radius:var(--radius-small);padding:8px">
+      <button class="chip-option chip-option--lg is-active has-overlay"><span>최신순</span></button>
+      <button class="chip-option chip-option--lg has-overlay"><span>오래된순</span></button>
+      <button class="chip-option chip-option--lg has-overlay"><span>조회순</span></button>
+    </div>
+    <p class="spec">폭 320 고정(피그마) · 활성 <code>#151617</code> · 비활성 <code>#7c8288</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Content Badge — 분류 태그</h3>
+    <p class="note">게시판 카드에 붙는 태그. 클릭 대상이 아니라 표시용이다.</p>
+    <div class="row">
+      <span class="badge badge--lg">텍스트</span>
+      <span class="badge badge--md">텍스트</span>
+      <span class="badge badge--sm">텍스트</span>
+    </div>
+    <p class="spec">면 <code>#e4e6e8</code>(Background/Normal/Assistive) · 글자 <code>#7c8288</code> · lg 여백 4/8 글자 16(Main lg) · md 3/6 14(Common lg·Main md·sm) · sm 2/6 12(Common md-sm)
+    <br>덤프에서는 Common 24개가 <code>#f5f6f7</code>, Main 18개가 <code>#e4e6e8</code> 로 갈려 보였다. 변형이 아니라 <b>반영 안 된 옛 상태</b>였다 — Common 인스턴스가 면을 덮는 <code>bg</code> 레이어 없는 옛 배지를 붙들고 있었다. 최신 상태인 <code>#e4e6e8</code> 로 통일(2026-09-07)</p>
+  </div>
+</section>
+
+<!-- ══════════════ GNB ══════════════ -->
+<section class="sec" id="gnb">
+  <h2>GNB</h2>
+  <p class="desc">웹사이트 전체에 동일하게 적용되는 최상단 내비게이션. 축이 다섯 개(브레이크포인트·모드·배경·스크롤·펼침)라 컴포넌트 중 변형이 가장 많다.</p>
+  <p class="src">피그마 <code>GNB · 1019:15724</code> · 변형 28 · <code>GNB/LNB 1019:15506</code> · <code>Navigation/LNB/List 1019:16302</code> — 2026-09-07 Navigation 섹션이 재구성되어 노드 ID가 <code>1008:</code>에서 <code>1019:</code>로 바뀌었다</p>
+
+  <div class="frame">
+    <p class="frame__cap">Mode=White · Background=True · Scroll=False</p>
+    <header class="gnb gnb--white">
+      <div class="gnb__bar"><div class="gnb__inner">
+        <a class="gnb__logo" href="#gnb"><span class="logo-crissit"></span></a>
+        <div class="gnb__right">
+          <nav class="gnb__menu"><a href="#gnb">회사</a><a href="#gnb">제품</a><a href="#gnb">고객사</a><a href="#gnb">미디어</a></nav>
+          <div class="gnb__util">
+            <button class="gnb__lang">
+              <i class="icon icon--20 i-earth"></i>
+              <span class="gnb__lang-group"><span class="gnb__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+            </button>
+            <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+          </div>
+        </div>
+        <button class="gnb__toggle ibtn ibtn--normal has-overlay"><i class="icon i-menu"></i></button>
+      </div></div>
+    </header>
+  </div>
+
+  <div class="frame">
+    <p class="frame__cap">Mode=Black · Background=True · Scroll=True (아래 1px 선이 생긴다)</p>
+    <header class="gnb gnb--black is-scrolled">
+      <div class="gnb__bar"><div class="gnb__inner">
+        <a class="gnb__logo" href="#gnb"><span class="logo-crissit"></span></a>
+        <div class="gnb__right">
+          <nav class="gnb__menu"><a href="#gnb">회사</a><a href="#gnb">제품</a><a href="#gnb">고객사</a><a href="#gnb">미디어</a></nav>
+          <div class="gnb__util">
+            <button class="gnb__lang">
+              <i class="icon icon--20 i-earth"></i>
+              <span class="gnb__lang-group"><span class="gnb__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+            </button>
+            <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+          </div>
+        </div>
+        <button class="gnb__toggle ibtn ibtn--normal has-overlay"><i class="icon i-menu"></i></button>
+      </div></div>
+    </header>
+  </div>
+
+  <div class="frame">
+    <p class="frame__cap">Expand=True — 메가메뉴(LNB) 256px 가 펼쳐진다</p>
+    <header class="gnb gnb--white is-expanded">
+      <div class="gnb__bar"><div class="gnb__inner">
+        <a class="gnb__logo" href="#gnb"><span class="logo-crissit"></span></a>
+        <div class="gnb__right">
+          <nav class="gnb__menu"><a href="#gnb" style="font-weight:700">제품</a><a href="#gnb">회사</a><a href="#gnb">고객사</a><a href="#gnb">미디어</a></nav>
+          <div class="gnb__util">
+            <button class="gnb__lang">
+              <i class="icon icon--20 i-earth"></i>
+              <span class="gnb__lang-group"><span class="gnb__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+            </button>
+            <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+          </div>
+        </div>
+        <button class="gnb__toggle ibtn ibtn--normal has-overlay"><i class="icon i-menu"></i></button>
+      </div></div>
+      <div class="gnb__lnb"><div class="gnb__lnb-inner">
+        <h3 class="gnb__lnb-title">제품</h3>
+        <div class="gnb__lnb-side">
+          <div class="gnb__lnb-list">
+            <a href="#gnb" class="is-active"><span>Prixm AI</span><i class="icon i-placeholder"></i></a>
+            <a href="#gnb"><span>Toxmind</span><i class="icon i-placeholder"></i></a>
+            <a href="#gnb" class="is-blank"><span>Knoden AI</span><i class="icon i-blank"></i></a>
+          </div>
+          <div class="gnb__lnb-img"></div>
+        </div>
+      </div></div>
+    </header>
+  </div>
+
+  <div class="frame frame--narrow">
+    <p class="frame__cap">Mobile(sm) · 높이 48 · 햄버거 (창을 1023px 이하로 줄이면 위 예시도 이렇게 바뀐다)</p>
+    <header class="gnb gnb--white" style="--gnb-h:48px">
+      <div class="gnb__bar" style="height:48px"><div class="gnb__inner" style="padding:4px 20px">
+        <a class="gnb__logo" href="#gnb"><span class="logo-crissit"></span></a>
+        <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-menu"></i></button>
+      </div></div>
+    </header>
+  </div>
+
+  <div class="card">
+    <h3>메가메뉴 목록 항목 — <code>Navigation/LNB/List</code></h3>
+    <p class="note">축이 셋(배경 × 상태 × 타입)에 변형 10개, 그리고 축 밖에 불린 <code>Tailing Icon</code>(기본 켜짐)이 하나 더 있다. <b>Active</b>(굵어짐)와 <b>외부 링크</b>(↗)가 정식 상태다.</p>
+    <div class="row" style="align-items:flex-start;gap:64px">
+      <div>
+        <p class="lbl" style="margin-bottom:8px">밝은 배경 — Normal / Hover / Active / 외부 링크 / 아이콘 끔</p>
+        <div class="gnb__lnb-list" style="color:var(--label-normal)">
+          <a href="#gnb"><span>Prixm AI</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" style="color:var(--label-normal)"><span>Toxmind (hover)</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" class="is-active"><span>Knoden AI</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" class="is-blank"><span>외부 링크</span><i class="icon i-blank"></i></a>
+          <a href="#gnb"><span>Tailing Icon = false</span></a>
+        </div>
+      </div>
+      <div class="gnb gnb--black" style="padding:20px;border-radius:var(--radius-medium)">
+        <p class="lbl" style="margin-bottom:8px;color:var(--label-inverse-assistive)">어두운 배경</p>
+        <div class="gnb__lnb-list">
+          <a href="#gnb"><span>Prixm AI</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" style="color:var(--label-inverse-normal)"><span>Toxmind (hover)</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" class="is-active"><span>Knoden AI</span><i class="icon i-placeholder"></i></a>
+          <a href="#gnb" class="is-blank"><span>외부 링크</span><i class="icon i-blank"></i></a>
+          <a href="#gnb"><span>Tailing Icon = false</span></a>
+        </div>
+      </div>
+    </div>
+    <p class="spec">항목 236×24 · 목록 간격 12 · link 은 라벨이 남는 폭을 다 차지하고 아이콘이 우측 끝(간격 0) · Blank 는 라벨 폭만 차지하고 간격 2 뒤에 ↗ · 밝은 배경 <code>#7c8288</code>→<code>#151617</code> · 어두운 배경 <code>#e4e6e8</code>→<code>#fafafa</code> · Active 는 굵기 500→700
+    <br><b>link 타입의 아이콘은 아직 미정이다</b> — 피그마에서 <code>Icon/Normal/-</code> 의 <code>Name=dummy</code> 변형(그 세트에 변형이 dummy 하나뿐인 자리표시자)이고, 실제 메가메뉴 5개 항목도 전부 dummy 다. 임의로 화살표를 넣지 않고 점선 사각형을 그대로 뒀다
+    <br><b>주의</b> — 이 컴포넌트의 <code>Mode</code> 이름이 다른 컴포넌트와 <b>반대</b>다. GNB·Footer 는 <code>Mode=White</code>가 밝은 배경인데 여기서는 어두운 배경용(밝은 글자)이다. 실제 조립을 보면 <code>GNB/LNB Mode=White</code>(흰 배경) 안에 <code>List Mode=Black</code>이 들어간다</p>
+
+  <div class="card">
+    <p class="note" style="margin:0">
+      <b>실측</b> · 바 높이 64(xl·lg) / 48(md·sm) · 컨테이너 최대 1280, 좌우 여백 20 ·
+      메뉴 항목 간격 32 · 메뉴군↔유틸군 간격 80 · 메뉴 항목은 Button/Text lg ·
+      언어 선택은 earth 20 + KR(폭 22) + chevron 16 · CTA 는 Button/Solid sm Primary ·
+      LNB 제목 Title1/Bold 32, 목록 항목 폭 236, 항목 간격 12, 이미지 160×200(좌상·우하 8px 컷)
+      <br><b>Background=False</b> 는 배경을 없애는 게 아니라 <b>불투명도 0</b>이다 — 면은 그대로 있고 투명해진다.
+      <b>햄버거 크기가 다르다</b> — 태블릿 24 · 모바일 20. 그래서 마크업에 크기 클래스를 붙이지 않고 <code>gnb.css</code>가 정한다.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ Dropdown list ══════════════ -->
+<section class="sec" id="dropdown">
+  <h2>Dropdown list</h2>
+  <p class="desc">Chip / Filter 를 펼쳤을 때 아래에 뜨는 목록 패널. 행은 앞의 Chip / Filter / Active 를 그대로 쓴다.</p>
+  <p class="src">피그마 <code>Dropdown_list · 1010:17342</code> · 정책은 <code>[Media_Web_Desktop] 기능 및 정책 정의서</code> §2</p>
+
+  <div class="card">
+    <h3>연도 목록 — 5행</h3>
+    <p class="note">첫 행이 현재 선택값이다. 5행까지는 그대로 보이고, 넘으면 스크롤바가 생긴다.</p>
+    <div class="row" style="align-items:flex-start;height:300px">
+      <div class="dd-wrap">
+        <button class="chip chip--lg chip--expand"><span>전체 연도</span><i class="chip__caret"></i></button>
+        <div class="dd">
+          <button class="chip-option chip-option--lg is-active has-overlay"><span>전체 연도</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>2026년</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>2025년</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>2024년</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>2023년</span></button>
+        </div>
+      </div>
+      <div class="dd-wrap" style="margin-left:200px">
+        <button class="chip chip--lg chip--expand"><span>전체 월</span><i class="chip__caret"></i></button>
+        <div class="dd">
+          <button class="chip-option chip-option--lg is-active has-overlay"><span>전체 월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>09월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>08월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>07월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>06월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>05월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>04월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>03월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>02월</span></button>
+          <button class="chip-option chip-option--lg has-overlay"><span>01월</span></button>
+        </div>
+      </div>
+    </div>
+    <p class="spec">패널 208 폭 · 여백 8 · radius 4 · 그림자 <code>Strong</code> · 행 폭 192, 높이 40(lg), 간격 4 · 칩 아래 8 띄움 · 스크롤바 폭 4</p>
+  </div>
+
+  <div class="card">
+    <h3>정책 — 연도·월 필터가 서로 묶여 있다</h3>
+    <p class="note" style="margin:0">
+      ① 처음에는 <b>[전체 연도]만 활성</b>이고 [전체 월]은 비활성이다 — 연도를 고르지 않으면 월을 고를 수 없다 ·
+      ② 연도를 고르면 칩 라벨이 <code>2026년</code>으로 바뀌고, [전체 월]이 활성화되고 [초기화]가 활성화된다 ·
+      ③ <b>올해는 현재 달까지만</b> 고를 수 있다(9월이면 1~9월). 지난해는 12개월 전부 ·
+      ④ 목록이 5개를 넘으면 스크롤바가 생긴다 ·
+      ⑤ 결과가 없으면 목록 자리에 Empty data 를 넣는다
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ Filter bar · Empty ══════════════ -->
+<section class="sec" id="filter">
+  <h2>Filter bar · Empty data</h2>
+  <p class="desc">목록 위의 필터 줄과, 결과가 없을 때 목록 자리에 들어가는 빈 화면.</p>
+  <p class="src">피그마 <code>News_main · 1010:17244</code></p>
+
+  <div class="card">
+    <h3>필터 줄 — 처음 상태</h3>
+    <p class="note">[전체 월]이 비활성이다. 초기화 버튼도 아직 누를 것이 없다.</p>
+    <div class="filter-bar">
+      <div class="filter-bar__chips">
+        <button class="chip chip--lg"><span>전체 연도</span><i class="chip__caret"></i></button>
+        <button class="chip chip--lg" disabled><span>전체 월</span><i class="chip__caret"></i></button>
+      </div>
+      <button class="btn btn--text btn--md btn--assistive" disabled>
+        <i class="icon icon--18 i-reset"></i><span>초기화</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>필터 줄 — 연도를 고른 뒤</h3>
+    <p class="note">라벨이 <code>2024년</code>으로 바뀌고 초기화가 활성화됐다. 월은 여전히 <code>전체 월</code>이지만 이제 누를 수 있다.</p>
+    <div class="filter-bar">
+      <div class="filter-bar__chips">
+        <button class="chip chip--lg"><span>2024년</span><i class="chip__caret"></i></button>
+        <button class="chip chip--lg"><span>전체 월</span><i class="chip__caret"></i></button>
+      </div>
+      <button class="btn btn--text btn--md btn--assistive">
+        <i class="icon icon--18 i-reset"></i><span>초기화</span>
+      </button>
+    </div>
+    <div class="empty">검색 결과가 없습니다.</div>
+    <p class="spec">필터 줄 좌우 벌림 · 왼쪽 여백 20 · 칩 간격 32 · 초기화 = Button/Text md + reset 아이콘 18 · 필터 줄↔목록 간격 40 · Empty 위 80, Label1/Medium 16 <code>#7c8288</code></p>
+  </div>
+</section>
+
+<!-- ══════════════ GNB 드로어 ══════════════ -->
+<section class="sec" id="drawer">
+  <h2>GNB 드로어 <span style="font:var(--label-2-medium);color:var(--label-alternative)">— 모바일 · 태블릿</span></h2>
+  <p class="desc">햄버거를 누르면 열리는 전체 메뉴. 데스크톱 메가메뉴와는 다른 컴포넌트다 — 여기서는 메뉴가 아코디언으로 펼쳐지고, 하단에 언어 선택과 문의하기가 붙는다.</p>
+  <p class="src">피그마 <code>GNB/LNB (모바일·태블릿) · 1010:18163~18175</code> · 가이드 문서 <code>[GNB_Reponsible]</code></p>
+
+  <div class="card">
+    <h3>Mobile(sm) — 전체 폭</h3>
+    <p class="note">모바일에서는 드로어가 화면을 다 덮는다. 스크림이 없다.</p>
+    <div class="frame" style="margin:0">
+      <p class="frame__cap">360 × 560 — 닫힘 / 회사 펼침 / 제품 펼침</p>
+      <div style="display:flex;gap:1px;background:var(--line-normal);overflow-x:auto">
+        <!-- 1) 전부 닫힘 -->
+        <div class="drawer drawer--inline drawer--sm is-open" style="width:360px;flex:none;height:560px">
+          <div class="drawer__panel">
+            <div class="drawer__body">
+              <div class="drawer__top">
+                <div class="drawer__bar">
+                  <a class="drawer__logo" href="#drawer"><span class="logo-crissit"></span></a>
+                  <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-close"></i></button>
+                </div>
+                <div class="drawer__list">
+                  <div class="drawer__item">
+                    <button class="drawer__link"><span>회사</span><i class="icon icon--20 i-chevron-down"></i></button>
+                  </div>
+                  <div class="drawer__item">
+                    <button class="drawer__link"><span>제품</span><i class="icon icon--20 i-chevron-down"></i></button>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>고객사</span></a>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>미디어</span></a>
+                  </div>
+                </div>
+              </div>
+              <div class="drawer__util">
+                <button class="drawer__lang">
+                  <i class="icon icon--20 i-earth"></i>
+                  <span class="drawer__lang-group"><span class="drawer__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+                </button>
+                <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 2) 회사 펼침 -->
+        <div class="drawer drawer--inline drawer--sm is-open" style="width:360px;flex:none;height:560px">
+          <div class="drawer__panel">
+            <div class="drawer__body">
+              <div class="drawer__top">
+                <div class="drawer__bar">
+                  <a class="drawer__logo" href="#drawer"><span class="logo-crissit"></span></a>
+                  <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-close"></i></button>
+                </div>
+                <div class="drawer__list">
+                  <div class="drawer__item is-open">
+                    <button class="drawer__link"><span>회사</span><i class="icon icon--20 i-chevron-down"></i></button>
+                    <div class="drawer__sub">
+                      <div class="drawer__sub-row">
+                        <a href="#drawer"><span>회사소개</span></a>
+                        <a href="#drawer"><span>연혁</span></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="drawer__item">
+                    <button class="drawer__link"><span>제품</span><i class="icon icon--20 i-chevron-down"></i></button>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>고객사</span></a>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>미디어</span></a>
+                  </div>
+                </div>
+              </div>
+              <div class="drawer__util">
+                <button class="drawer__lang">
+                  <i class="icon icon--20 i-earth"></i>
+                  <span class="drawer__lang-group"><span class="drawer__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+                </button>
+                <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 3) 제품 펼침 (외부 링크 포함) -->
+        <div class="drawer drawer--inline drawer--sm is-open" style="width:360px;flex:none;height:560px">
+          <div class="drawer__panel">
+            <div class="drawer__body">
+              <div class="drawer__top">
+                <div class="drawer__bar">
+                  <a class="drawer__logo" href="#drawer"><span class="logo-crissit"></span></a>
+                  <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-close"></i></button>
+                </div>
+                <div class="drawer__list">
+                  <div class="drawer__item">
+                    <button class="drawer__link"><span>회사</span><i class="icon icon--20 i-chevron-down"></i></button>
+                  </div>
+                  <div class="drawer__item is-open">
+                    <button class="drawer__link"><span>제품</span><i class="icon icon--20 i-chevron-down"></i></button>
+                    <div class="drawer__sub">
+                      <div class="drawer__sub-row">
+                        <a href="#drawer"><span>Prixm AI</span></a>
+                        <a href="#drawer"><span>Toxmind</span></a>
+                      </div>
+                      <div class="drawer__sub-row drawer__sub-row--auto">
+                        <a href="#drawer"><span>Knoden AI</span><i class="icon icon--20 i-blank"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>고객사</span></a>
+                  </div>
+                  <div class="drawer__item">
+                    <a class="drawer__link" href="#drawer"><span>미디어</span></a>
+                  </div>
+                </div>
+              </div>
+              <div class="drawer__util">
+                <button class="drawer__lang">
+                  <i class="icon icon--20 i-earth"></i>
+                  <span class="drawer__lang-group"><span class="drawer__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+                </button>
+                <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="spec">여백 좌우 20 아래 20 · 상단 바 위아래 4 · 상단 바↔목록 20 · 항목 간격 4 + 1px 선 · 1차 항목 위아래 12 Label1/Medium 16 · 펼친 영역 위 8 아래 16 · 2차 항목 위아래 8 <code>#7c8288</code>, 한 줄에 2칸 · 외부 링크는 뒤에 blank 아이콘</p>
+  </div>
+
+  <div class="card">
+    <h3>Tablet(md) — 우측 384px 패널 + 스크림</h3>
+    <p class="note">태블릿에서는 드로어가 화면 절반(384px)만 차지하고, 나머지는 스크림으로 덮인다.</p>
+    <div class="frame" style="margin:0;max-width:768px">
+      <p class="frame__cap">768 × 480</p>
+      <div class="drawer drawer--inline drawer--md is-open" style="height:480px">
+        <div class="drawer__scrim"></div>
+        <div class="drawer__panel">
+          <div class="drawer__body">
+            <div class="drawer__top">
+              <div class="drawer__bar">
+                <a class="drawer__logo" href="#drawer"><span class="logo-crissit"></span></a>
+                <button class="ibtn ibtn--normal ibtn--md has-overlay"><i class="icon i-close"></i></button>
+              </div>
+              <div class="drawer__list">
+                <div class="drawer__item is-open">
+                  <button class="drawer__link"><span>회사</span><i class="icon icon--20 i-chevron-down"></i></button>
+                  <div class="drawer__sub">
+                    <div class="drawer__sub-row">
+                      <a href="#drawer"><span>회사소개</span></a>
+                      <a href="#drawer"><span>연혁</span></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="drawer__item">
+                  <button class="drawer__link"><span>제품</span><i class="icon icon--20 i-chevron-down"></i></button>
+                </div>
+                <div class="drawer__item">
+                  <a class="drawer__link" href="#drawer"><span>고객사</span></a>
+                </div>
+                <div class="drawer__item">
+                  <a class="drawer__link" href="#drawer"><span>미디어</span></a>
+                </div>
+              </div>
+            </div>
+            <div class="drawer__util">
+              <button class="drawer__lang">
+                <i class="icon icon--20 i-earth"></i>
+                <span class="drawer__lang-group"><span class="drawer__lang-code">KR</span><i class="icon icon--16 i-chevron-down"></i></span>
+              </button>
+              <button class="btn btn--solid btn--primary btn--sm has-overlay"><span>문의하기</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="spec">스크림 <code>#151617</code> 48% · 패널 384 우측 고정 · 실제 화면에서는 <code>.drawer</code>가 <code>position:fixed</code>다. 위 예시는 액자에 넣어 보려고 <code>.drawer--inline</code>을 붙인 것이다</p>
+  </div>
+</section>
+
+<!-- ══════════════ Footer ══════════════ -->
+<section class="sec" id="footer">
+  <h2>Footer</h2>
+  <p class="desc">사이트 하단 공통 영역. 위에 붙는 CTA 블록(Section_Contact)은 켜고 끌 수 있는 선택 슬롯이다.</p>
+  <p class="src">피그마 <code>Footer · 1008:7323</code> · 변형 8 (Breakpoint 4 × Mode 2)</p>
+
+  <div class="frame">
+    <p class="frame__cap">Mode=Black · Section_Contact 켬</p>
+    <div class="ft ft--black">
+      <div class="ft__cta"><div class="ft__cta-inner">
+        <div class="ft__cta-text">
+          <h2><span class="ft__cta-lead">성공적인 AX 도입을</span><br>함께 만듭니다</h2>
+          <p>도입이 필요한 환경을 파악하고 요청사항 및 보안 요건에 맞는 구성으로 제안합니다.</p>
+        </div>
+        <button class="btn btn--solid btn--primary btn--md has-overlay"><span>무료 컨설팅 신청</span></button>
+      </div></div>
+      <div class="ft__inner"><div class="ft__row">
+        <a class="ft__brand" href="#footer"><span class="logo-realizers"></span></a>
+        <div class="ft__cols-wrap">
+          <div class="ft__cols">
+            <div class="ft__col">
+              <p class="ft__col-head">회사</p>
+              <div class="ft__col-list"><a href="#footer">회사소개</a><a href="#footer">연혁</a><a href="#footer">미디어</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">제품</p>
+              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a href="#footer">Knoden AI</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">미디어</p>
+              <div class="ft__col-list"><a href="#footer">보도 자료</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">서비스 이용안내</p>
+              <div class="ft__col-list"><a href="#footer">문의하기</a><a href="#footer">개인정보 처리방침</a></div>
+            </div>
+          </div>
+          <div class="ft__legal">
+            <div class="ft__legal-line"><span>사업자 등록 번호 : 863-81-03090</span><span>|</span><span>대표 : 박종진</span></div>
+            <span>경기 용인시 수지구 포은대로 59번길 시그니처광교, 1001호, 717호</span>
+            <span>© 2026 crissit Inc. All rights reserved.</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <p class="frame__cap">Mode=White · Section_Contact 끔</p>
+    <div class="ft ft--white">
+      <div class="ft__inner"><div class="ft__row">
+        <a class="ft__brand" href="#footer"><span class="logo-realizers"></span></a>
+        <div class="ft__cols-wrap">
+          <div class="ft__cols">
+            <div class="ft__col">
+              <p class="ft__col-head">회사</p>
+              <div class="ft__col-list"><a href="#footer">회사소개</a><a href="#footer">연혁</a><a href="#footer">미디어</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">제품</p>
+              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a href="#footer">Knoden AI</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">미디어</p>
+              <div class="ft__col-list"><a href="#footer">보도 자료</a></div>
+            </div>
+            <div class="ft__col">
+              <p class="ft__col-head">서비스 이용안내</p>
+              <div class="ft__col-list"><a href="#footer">문의하기</a><a href="#footer">개인정보 처리방침</a></div>
+            </div>
+          </div>
+          <div class="ft__legal">
+            <div class="ft__legal-line"><span>사업자 등록 번호 : 863-81-03090</span><span>|</span><span>대표 : 박종진</span></div>
+            <span>경기 용인시 수지구 포은대로 59번길 시그니처광교, 1001호, 717호</span>
+            <span>© 2026 crissit Inc. All rights reserved.</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="note" style="margin:0">
+      <b>실측</b> · 높이 392(xl·lg) / 530(md) / 550(sm) · 위 96 아래 48 ·
+      로고 165×64 · 메뉴 열 4개, 열 폭 160, 열 간격 40 · 메뉴군↔법인정보 간격 64 ·
+      <b>Black</b> 열 제목 <code>#c9ccd0</code> / 항목 <code>#fafafa</code> / 법인정보 <code>#c9ccd0</code> ·
+      <b>White</b> 열 제목·법인정보 <code>#a3a8ad</code> / 항목 <code>#151617</code> ·
+      CTA 위 120 아래 40, 바탕 두 겹(세로 그라디언트 + 상단 보라 빛 번짐 40%, 높이 xl·lg 268 / md 256 / sm 264),
+      제목 Heading2/Bold 40 — 첫 줄이 한 단계 연하다, 버튼 Solid md <b>Normal</b>(2026-09-07 Brand→Normal로 변경됨)
+    </p>
+    <p class="note" style="margin:16px 0 0">
+      <b>태블릿(md 768) · 모바일(sm 360)</b> — 창을 1023px 이하로 줄이면 바뀐다.
+      구조가 아예 다르다: 데스크톱은 「로고 | 메뉴열」 가로인데 md·sm 은 세로로 쌓이고,
+      메뉴 4열이 <b>2×2</b> 로 접히며(열이 각각 절반을 꽉 채운다, 줄 간격 40),
+      CTA 는 제목·본문·버튼이 모두 <b>가운데 정렬</b>로 바뀐다.
+      위 32 아래 48 · 로고↔메뉴↔법인정보 간격 48 · 로고 124×48 · CTA 위 64 아래 32
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ Pagination ══════════════ -->
+<section class="sec" id="pgn">
+  <h2>Pagination</h2>
+  <p class="desc">많은 양의 데이터를 여러 페이지로 나누어 표시할 때 쓴다. 숫자 칸은 전용 컴포넌트(Icon Button/Num)이고, 화살표는 Icon Button/Background 의 White 를 쓴다.</p>
+  <p class="src">피그마 <code>Navigation/Pagination 1008:7671</code> · <code>Icon Button/Num 1008:7688</code></p>
+
+  <div class="card">
+    <h3>Size md · sm</h3>
+    <div class="row">
+      <nav class="pgn pgn--md">
+        <button class="ibtn ibtn--bg ibtn--white ibtn--md has-overlay" disabled><i class="icon i-arrow-left"></i></button>
+        <button class="pgn__num is-active">1</button>
+        <button class="pgn__num has-overlay">2</button>
+        <button class="pgn__num has-overlay">3</button>
+        <button class="pgn__num has-overlay">4</button>
+        <button class="pgn__num has-overlay">5</button>
+        <button class="ibtn ibtn--bg ibtn--white ibtn--md has-overlay"><i class="icon i-arrow-right"></i></button>
+      </nav>
+    </div>
+    <div class="row">
+      <nav class="pgn pgn--sm">
+        <button class="ibtn ibtn--bg ibtn--white ibtn--sm has-overlay" disabled><i class="icon i-arrow-left"></i></button>
+        <button class="pgn__num is-active">1</button>
+        <button class="pgn__num has-overlay">2</button>
+        <button class="pgn__num has-overlay">3</button>
+        <button class="pgn__num has-overlay">4</button>
+        <button class="pgn__num has-overlay">5</button>
+        <button class="ibtn ibtn--bg ibtn--white ibtn--sm has-overlay"><i class="icon i-arrow-right"></i></button>
+      </nav>
+    </div>
+    <div class="row">
+      <p class="lbl">Num — Active False / True · Hover</p>
+      <nav class="pgn pgn--md">
+        <button class="pgn__num has-overlay">1</button>
+        <button class="pgn__num is-active">1</button>
+        <button class="pgn__num has-overlay demo-hover">1</button>
+      </nav>
+    </div>
+    <p class="spec">항목 간격 8 · md 40×40(글자 14 Bold, 숫자 칸 폭 32) · sm 32×32(12 Bold) · 활성 면 <code>#e4e6e8</code> radius 4 · 화살표 흰색 반투명이라 갈 페이지가 없으면 12%, 있으면 32%로 농도가 다르다</p>
+  </div>
+</section>
+
+<!-- ══════════════ Board list / Main ══════════════ -->
+<section class="sec" id="bl-main">
+  <h2>Board list / Main</h2>
+  <p class="desc">미디어·소식 영역의 대표 기사. 최대 5건이 8초마다 자동으로 넘어가고, 남은 시간은 일시정지 버튼 테두리가 차오르며 표시된다.</p>
+  <p class="src">피그마 <code>Content/Boardlist/Main · 1008:7744</code> · 변형 6 · 정책 <code>[Media_Web_Desktop] 기능 및 정책 정의서</code> §1 · 동작 <code>js/boardlist-main.js</code></p>
+
+  <div class="card">
+    <h3>3건 — 실제로 도는 상태</h3>
+    <p class="note">그림이 아니라 <b>동작하는 것</b>이다. 8초에 한 번 넘어가고, 그 8초 동안 일시정지 버튼 테두리가 상단 중앙에서 시계방향으로 <b>연속으로</b> 한 바퀴 찬다. 일시정지를 누르면 차오르던 자리에 그대로 서고, 이전·다음을 누르면 처음부터 다시 센다. 화면 밖으로 나가거나 탭이 백그라운드로 가면 스스로 멈춘다.</p>
+    <div data-bl-rotator data-interval="8000">
+      <div class="bl bl-main" data-bl-slide>
+        <div class="bl__img"></div>
+        <div class="bl-main__body">
+          <div class="bl-main__head">
+            <div class="bl-main__text">
+              <span class="bl__date">26.09.01</span>
+              <h3 class="bl-main__title">[2026 혁신 바이오 기술대상] 크리스아이티, 바이오·화학 AI 플랫폼 사업 확대</h3>
+              <p class="bl-main__summary">[2026 혁신 바이오 기술대상] 크리스아이티, 바이오·화학 AI 플랫폼 사업 확대로 국내 연구 현장의 데이터 활용 수준을 끌어올린다.</p>
+            </div>
+            <div class="bl__badges"><span class="badge badge--lg">보도자료</span><span class="badge badge--lg">수상</span><span class="badge badge--lg">플랫폼</span></div>
+          </div>
+          <div class="bl-main__nav">
+            <div class="bl-main__nav-group">
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+            </div>
+            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+              <i class="icon i-pause"></i>
+              <span class="bl-prog__ring" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bl bl-main" data-bl-slide hidden>
+        <div class="bl__img"></div>
+        <div class="bl-main__body">
+          <div class="bl-main__head">
+            <div class="bl-main__text">
+              <span class="bl__date">26.08.20</span>
+              <h3 class="bl-main__title">사내 문서와 자료를 안전하게 지식화하는 Prixm AI 도입 사례</h3>
+              <p class="bl-main__summary">폐쇄망 환경에서도 문서 검색과 요약이 가능하도록 구성한 사례를 정리했습니다.</p>
+            </div>
+            <div class="bl__badges"><span class="badge badge--lg">도입사례</span><span class="badge badge--lg">보안</span></div>
+          </div>
+          <div class="bl-main__nav">
+            <div class="bl-main__nav-group">
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+            </div>
+            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+              <i class="icon i-pause"></i>
+              <span class="bl-prog__ring" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bl bl-main" data-bl-slide hidden>
+        <div class="bl__img"></div>
+        <div class="bl-main__body">
+          <div class="bl-main__head">
+            <div class="bl-main__text">
+              <span class="bl__date">26.07.11</span>
+              <h3 class="bl-main__title">AI 직원이 핵심 업무를 처리한다 — 업무 자동화 파트너십 체결</h3>
+              <p class="bl-main__summary">반복 업무를 맡는 AI 직원 구성을 함께 설계하는 파트너십을 맺었습니다.</p>
+            </div>
+            <div class="bl__badges"><span class="badge badge--lg">파트너십</span></div>
+          </div>
+          <div class="bl-main__nav">
+            <div class="bl-main__nav-group">
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+            </div>
+            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+              <i class="icon i-pause"></i>
+              <span class="bl-prog__ring" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="spec">좌우 간격 48 · 이미지 폭 505 · 본문 위·아래 벌림 gap 48 · 제목 Title2/Bold 24(2줄 자름) · 요약 Body1/Regular 18(1줄 자름) · 배지 lg, 간격 8 · 아래 줄 = 이전·다음(간격 12) + 우측 일시정지 · State=Hover 는 카드 전체 불투명도 48%</p>
+  </div>
+
+  <div class="card">
+    <h3>Progress — 3초로 줄여 본 것</h3>
+    <p class="note">위 카드와 같은 스크립트인데 주기만 <b>3초</b>로 줄였다. 8초를 기다리지 않고 테두리가 <b>연속으로</b> 차오르는 것과, 일시정지가 <b>그 자리에 서는 것</b>을 바로 볼 수 있다. 버튼을 누르면 아이콘도 <code>i-pause</code> ↔ <code>i-play</code> 로 바뀐다.</p>
+    <div class="row" style="align-items:center;gap:32px" data-bl-rotator data-interval="3000">
+      <span data-bl-slide class="t-title-2">1번 기사</span>
+      <span data-bl-slide class="t-title-2" hidden>2번 기사</span>
+      <span data-bl-slide class="t-title-2" hidden>3번 기사</span>
+      <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+        <i class="icon i-pause"></i>
+        <span class="bl-prog__ring" aria-hidden="true"></span>
+      </button>
+    </div>
+    <p class="spec">피그마 목업은 이 동작을 <b>4장의 정지 이미지</b>로 그려 뒀다(우상 → 우하 → 좌하 → 좌상). 그건 피그마가 움직임을 못 그려서 쓴 표현 방식이지 컴포넌트의 상태가 아니라, 코드에는 남기지 않았다 — 각도는 그냥 연속으로 돈다. 정의서 문구도 “차오르며”라 연속이 맞다</p>
+  </div>
+
+  <div class="card">
+    <h3>1건뿐일 때</h3>
+    <p class="note">기사가 하나면 이전·다음을 감추고 자동 전환도 돌지 않는다(정의서 🅓). 스크립트가 <code>data-bl-slide</code> 개수를 보고 <code>.bl-main--single</code> 을 스스로 붙인다 — 마크업에서 지울 필요가 없다.</p>
+    <div data-bl-rotator>
+      <div class="bl bl-main" data-bl-slide>
+        <div class="bl__img"></div>
+        <div class="bl-main__body">
+          <div class="bl-main__head">
+            <div class="bl-main__text">
+              <span class="bl__date">26.09.01</span>
+              <h3 class="bl-main__title">등록된 보도자료가 한 건일 때</h3>
+              <p class="bl-main__summary">이전·다음 버튼이 사라지고 자동 전환도 돌지 않는다. 일시정지 버튼은 남는다.</p>
+            </div>
+          </div>
+          <div class="bl-main__nav">
+            <div class="bl-main__nav-group">
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-prev aria-label="이전 기사"><i class="icon i-arrow-left"></i></button>
+              <button class="ibtn ibtn--outlined ibtn--lg has-overlay" data-bl-next aria-label="다음 기사"><i class="icon i-arrow-right"></i></button>
+            </div>
+            <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+              <i class="icon i-pause"></i>
+              <span class="bl-prog__ring" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ Board list / Common ══════════════ -->
+<section class="sec" id="bl-common">
+  <h2>Board list / Common</h2>
+  <p class="desc">목록과 그리드에 반복해서 쓰는 카드. 가로형(Horizontal)은 목록 페이지, 세로형(Vertical)은 관련 기사 그리드에 쓴다.</p>
+  <p class="src">피그마 <code>Content/Boardlist/Common · 1008:7915</code> · 변형 8 (Breakpoint 2 × State 2 × Type 2)</p>
+
+  <div class="card">
+    <h3>Horizontal — 목록형</h3>
+    <div>
+      <a class="bl bl-h" href="#bl-common">
+        <div class="bl-h__body">
+          <div class="bl-h__text">
+            <span class="bl__date">26.09.01</span>
+            <h3 class="bl-h__title bl__clamp2">뉴스 제목은 최대 2줄입니다.<br>뉴스 제목은 최대 2줄입니다.</h3>
+          </div>
+          <div class="bl__badges"><span class="badge badge--md">보도자료</span><span class="badge badge--md">수상</span></div>
+        </div>
+        <div class="bl__img"></div>
+      </a>
+      <a class="bl bl-h" href="#bl-common">
+        <div class="bl-h__body">
+          <div class="bl-h__text">
+            <span class="bl__date">26.08.20</span>
+            <h3 class="bl-h__title bl__clamp2">뉴스 제목은 최대 2줄입니다.</h3>
+          </div>
+        </div>
+        <div class="bl__img"></div>
+      </a>
+      <a class="bl bl-h demo-hover" href="#bl-common">
+        <div class="bl-h__body">
+          <div class="bl-h__text">
+            <span class="bl__date">26.08.11</span>
+            <h3 class="bl-h__title bl__clamp2">State=Hover — 카드 전체가 48%로 흐려진다</h3>
+          </div>
+        </div>
+        <div class="bl__img"></div>
+      </a>
+    </div>
+    <p class="spec">위아래 32 · 아래 1px 선 · 제목 Label1/Bold 16 최대 2줄 · 날짜 Label2/Medium 14 · 이미지 176×122</p>
+  </div>
+
+  <div class="card">
+    <h3>Vertical — 그리드형</h3>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <a class="bl bl-v" href="#bl-common">
+        <div class="bl__img"></div>
+        <div class="bl-v__body">
+          <div class="bl-v__text">
+            <span class="bl__date">26.09.01</span>
+            <h3 class="bl-v__title bl__clamp2">뉴스 제목은 최대 2줄입니다.<br>뉴스 제목은 최대 2줄입니다.</h3>
+          </div>
+          <div class="bl__badges"><span class="badge badge--md">보도자료</span></div>
+        </div>
+      </a>
+      <a class="bl bl-v" href="#bl-common">
+        <div class="bl__img"></div>
+        <div class="bl-v__body">
+          <div class="bl-v__text">
+            <span class="bl__date">26.08.20</span>
+            <h3 class="bl-v__title bl__clamp2">뉴스 제목은 최대 2줄입니다.</h3>
+          </div>
+        </div>
+      </a>
+      <a class="bl bl-v demo-hover" href="#bl-common">
+        <div class="bl__img"></div>
+        <div class="bl-v__body">
+          <div class="bl-v__text">
+            <span class="bl__date">26.08.11</span>
+            <h3 class="bl-v__title bl__clamp2">State=Hover</h3>
+          </div>
+        </div>
+      </a>
+    </div>
+    <p class="spec">폭 295 · 이미지 높이 190 · 이미지↔본문 간격 16 · 제목 Bold 18 최대 2줄 · 날짜 Label1/Medium 16</p>
+  </div>
+</section>
+
+<!-- ══════════════ Board list / Recommand ══════════════ -->
+<section class="sec" id="bl-rec">
+  <h2>Board list / Recommand</h2>
+  <p class="desc">상세 페이지 사이드에서 다른 글을 추천하는 줄. 제목만 있고 이미지·날짜가 없다.</p>
+  <p class="src">피그마 <code>Content/Boardlist/Recommand · 1008:8040</code> · 변형 2</p>
+  <div class="card">
+    <div style="width:295px">
+      <a class="bl bl-rec" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">타이틀은 2줄이 최대입니다.<br>타이틀은 2줄이 최대입니다.</h3></a>
+      <a class="bl bl-rec" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">타이틀은 2줄이 최대입니다.</h3></a>
+      <a class="bl bl-rec demo-hover" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">State=Hover</h3></a>
+    </div>
+    <p class="spec">폭 295 · 위아래 16 · 아래 1px 선 · 제목 Label2/Bold 14 최대 2줄</p>
+  </div>
+</section>
+
+<!-- ══════════════ 아이콘 ══════════════ -->
+<section class="sec" id="icons">
+  <h2>아이콘 · 로고</h2>
+  <p class="desc">피그마 아이콘 라이브러리를 <b>통째로</b> 내려 <code>assets/</code>에 넣었다. 파일 안의 <code>fill</code>은 <code>currentColor</code>로 바꿔 두었고, CSS <code>mask</code>로 깔기 때문에 <b>아이콘 색이 글자색을 따라간다</b> — 밝은 배경·어두운 배경에 같은 파일을 쓴다.</p>
+  <p class="src">피그마 <code>Crissit_Main</code> Icon 페이지 · 아이콘 <code>38:4019</code> 세트 38개 → 글리프 <b>64종</b> · 로고 <code>38:4175</code> <b>6종</b><br>
+  이름 규칙 — <code>-thick</code>은 피그마 변형 <code>Thick=True</code>(선 굵은 판), <code>-sm</code>은 <code>Small=True</code>(작은 판), <code>-fill</code>은 <code>Fill=True</code>(채운 판). 기본 이름이 각 축의 False 쪽이다.<br>
+  <b>세트 이름과 그려진 모양이 어긋나는 것이 셋 있다</b> — 아래 「확인 필요」에 올려 두었다. 여기서는 <b>그려진 모양대로</b> 이름을 붙였다.</p>
+
+  <div class="card">
+    <h3>화살표</h3>
+    <div class="iconset">
+      <span><i class="icon icon--24 i-arrow-left"></i><br><code style="font-size:10px">arrow-left</code></span>
+      <span><i class="icon icon--24 i-arrow-right"></i><br><code style="font-size:10px">arrow-right</code></span>
+      <span><i class="icon icon--24 i-arrow-up"></i><br><code style="font-size:10px">arrow-up</code></span>
+      <span><i class="icon icon--24 i-arrow-down"></i><br><code style="font-size:10px">arrow-down</code></span>
+      <span><i class="icon icon--24 i-arrow-left-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-right-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-up-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-arrow-down-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+    </div>
+    <p class="spec">피그마 세트 <code>Icon/Normal/Arrow Left·Right·Up·Down</code> · 축 <code>Thick</code></p>
+  </div>
+
+  <div class="card">
+    <h3>꺾쇠</h3>
+    <div class="iconset">
+      <span><i class="icon icon--24 i-chevron-up"></i><br><code style="font-size:10px">chevron-up</code></span>
+      <span><i class="icon icon--24 i-chevron-down"></i><br><code style="font-size:10px">chevron-down</code></span>
+      <span><i class="icon icon--24 i-chevron-left"></i><br><code style="font-size:10px">chevron-left</code></span>
+      <span><i class="icon icon--24 i-chevron-right"></i><br><code style="font-size:10px">chevron-right</code></span>
+      <span><i class="icon icon--24 i-chevron-up-sm"></i><br><code style="font-size:10px">·-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-down-sm"></i><br><code style="font-size:10px">·-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-left-sm"></i><br><code style="font-size:10px">·-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-right-sm"></i><br><code style="font-size:10px">·-sm</code></span>
+      <span><i class="icon icon--24 i-chevron-up-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-down-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-left-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-right-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-up-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-down-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-left-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
+      <span><i class="icon icon--24 i-chevron-right-sm-thick"></i><br><code style="font-size:10px">·-sm-thick</code></span>
+    </div>
+    <p class="spec">피그마 세트 <code>Icon/Normal/Chevron Up·Down·Left·Right</code> · 축 <code>Thick</code> × <code>Small</code> = 변형 4개씩<br><code>Small=True</code>는 같은 20 틀 안에서 글리프만 작게 그린 판이다 — 글자 옆(언어 선택 등)에 쓴다</p>
+  </div>
+
+  <div class="card">
+    <h3>조작</h3>
+    <div class="iconset">
+      <span><i class="icon icon--24 i-check"></i><br><code style="font-size:10px">check</code></span>
+      <span><i class="icon icon--24 i-check-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-close"></i><br><code style="font-size:10px">close</code></span>
+      <span><i class="icon icon--24 i-close-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-menu"></i><br><code style="font-size:10px">menu</code></span>
+      <span><i class="icon icon--24 i-menu-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-plus"></i><br><code style="font-size:10px">plus</code></span>
+      <span><i class="icon icon--24 i-plus-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-expand"></i><br><code style="font-size:10px">expand</code></span>
+      <span><i class="icon icon--24 i-reset"></i><br><code style="font-size:10px">reset</code></span>
+      <span><i class="icon icon--24 i-share"></i><br><code style="font-size:10px">share</code></span>
+      <span><i class="icon icon--24 i-earth"></i><br><code style="font-size:10px">earth</code></span>
+      <span><i class="icon icon--24 i-blank"></i><br><code style="font-size:10px">blank</code></span>
+      <span><i class="icon icon--24 i-blank-auto"></i><br><code style="font-size:10px">blank-auto</code></span>
+      <span><i class="icon icon--24 i-filter"></i><br><code style="font-size:10px">filter</code></span>
+      <span><i class="icon icon--24 i-filter-active"></i><br><code style="font-size:10px">filter-active</code></span>
+      <span><i class="icon icon--24 i-pause"></i><br><code style="font-size:10px">pause</code></span>
+      <span><i class="icon icon--24 i-play"></i><br><code style="font-size:10px">play</code></span>
+      <span><i class="icon icon--24 i-placeholder"></i><br><code style="font-size:10px">placeholder</code></span>
+    </div>
+    <p class="spec"><code>plus</code>는 피그마 세트 이름이 <code>Icon/Normal/Arrow Down</code>(38:4115)인데 그려진 모양은 <code>+</code>다<br>
+    <code>pause</code>·<code>play</code>는 세트 하나(<code>Icon/Normal/play</code>)의 두 변형이다 — <code>Auto On=False</code>가 막대 두 개, <code>Auto On=True</code>가 삼각형<br>
+    <code>placeholder</code>는 <code>Icon/Normal/-</code>의 <code>Name=dummy</code>다. 아이콘이 아직 안 정해진 자리에 들어간다</p>
+  </div>
+
+  <div class="card">
+    <h3>내용 아이콘</h3>
+    <div class="iconset">
+      <span><i class="icon icon--24 i-book"></i><br><code style="font-size:10px">book</code></span>
+      <span><i class="icon icon--24 i-book-fill"></i><br><code style="font-size:10px">·-fill</code></span>
+      <span><i class="icon icon--24 i-coins"></i><br><code style="font-size:10px">coins</code></span>
+      <span><i class="icon icon--24 i-coins-fill"></i><br><code style="font-size:10px">·-fill</code></span>
+      <span><i class="icon icon--24 i-company"></i><br><code style="font-size:10px">company</code></span>
+      <span><i class="icon icon--24 i-company-fill"></i><br><code style="font-size:10px">·-fill</code></span>
+      <span><i class="icon icon--24 i-graduation"></i><br><code style="font-size:10px">graduation</code></span>
+      <span><i class="icon icon--24 i-graduation-fill"></i><br><code style="font-size:10px">·-fill</code></span>
+      <span><i class="icon icon--24 i-heart"></i><br><code style="font-size:10px">heart</code></span>
+      <span><i class="icon icon--24 i-heart-fill"></i><br><code style="font-size:10px">·-fill</code></span>
+      <span><i class="icon icon--24 i-atom"></i><br><code style="font-size:10px">atom</code></span>
+      <span><i class="icon icon--24 i-server"></i><br><code style="font-size:10px">server</code></span>
+      <span><i class="icon icon--24 i-codeview"></i><br><code style="font-size:10px">codeview</code></span>
+      <span><i class="icon icon--24 i-soft"></i><br><code style="font-size:10px">soft</code></span>
+      <span><i class="icon icon--24 i-chip"></i><br><code style="font-size:10px">chip</code></span>
+      <span><i class="icon icon--24 i-rocket"></i><br><code style="font-size:10px">rocket</code></span>
+    </div>
+    <p class="spec"><code>soft</code>(분자·노드)와 <code>chip</code>(반도체)은 피그마에서 <b>둘 다 이름이 <code>Icon/Normal/Soft</code></b>인 별개 세트다 — 그린 모양대로 갈랐다<br>
+    <code>rocket</code>은 세트 이름이 <code>Icon/Normal/Roket</code>, 변형 이름이 <code>Name=reset</code>으로 붙어 있다</p>
+  </div>
+
+  <div class="card">
+    <h3>가이드 문서 전용</h3>
+    <div class="iconset">
+      <span><i class="icon icon--24 i-guide-desktop"></i><br><code style="font-size:10px">guide-desktop</code></span>
+      <span><i class="icon icon--24 i-guide-desktop-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-guide-mobile"></i><br><code style="font-size:10px">guide-mobile</code></span>
+      <span><i class="icon icon--24 i-guide-mobile-thick"></i><br><code style="font-size:10px">·-thick</code></span>
+      <span><i class="icon icon--24 i-guide-shift"></i><br><code style="font-size:10px">guide-shift</code></span>
+    </div>
+    <p class="spec">화면에 쓰는 아이콘이 아니라 디자인 가이드 안에서 브레이크포인트를 표시하는 그림이다. 실제 페이지에 쓸 일은 없다</p>
+  </div>
+
+  <div class="card">
+    <h3>색은 글자색을 따라간다</h3>
+    <div class="row">
+      <p class="lbl">같은 파일 · 색만 다름</p>
+      <span style="color:var(--purple-500)"><i class="icon icon--24 i-arrow-right"></i></span>
+      <span style="color:var(--label-alternative)"><i class="icon icon--24 i-arrow-right"></i></span>
+      <span style="color:var(--label-disable)"><i class="icon icon--24 i-arrow-right"></i></span>
+    </div>
+    <div class="on-dark" style="margin-top:8px;color:var(--label-inverse-normal);display:flex;gap:24px;align-items:center;padding:12px">
+      <i class="icon icon--24 i-arrow-right"></i>
+      <i class="icon icon--24 i-check"></i>
+      <i class="icon icon--24 i-heart-fill"></i>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>로고</h3>
+    <div class="row" style="align-items:center">
+      <span style="text-align:center"><span class="logo-crissit"></span><br><code style="font-size:10px">.logo-crissit</code></span>
+      <span style="text-align:center"><span class="logo-crissit-symbol"></span><br><code style="font-size:10px">·-symbol</code></span>
+      <span style="text-align:center"><span class="logo-crissit-title"></span><br><code style="font-size:10px">·-title</code></span>
+      <span style="text-align:center"><span class="logo-realizers" style="width:120px;height:46px"></span><br><code style="font-size:10px">.logo-realizers</code></span>
+    </div>
+    <div class="on-dark" style="margin-top:8px;color:var(--label-inverse-normal);display:flex;gap:24px;align-items:center;padding:12px">
+      <span class="logo-crissit"></span>
+      <span class="logo-crissit-symbol"></span>
+      <span class="logo-realizers" style="width:120px;height:46px"></span>
+    </div>
+    <div class="row" style="margin-top:16px;align-items:center">
+      <p class="lbl">두 색 원본</p>
+      <img src="assets/logo-crissit-color.svg" alt="crissit" style="height:19.2px">
+      <code style="font-size:10px">logo-crissit-color.svg</code>
+    </div>
+    <p class="spec">crissit 가로형 89×19.2 (GNB 기준) · 심볼 20.3×19.2 · 워드마크 83×19.2 · We the Realizers 165×64 (푸터 기준)<br>
+    가로형 아트보드는 148×40 인데 실제 그림은 148×32 이고 위아래 4씩 여백이 있다. 그대로 <code>mask</code>에 쓰면 로고가 작아져서 파일의 <code>viewBox</code>를 <code>0 4 148 32</code>로 잘라 두었다 — 그 비율(4.625:1)이 GNB 실측 89×19.2 와 정확히 맞는다<br>
+    피그마 변형은 <code>Type=Default</code>(심볼 보라+워드마크 검정) / <code>Dark</code>(전부 검정) / <code>White</code>(전부 흰색) 셋인데 <b>모양은 같고 색만 다르다</b>. 그래서 단색은 <code>mask</code> 한 파일로 처리하고, 두 색이 필요한 자리에만 <code>logo-crissit-color.svg</code>를 쓴다</p>
+  </div>
+</section>
+
+<!-- ══════════════ 확인 필요 ══════════════ -->
+<section class="sec" id="gaps">
+  <h2>확인 필요</h2>
+  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>12건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
+  <p class="src">검증 근거 · <code>가이드 / Content / Navigation / Action .f2h.json</code> (2026-09-07 내보냄) · <code>Definition / Icon / Logo .f2h.json</code> (2026-09-08 내보냄) — 색·여백·효과·활자·아이콘·컴포넌트 세트 변형을 전수 대조</p>
+
+  <div class="card">
+    <h3>설계가 없는 것</h3>
+    <table class="tk">
+      <tr><th style="width:230px">항목</th><th>지금 상태</th><th>필요한 결정</th></tr>
+      <tr><td>Section Heading 태블릿·모바일</td><td>48 → 36 → 28px 로 축소(이쪽에서 정함)</td><td>컴포넌트 세트에 <code>Breakpoint=Desktop (lg)</code> 변형 하나뿐임을 확인. md·sm 설계가 필요하다</td></tr>
+      <tr><td>Section Heading 어두운 배경</td><td><code>.sh--inverse</code> — Label/Inverse 토큰으로 대응</td><td>같은 이유로 피그마에 변형이 없다</td></tr>
+      <tr><td>Button/Text hover 폭 밀림</td><td>굵기가 Medium→Bold 로 바뀌는 피그마 설계 그대로</td><td>나란히 놓으면 옆 요소가 밀린다. 그대로 갈지, 폭을 미리 확보할지(<code>.btn--stable</code>) 결정</td></tr>
+      <tr><td>GNB CTA 버튼 라운드</td><td><code>Round=Normal</code> (다수 쪽)</td><td>28개 변형 중 <code>Desktop(xl) Mode=Black</code> 하나만 <code>Brand</code>다. 푸터를 Normal 로 바꾸셨으니 이것도 Normal 이 의도로 보이는데, 피그마에서 정리 필요</td></tr>
+      <tr><td><b>아이콘이 정해진 컴포넌트가 거의 없다</b></td><td>자리표시자(점선 사각형)를 그대로 뒀다</td><td>아이콘 슬롯을 전수 확인한 결과, <b>버튼 계열 7개 세트는 실제 글리프가 하나도 없다</b> — Button/Solid 60 · Outlined 72 · Text 36 · Icon/Normal 6 · Icon/Outlined 12 · Icon/Solid 32 · Icon/Background 24 곳이 모두 <code>Icon/Normal/-</code>(<code>Name=dummy</code>)다. 메가메뉴 목록 항목의 <code>Type=link</code> 도 같다.<br><b>이제 라이브러리 64종을 전부 넣어 두었으니, 글리프가 정해지면 <code>i-*</code> 클래스만 바꾸면 된다.</b> 실제 글리프가 정해진 곳은 GNB(menu · earth · chevron)와 LNB/List 의 <code>Type=Blank</code>(↗) 뿐이다</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>정의서와 실제 스타일이 다른 것 — 활자</h3>
+    <p class="note">정의서(<code>Typography / Definition · 5:3334</code>)에 적힌 값과, 같은 파일의 텍스트 스타일에 실제로 저장된 값이 어긋난다. 토큰은 <b>정의서 쪽</b>을 따랐다.</p>
+    <table class="tk">
+      <tr><th style="width:230px">항목</th><th>정의서</th><th>실제 스타일</th></tr>
+      <tr><td><code>Display</code></td><td>Extra Bold <b>800</b> · lg <b>64</b> / md 48 / sm 36 · 행간 125% · 자간 -2%</td><td><code>Display 1</code> 스타일은 Bold <b>700</b> · <b>32</b>px · 행간 130%<br>→ 토큰 <code>--display-extrabold</code>는 정의서를 따랐다. 스타일을 정의서에 맞춰 고쳐야 한다</td></tr>
+      <tr><td><code>Body 1 / Reading</code></td><td><b>18</b>px · 행간 175%</td><td>실제 스타일은 <b>16</b>px · 행간 175%<br>→ 토큰 <code>--body-1-reading</code>은 18px 로 두었다</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>이름과 그림이 어긋난 것 — 아이콘</h3>
+    <p class="note">아이콘 라이브러리(<code>Icon · 38:4019</code>)를 전수 대조한 결과다. 여기서는 <b>그려진 모양대로</b> 파일 이름을 붙였고, 피그마 쪽 이름을 고치면 그때 맞추면 된다.</p>
+    <table class="tk">
+      <tr><th style="width:230px">피그마 세트</th><th>실제 그림</th><th>필요한 결정</th></tr>
+      <tr><td><code>Icon/Normal/Arrow Down</code> (38:4115)</td><td><b><code>+</code> (플러스)</b></td><td>같은 이름의 세트가 둘인데(38:4098 · 38:4115) 하나는 아래 화살표, 하나는 플러스다. 세트 이름을 <code>Plus</code>로 고쳐야 한다 → 여기서는 <code>i-plus</code></td></tr>
+      <tr><td><code>Icon/Normal/Soft</code> (327:7314 · 2821:50946)</td><td>분자·노드 / 반도체 칩 — <b>서로 다른 그림</b></td><td>이름이 같은 별개 세트다. 하나를 다른 이름으로 → 여기서는 <code>i-soft</code> · <code>i-chip</code></td></tr>
+      <tr><td><code>Icon/Normal/Roket</code> (2821:50840)</td><td>로켓</td><td>세트 이름 철자가 <code>Roket</code>, 변형 이름이 <code>Name=reset</code>(다른 아이콘 이름)으로 붙어 있다 → 여기서는 <code>i-rocket</code></td></tr>
+      <tr><td><code>Icon/Normal/play</code> (38:4122)</td><td><code>Auto On=False</code> 막대 두 개(일시정지) · <code>Auto On=True</code> 삼각형(재생)</td><td>축 이름이 방향과 반대로 읽힌다 — 자동 전환이 켜져 있으면(<code>Auto On=True</code>) 눌러서 멈추는 것이니 <b>일시정지</b>가 보여야 자연스럽다. 축을 뒤집을지 확인 필요</td></tr>
+      <tr><td><code>Icon/Normal/Heart</code> (2821:50965)</td><td>빈 하트 / 채운 하트</td><td>축이 둘인데(<code>Name</code> · <code>Fill</code>) 항상 같이 움직인다(<code>heart+False</code> / <code>heartFill+True</code>). <code>Fill</code> 하나면 충분하다</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>중복·빈 세트</h3>
+    <p class="note">같은 이름의 세트가 둘씩 있고, 그림이 완전히 같다. 앞서 색 스타일에서 본 것과 같은 원인으로 보인다 — 라이브러리에서 떨어져 나온 사본이 파일 안에 남은 것이다.</p>
+    <table class="tk">
+      <tr><th style="width:230px">항목</th><th>지금 상태</th><th>필요한 결정</th></tr>
+      <tr><td><code>Icon/Guide/Desktop</code> · <code>Icon/Guide/Mobile</code></td><td>각각 세트 둘 (48:6857·1949:20019 / 48:6863·1949:20024)</td><td>그림이 완전히 같다. 한쪽을 지운다</td></tr>
+      <tr><td><code>Icon/color/-</code></td><td>세트 둘 (38:4166 · 48:6629)</td><td>둘 다 <code>Icon/Normal/-</code>(<code>Name=dummy</code>)와 같은 점선 사각형이다. 셋 다 같은 자리표시자라 하나로 합칠 수 있다</td></tr>
+      <tr><td><code>Logo Horizontal</code> · <code>Logo/Resource</code></td><td>각각 세트 둘 (38:4185·138:20278 / 38:4196·138:20289)</td><td>사본 쪽(138:*)의 <code>Logo/Resource</code>는 <b><code>Type=Symbol</code>·<code>Type=Title</code> 변형이 비어 있다</b>(그림이 없다). 사본을 지우는 게 맞아 보인다</td></tr>
+      <tr><td><code>Navigation/LNB/List</code> 의 Mode 이름</td><td>배경 기준으로 갈랐다</td><td>GNB·Footer 는 <code>Mode=White</code>가 밝은 배경인데 이 컴포넌트만 반대다(어두운 배경용). 이름을 맞추는 게 좋다</td></tr>
+    </table>
+  </div>
+
+</section>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+/* ============================================================
+   공통 베이스 — 리셋 · 타이포 유틸 · 아이콘 슬롯
+   컴포넌트 CSS 는 전부 이 파일을 전제한다.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg-normal);
+  color:var(--label-normal);
+  font:var(--label-1-medium);
+  word-break:keep-all;       /* 한글 — 어절 단위 줄바꿈 */
+  overflow-wrap:anywhere;    /* 긴 URL·영문 토큰 보호 */
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+/* hidden 속성이 항상 이기게 한다.
+   브라우저 기본 규칙은 `[hidden]{display:none}` 인데, 컴포넌트가
+   `display:flex` 같은 값을 주면 명시도가 같아서 나중에 온 쪽이 이긴다
+   → 숨긴 줄 알았는데 그대로 보인다. 스크립트로 여닫는 것(캐러셀·드로어·
+   드롭다운)이 전부 여기 걸리므로 한 번만 못박는다 */
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+img,svg{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--primary-normal);outline-offset:2px;border-radius:var(--radius-xsmall)}
+
+/* ---------- 타이포 유틸 ----------
+   정의서(Typography / Definition · 5:3334) 1:1. letter-spacing 은 % 라서
+   폰트 축약형에 못 넣으므로 여기서 따로 준다.
+   제목 계열은 크기가 화면 폭을 따라 바뀐다 — tokens.css 의 --fs-* 참고 */
+.t-display   {font:var(--display-extrabold);letter-spacing:-.02em}
+.t-heading-1 {font:var(--heading-1-bold);letter-spacing:-.015em}
+.t-heading-2 {font:var(--heading-2-bold);letter-spacing:-.015em}
+.t-title-1   {font:var(--title-1-bold);letter-spacing:-.01em}
+.t-title-2   {font:var(--title-2-bold);letter-spacing:-.01em}
+.t-title-3   {font:var(--title-3-semibold);letter-spacing:-.01em}
+.t-body-1{font:var(--body-1-normal-regular)}
+.t-body-1-md{font:var(--body-1-normal-medium)}
+.t-body-1-sb{font:var(--body-1-normal-semibold)}
+.t-body-1-b{font:var(--body-1-normal-bold)}
+.t-body-1-reading{font:var(--body-1-reading)}
+.t-body-2{font:var(--body-2-normal-regular)}
+.t-body-2-md{font:var(--body-2-normal-medium)}
+.t-body-2-b{font:var(--body-2-normal-bold)}
+.t-body-2-reading{font:var(--body-2-reading)}
+.t-body-3{font:var(--body-3-normal-regular)}
+.t-label-1{font:var(--label-1-medium)}
+.t-label-1-b{font:var(--label-1-bold)}
+.t-label-2{font:var(--label-2-medium)}
+.t-label-2-b{font:var(--label-2-bold)}
+.t-label-3{font:var(--label-3-medium)}
+.t-label-3-b{font:var(--label-3-bold)}
+/* 이전 이름 — 카탈로그·컴포넌트가 쓰고 있어 남겨 둔다 */
+.t-display-1{font:var(--display-1)}
+
+/* ---------- 아이콘 ----------
+   SVG 를 mask 로 깐다. 그래서 아이콘 색이 글자색(currentColor)을 따른다.
+   쓰는 법:  <i class="icon icon--20 i-arrow-right"></i>
+   아이콘 이름 클래스(i-*)는 css/icons.css 에 있다. 인라인 style 로
+   --icon 을 주지 않는다 — 상대 경로가 HTML 기준이 아니라 CSS 기준으로
+   풀려 404 가 난다.
+   크기는 부모 컴포넌트가 정한다. 필요하면 .icon--16/18/20/24 를 붙인다. */
+.icon{
+  display:inline-block;flex:none;
+  width:1em;height:1em;
+  background:currentColor;
+  -webkit-mask:var(--icon) center/contain no-repeat;
+          mask:var(--icon) center/contain no-repeat;
+}
+.icon--16{width:16px;height:16px}
+.icon--18{width:18px;height:18px}
+.icon--20{width:20px;height:20px}
+.icon--24{width:24px;height:24px}
+
+/* ---------- 로고 ----------
+   출처: 피그마 `Crissit_Main` Logo 38:4175 (f2h 덤프 2026-09-08)
+
+   crissit 가로형은 아트보드가 148×40 인데 실제 그림(Shape 프레임)은
+   148×32 이고 위아래로 4 씩 여백이 들어 있다. 그대로 쓰면 mask 의
+   `contain` 이 여백까지 맞추느라 로고가 작아진다. 그래서 내려받은 파일의
+   viewBox 를 `0 4 148 32` 로 잘라 두었다 — 그 결과 비율이 4.625:1 이고,
+   GNB 에서 실측한 89×19.2 와 정확히 맞는다.
+
+   ▸ 단색(mask)과 원본 색(파일) 둘 다 있다
+       .logo-crissit          단색. 글자색을 따라간다 (밝은 바·어두운 바 공용)
+       logo-crissit-color.svg 심볼 보라 + 워드마크 검정. <img> 나 인라인으로 쓴다
+     피그마 변형은 Type=Default(두 색) / Dark(전부 검정) / White(전부 흰색)
+     세 가지인데, 모양은 셋 다 같고 색만 다르다. 그래서 단색은 한 파일로
+     충분하고, 두 색이 필요한 자리에만 `-color` 를 쓴다.
+
+   ▸ 조각 로고도 따로 있다 — 심볼만 34×32, 워드마크만 108×25
+   ------------------------------------------------------------ */
+.logo-crissit{
+  display:block;width:89px;height:19.2px;
+  background:currentColor;
+  -webkit-mask:url(../assets/logo-crissit.svg) center/contain no-repeat;
+          mask:url(../assets/logo-crissit.svg) center/contain no-repeat;
+}
+/* 심볼만 — 파비콘·앱 아이콘·좁은 자리 */
+.logo-crissit-symbol{
+  display:block;width:20.3px;height:19.2px;   /* 34:32 비율 */
+  background:currentColor;
+  -webkit-mask:url(../assets/logo-crissit-symbol.svg) center/contain no-repeat;
+          mask:url(../assets/logo-crissit-symbol.svg) center/contain no-repeat;
+}
+/* 워드마크만 — 심볼을 이미 보여준 화면에서 쓴다 */
+.logo-crissit-title{
+  display:block;width:83px;height:19.2px;     /* 108:25 비율 */
+  background:currentColor;
+  -webkit-mask:url(../assets/logo-crissit-title.svg) center/contain no-repeat;
+          mask:url(../assets/logo-crissit-title.svg) center/contain no-repeat;
+}
+/* We the Realizers — 아트보드 124×48 에 그림이 꽉 차 있어 자를 것이 없다 */
+.logo-realizers{
+  display:block;width:165px;height:64px;
+  background:currentColor;
+  -webkit-mask:url(../assets/logo-realizers.svg) left center/contain no-repeat;
+          mask:url(../assets/logo-realizers.svg) left center/contain no-repeat;
+}
+
+/* ---------- 컨테이너 ---------- */
+.container{
+  width:100%;max-width:var(--container-max);
+  margin-inline:auto;padding-inline:var(--container-pad);
+}
+
+/* ---------- 상호작용 오버레이 ----------
+   피그마 Element/Interaction 레이어를 ::after 로 옮긴 것.
+   면을 가진 컴포넌트(버튼·칩 등)가 이 클래스를 함께 쓴다.
+   오버레이는 z-index:-1 + isolation:isolate 조합으로 배경 위·글자 아래에
+   놓인다. 피그마 레이어 순서(BG → Interaction → Content)와 같다. */
+.has-overlay{position:relative;overflow:hidden;isolation:isolate}
+.has-overlay::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:var(--overlay-dark);opacity:0;
+  transition:opacity .15s ease;pointer-events:none;
+  border-radius:inherit;
+}
+.has-overlay--light::after{background:var(--overlay-light)}
+.has-overlay:hover:not(:disabled):not(.is-disabled)::after{opacity:var(--interaction-hover)}
+/* 흰 막은 검정 막보다 진하다 — 8% 가 아니라 12% (실측) */
+.has-overlay--light:hover:not(:disabled):not(.is-disabled)::after{opacity:var(--interaction-hover-light)}
+@media (prefers-reduced-motion:reduce){.has-overlay::after{transition:none}}

@@ -1,0 +1,171 @@
+/* ============================================================
+   GNB — 피그마 Navigation / GNB (1008:6752) 변형 28
+   축 5개
+     Breakpoint  Desktop(xl) ≥1280 · Desktop(lg) 1024–1279 (높이 64)
+                 Tablet(md) 768–1023 · Mobile(sm) 360–767  (높이 48)
+     Mode        White(밝은 바) | Black(어두운 바)   → .gnb--white / --black
+     Background  True(면 있음) | False(투명)         → .gnb--transparent
+     Scroll      True 면 바 아래 1px 구분선           → .is-scrolled
+     Expand      True 면 메가메뉴(LNB) 256px 펼침     → .is-expanded
+
+   실측
+     바 높이 64 / 48 · 컨테이너 max 1280 · 좌우 여백 20
+     메뉴 항목 간격 32 · 메뉴군과 유틸군 간격 80
+     메뉴 항목 = Button/Text lg (Label1/Medium 16, 위아래 12)
+     언어 선택 = earth 20 + "KR"(폭 22) + chevron 16
+     CTA = Button/Solid sm Primary
+     LNB 제목 Title1/Bold 32 · 목록 항목 폭 236 · 목록 간격 12
+       목록 항목은 별도 컴포넌트다 → `Navigation/LNB/List` (아래 절 참고)
+     LNB 이미지 160×200 · 컨테이너 pt24 pb32
+
+   마크업은 카탈로그.html 의 GNB 절을 그대로 복사해 쓰면 된다.
+   ============================================================ */
+
+.gnb{
+  position:relative;width:100%;
+  background:var(--bg-normal);
+  color:var(--label-normal);
+}
+.gnb--black{background:var(--bg-inverse);color:var(--label-inverse-normal)}
+.gnb--transparent{background:transparent}
+
+/* Scroll=True — 아래 1px 선 (f2h 덤프 실측, 추정 아님)
+   밝은 바 #e4e6e8 Line/Normal/Normal · 어두운 바 #414549 Line/Inverse/Normal
+   Scroll=False 변형에도 같은 Divider 노드가 있지만 숨겨져 있다 */
+.gnb.is-scrolled{box-shadow:inset 0 -1px 0 var(--line-normal)}
+.gnb--black.is-scrolled{box-shadow:inset 0 -1px 0 var(--line-inverse)}
+
+/* ---------- 바 ---------- */
+.gnb__bar{height:var(--gnb-h);display:flex;align-items:center}
+.gnb__inner{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;max-width:var(--container-max);
+  margin-inline:auto;padding:8px var(--container-pad);
+}
+.gnb__logo{display:flex;align-items:center;padding-block:8px;color:inherit}
+
+/* ---------- 메뉴 + 유틸 ---------- */
+.gnb__right{display:flex;align-items:center;gap:80px}
+.gnb__menu{display:flex;align-items:center;gap:32px}
+.gnb__menu a{
+  display:inline-flex;align-items:center;
+  padding-block:12px;                       /* Button/Text lg */
+  font:var(--label-1-medium);color:inherit;
+}
+.gnb__menu a:hover{font-weight:700}
+
+.gnb__util{display:flex;align-items:center;gap:32px}
+
+.gnb__lang{
+  display:inline-flex;align-items:center;gap:6px;
+  border:0;background:none;padding:8px 0;cursor:pointer;
+  font:var(--label-1-medium);color:inherit;
+}
+.gnb__lang .gnb__lang-code{display:inline-block;width:22px}
+.gnb__lang .gnb__lang-group{display:inline-flex;align-items:center;gap:2px}
+
+/* 모바일·태블릿 햄버거 — 데스크톱에서는 숨는다.
+   크기가 브레이크포인트마다 다르다 — 태블릿 24 · 모바일 20 (f2h 실측).
+   그래서 마크업에 크기 클래스(.ibtn--md 등)를 붙이지 않고 여기서 정한다.
+   `.gnb` 를 앞에 붙인 이유는 icon-button.css 의 `.ibtn--normal.ibtn--md .icon`
+   (클래스 3개)보다 명시도를 높이려는 것이다 — 파일 순서에 기대지 않는다 */
+.gnb__toggle{display:none}
+.gnb .gnb__toggle .icon{width:24px;height:24px}
+
+/* ---------- 메가메뉴 (Expand=True) ---------- */
+.gnb__lnb{
+  display:none;
+  background:var(--bg-normal);color:var(--label-normal);
+  box-shadow:inset 0 -1px 0 var(--line-normal);
+}
+.gnb--black .gnb__lnb{
+  background:var(--bg-inverse);color:var(--label-inverse-normal);
+  box-shadow:inset 0 -1px 0 var(--line-inverse);
+}
+.gnb.is-expanded .gnb__lnb{display:block}
+
+.gnb__lnb-inner{
+  display:flex;align-items:flex-start;
+  width:100%;max-width:var(--container-max);margin-inline:auto;
+  padding:24px var(--container-pad) 32px;
+}
+.gnb__lnb-title{
+  flex:1 0 0;min-width:0;margin:0;
+  font:var(--title-1-bold);letter-spacing:-.01em;
+}
+.gnb__lnb-side{display:flex;align-items:flex-start;gap:80px}
+.gnb__lnb-list{display:flex;flex-direction:column;gap:12px}
+
+/* ---------- 메가메뉴 목록 항목 ----------
+   피그마 `Navigation/LNB/List` (1019:16302) 변형 10개.
+   축 세 개 — Mode(배경) × State(Normal·Hover·Active) × Type(link·Blank)
+
+   ▸ 주의: 이 컴포넌트의 Mode 이름이 다른 컴포넌트와 **반대**다.
+     GNB·Footer 는 `Mode=White` 가 밝은 배경인데, LNB/List 는
+     `Mode=White` 가 어두운 배경용(밝은 글자)이다. 실제 사용을 보면
+     GNB/LNB Mode=White(흰 배경) 안에 List Mode=Black 이 들어간다.
+     여기서는 헷갈리지 않게 **배경 기준**으로 갈랐다 —
+     기본은 밝은 배경, `.gnb--black` 안이면 어두운 배경.
+
+   축 밖에 불린이 하나 더 있다
+     `Tailing Icon` (기본 true) — 뒤쪽 아이콘을 켜고 끈다.
+     끄려면 `<i class="icon …">` 를 넣지 않으면 된다. 라벨이 폭을 다 차지한다.
+
+   ⚠️ `Type=link` 의 아이콘은 아직 **정해지지 않았다**.
+      피그마에서 `Icon/Normal/-` 의 `Name=dummy` 변형 — 그 세트에 변형이
+      dummy 하나뿐인 자리표시자다. 실제 메가메뉴 5개 항목도 전부 dummy 다.
+      그래서 여기서는 화살표를 임의로 넣지 않고 `i-placeholder`(점선 사각형)를
+      그대로 둔다. 어떤 글리프인지 정해지면 그 클래스만 바꾸면 된다.
+      `Type=Blank` 는 실제 글리프가 있다 — `Icon/Normal/blank` (↗).
+
+   실측
+     항목 236×24 · 목록 간격 12
+     link  : 라벨이 남는 폭을 다 차지하고 아이콘 20 이 우측 끝 (간격 0)
+     Blank : 라벨이 글자 폭만 차지하고 간격 2 뒤에 blank 아이콘 20 (↗)
+     밝은 배경  Normal #7c8288 → Hover·Active #151617
+     어두운 배경 Normal #e4e6e8 → Hover·Active #fafafa
+     Active 는 색만 아니라 굵기가 500 → 700 으로 바뀐다 (link 타입만 있다)
+   ---------------------------------------------------------- */
+.gnb__lnb-list a{
+  display:flex;align-items:center;
+  width:236px;color:var(--label-alternative);
+  font:var(--label-1-medium);
+}
+.gnb__lnb-list a > span{flex:1 0 0;min-width:0}
+.gnb__lnb-list a .icon{width:20px;height:20px}
+
+/* Hover / Active — 색이 진해지고, Active 는 굵어진다 */
+.gnb__lnb-list a:hover{color:var(--label-normal)}
+.gnb__lnb-list a.is-active{color:var(--label-normal);font-weight:700}
+
+/* 어두운 배경 */
+.gnb--black .gnb__lnb-list a{color:var(--label-inverse-alternative)}
+.gnb--black .gnb__lnb-list a:hover,
+.gnb--black .gnb__lnb-list a.is-active{color:var(--label-inverse-normal)}
+
+/* 외부 링크 — 라벨 폭만 차지하고 아이콘이 바로 뒤에 붙는다 */
+.gnb__lnb-list a.is-blank{gap:2px}
+.gnb__lnb-list a.is-blank > span{flex:0 0 auto}
+
+/* 이미지 — 좌상·우하 8px 모서리 컷 */
+.gnb__lnb-img{
+  width:160px;height:200px;flex:none;
+  background:var(--neutral-100) center/cover no-repeat;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+}
+
+/* ============================================================
+   Tablet(md) 768–1023 · Mobile(sm) 360–767 — 바 48, 햄버거
+   ============================================================ */
+@media (max-width:1023px){
+  .gnb__bar{height:var(--gnb-h-compact)}
+  .gnb__inner{padding:4px var(--container-pad)}
+  .gnb__right{display:none}
+  .gnb__toggle{display:inline-flex}
+  .gnb__lnb-inner{flex-direction:column;gap:24px}
+  .gnb__lnb-side{flex-direction:column;gap:24px}
+  .gnb__lnb-list a{width:100%}
+}
+@media (max-width:767px){
+  .gnb .gnb__toggle .icon{width:20px;height:20px}   /* 모바일만 20 */
+}

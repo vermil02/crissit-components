@@ -1,0 +1,113 @@
+/* ============================================================
+   Button — 피그마 Action / Button
+   Button/Solid    (1008:5233) 변형 30
+   Button/Outlined (1008:5587) 변형 36
+   Button/Text     (1008:5957) 변형 18
+
+   축
+     스타일   .btn--solid | .btn--outlined | .btn--text
+     변형     .btn--primary | .btn--secondary | .btn--assistive
+     크기     .btn--sm | .btn--md | .btn--lg
+     라운드   (기본 Normal) | .btn--round-all | .btn--round-brand
+     아이콘   앞·뒤 <i class="icon"> 를 넣고 빼는 것으로 결정
+     비활성   disabled 속성 (또는 .is-disabled)
+
+   마크업
+     <button class="btn btn--solid btn--primary btn--md has-overlay">
+       <i class="icon" style="--icon:url(../assets/icon-arrow-left.svg)"></i>
+       <span>텍스트</span>
+       <i class="icon" style="--icon:url(../assets/icon-arrow-right.svg)"></i>
+     </button>
+
+   ▸ 테두리는 border 가 아니라 inset box-shadow 다. 피그마의 선은 면
+     안쪽에 그려져 크기를 늘리지 않는데, CSS border 를 쓰면 2px 커진다.
+   ▸ Solid/Assistive 는 어두운 면이라 hover 막이 흰색이다
+     → .has-overlay--light 를 함께 붙인다.
+   ============================================================ */
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  border:0;background:none;padding:0;
+  border-radius:var(--radius-xsmall);      /* Round = Normal */
+  font-family:var(--font-sans);font-weight:500;
+  white-space:nowrap;cursor:pointer;
+  text-align:center;
+}
+.btn:disabled,.btn.is-disabled{cursor:default}
+
+/* ---------- 크기 ----------
+   높이는 padding + 글자 줄높이로 만들어진다. 고정 height 를 주지 않는다 */
+.btn--sm{padding:7px 10px;  gap:4px; font:500 12px/1.5 var(--font-sans)}   /* 32 */
+.btn--md{padding:10px 12px; gap:6px; font:500 14px/1.45 var(--font-sans)}  /* 40 */
+.btn--lg{padding:12px 14px; gap:8px; font:500 16px/1.5 var(--font-sans)}   /* 48 */
+
+.btn--sm .icon{width:16px;height:16px}
+.btn--md .icon{width:18px;height:18px}
+.btn--lg .icon{width:20px;height:20px}
+
+/* ---------- 라운드 ---------- */
+.btn--round-all{border-radius:var(--radius-all)}
+.btn--round-brand{
+  border-radius:0;
+  /* 좌상·우하 6px 사선 컷. 피그마 path M126 42L120 48H0V6L6 0H126V42Z
+     ▸ sm·md·lg 세 크기 모두 6px 이다 (f2h 덤프에서 Clip 벡터 16×16 → 6×6 실측).
+       크기에 비례하지 않으므로 한 값으로 고정한다 */
+  clip-path:polygon(
+    var(--brand-chamfer) 0, 100% 0,
+    100% calc(100% - var(--brand-chamfer)), calc(100% - var(--brand-chamfer)) 100%,
+    0 100%, 0 var(--brand-chamfer));
+}
+
+/* ============================================================
+   Solid — 면이 채워진 버튼. 가장 높은 위계
+   ============================================================ */
+.btn--solid.btn--primary{
+  background:var(--primary-normal);
+  color:var(--label-inverse-normal);
+}
+.btn--solid.btn--assistive{
+  background:var(--neutral-900);
+  color:var(--label-inverse-normal);
+}
+.btn--solid:disabled,.btn--solid.is-disabled{
+  background:var(--bg-assistive);
+  color:var(--label-assistive);
+}
+
+/* ============================================================
+   Outlined — 테두리만. 상대적으로 덜 강조
+   ============================================================ */
+.btn--outlined{background:transparent}
+.btn--outlined.btn--primary{
+  box-shadow:inset 0 0 0 1px var(--primary-normal);
+  color:var(--primary-normal);
+}
+.btn--outlined.btn--secondary{
+  box-shadow:inset 0 0 0 1px var(--line-normal);
+  color:var(--primary-normal);
+}
+.btn--outlined.btn--assistive{
+  box-shadow:inset 0 0 0 1px var(--line-normal);
+  color:var(--label-neutral);
+}
+.btn--outlined:disabled,.btn--outlined.is-disabled{
+  box-shadow:inset 0 0 0 1px var(--line-normal);
+  color:var(--label-disable);
+}
+
+/* ============================================================
+   Text — 면도 테두리도 없다. 좌우 여백이 0
+   hover 는 굵기가 Medium → Bold 로 바뀐다(피그마 State=Hover)
+   ============================================================ */
+.btn--text{background:transparent;padding-inline:0}
+.btn--text.btn--primary{color:var(--primary-normal)}
+.btn--text.btn--assistive{color:var(--label-normal)}
+.btn--text:disabled,.btn--text.is-disabled{color:var(--label-disable)}
+.btn--text:hover:not(:disabled):not(.is-disabled){font-weight:700}
+/* 굵어지면서 폭이 늘어 옆 요소가 밀린다. 나란히 놓을 때는 부모에
+   min-width 를 잡거나 아래 한 줄로 폭을 미리 확보한다 */
+.btn--text.btn--stable > span{display:inline-block}
+.btn--text.btn--stable > span::after{
+  content:attr(data-label);display:block;height:0;overflow:hidden;
+  font-weight:700;visibility:hidden;
+}

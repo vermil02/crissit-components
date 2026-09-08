@@ -1,0 +1,140 @@
+/* ============================================================
+   Footer — 피그마 Navigation / Footer (1008:7323) 변형 8
+   축
+     Breakpoint  Desktop(xl)·(lg) 높이 392 · Tablet(md) 530 · Mobile(sm) 550
+     Mode        Black | White        → .ft--black / .ft--white
+     Section_Contact  선택 슬롯 — 켜면 위에 CTA 블록이 붙는다
+
+   실측 (Desktop, Mode=Black)
+     컨테이너 max 1280 · 좌우 20 · 위 96 아래 48
+     We the Realizers 로고 165×64
+     메뉴 열 4개 · 열 폭 160 · 열 간격 40
+       열 제목 Label2/Medium 14 · Label/Inverse/Assistive(#c9ccd0)
+       항목    Label2/Bold 14   · Label/Inverse/Normal(#fafafa) · 간격 10
+       제목→항목 간격 12 · 메뉴군→법인정보 간격 64
+     법인정보 Label2/Medium 14 · #c9ccd0 · 줄 간격 6
+
+   CTA 블록(Section_Contact)
+     배경 #151617 → #000 그라디언트 · 위 120 아래 40
+     제목 Heading2/Bold 40 (ls -0.6px) · 본문 Body 16/1.5 400 #e4e6e8
+     버튼 Button/Solid md Primary **Round=Normal**
+       ▸ 2026-09-07 재내보낸 덤프에서 Brand → Normal 로 바뀌었다.
+         Section_Contact 도 이제 8개 푸터 변형 전부에서 기본 숨김(opt-in)이다
+
+   Mode=White (f2h 덤프 실측 — 더 이상 추정 아님)
+     열 제목 · 법인정보  Label/Normal/Assistive  #a3a8ad
+     항목                Label/Normal/Normal     #151617
+     CTA 제목 1줄 #414549(Neutral) · 2줄 #151617(Normal)
+     CTA 본문 #7c8288(Alternative) · Body 2/Normal - Regular 400 16
+
+   CTA 바탕은 두 겹이다
+     ① 세로 그라디언트  Black #151617→#000 / White #f5f6f7→#fff
+     ② 그 위에 빛 번짐  40% · 보라(#543efa)에서 퍼진다
+        높이 xl·lg 268 / md 256 / sm 264
+
+   Tablet(md) 768×530 · Mobile(sm) 360×550 — f2h 실측
+     구조가 바뀐다: 데스크톱은 「로고 | 메뉴열」 가로, md·sm 은 세로로 쌓인다
+     Footer 위 32 아래 48 (데스크톱은 96/48) · 로고↔메뉴↔법인정보 간격 48
+     로고 124×48 (데스크톱 165×64)
+     메뉴 4열이 2×2 로 접힌다 — 열이 각각 절반을 꽉 채우고, 줄 간격 40
+     CTA 위 64 아래 32 · 제목·본문·버튼이 모두 **가운데 정렬**로 바뀐다
+   ============================================================ */
+
+.ft{width:100%}
+.ft--black{background:var(--bg-inverse);color:var(--label-inverse-normal)}
+.ft--white{background:var(--bg-normal);  color:var(--label-normal)}
+
+.ft__inner{
+  width:100%;max-width:var(--container-max);margin-inline:auto;
+  padding:96px var(--container-pad) 48px;
+}
+.ft__row{display:flex;align-items:flex-start;justify-content:space-between;gap:40px}
+.ft__brand{flex:none;color:inherit}
+
+.ft__cols-wrap{display:flex;flex-direction:column;gap:64px}
+.ft__cols{display:flex;align-items:flex-start;gap:40px}
+.ft__col{display:flex;flex-direction:column;gap:12px;width:160px}
+.ft__col-head{
+  margin:0;font:var(--label-2-medium);
+  color:var(--label-inverse-assistive);
+}
+.ft--white .ft__col-head{color:var(--label-assistive)}
+.ft__col-list{display:flex;flex-direction:column;gap:10px}
+.ft__col-list a{font:var(--label-2-bold);color:var(--label-inverse-normal)}
+.ft--white .ft__col-list a{color:var(--label-normal)}
+.ft__col-list a:hover{text-decoration:underline}
+
+.ft__legal{
+  display:flex;flex-direction:column;gap:6px;
+  font:var(--label-2-medium);color:var(--label-inverse-assistive);
+}
+.ft--white .ft__legal{color:var(--label-assistive)}
+.ft__legal-line{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------- CTA 블록 ---------- */
+.ft__cta{
+  position:relative;overflow:hidden;isolation:isolate;
+  background:var(--gradient-cta-black);
+  color:var(--label-inverse-normal);
+}
+.ft--white .ft__cta{
+  background:var(--gradient-cta-white);
+  color:var(--label-normal);
+}
+/* 빛 번짐 — 상단 268px 에 보라가 퍼진다 (피그마 section_3_bg) */
+.ft__cta::before{
+  content:"";position:absolute;left:0;right:0;top:0;z-index:-1;
+  height:var(--glow-cta-height);
+  background:var(--glow-cta-black);opacity:var(--glow-cta-opacity);
+  pointer-events:none;
+}
+.ft--white .ft__cta::before{background:var(--glow-cta-white)}
+.ft__cta-inner{
+  display:flex;align-items:flex-end;gap:24px;
+  width:100%;max-width:var(--container-max);margin-inline:auto;
+  padding:120px var(--container-pad) 40px;
+}
+.ft__cta-text{flex:1 0 0;min-width:0;display:flex;flex-direction:column;gap:20px}
+/* 제목은 두 줄이고 줄마다 색이 다르다 — 첫 줄이 한 단계 연하다 */
+.ft__cta-text h2{
+  margin:0;font:var(--heading-2-bold);letter-spacing:-.015em;
+  color:var(--label-inverse-normal);
+}
+.ft__cta-text h2 .ft__cta-lead{color:var(--label-inverse-neutral)}
+.ft--white .ft__cta-text h2{color:var(--label-normal)}
+.ft--white .ft__cta-text h2 .ft__cta-lead{color:var(--label-neutral)}
+.ft__cta-text p{margin:0;font:400 16px/1.5 var(--font-sans);color:var(--label-inverse-alternative)}
+.ft--white .ft__cta-text p{color:var(--label-alternative)}
+
+/* ============================================================
+   Tablet(md) 768–1023 · Mobile(sm) 360–767 — f2h 실측값
+   두 브레이크포인트가 규칙을 공유한다. 열 폭이 절반씩이라 화면 폭만
+   달라지면 저절로 맞는다.
+   ============================================================ */
+@media (max-width:1023px){
+  .ft__inner{padding:32px var(--container-pad) 48px}
+
+  /* 로고 위 → 메뉴 → 법인정보 순으로 쌓인다 */
+  .ft__row{flex-direction:column;gap:48px}
+  .ft__cols-wrap{gap:48px;width:100%}
+  .ft__brand .logo-realizers{width:124px;height:48px}
+
+  /* 4열이 2×2 로. 열이 각각 절반을 꽉 채우므로 열 사이 간격은 0이고,
+     줄 사이만 40 벌린다 (피그마에서 열이 FILL 이라 gap 40 이 소비된다) */
+  .ft__cols{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    row-gap:40px;column-gap:0;
+  }
+  .ft__col{width:auto}
+
+  /* CTA — 가운데 정렬로 바뀐다 */
+  .ft__cta-inner{
+    flex-direction:column;align-items:center;text-align:center;
+    gap:24px;padding:64px var(--container-pad) 32px;
+  }
+  .ft__cta-text{align-items:center;gap:20px;flex:none;width:100%}
+  .ft__cta::before{height:256px}
+}
+@media (max-width:767px){
+  .ft__cta::before{height:264px}
+}

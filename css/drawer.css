@@ -1,0 +1,126 @@
+/* ============================================================
+   GNB 드로어 — 피그마 GNB/LNB (모바일·태블릿)
+   가이드 문서 [GNB_Reponsible] 기능 및 정책 정의서 (1010:17415)
+
+   데스크톱의 메가메뉴(gnb.css 의 `.gnb__lnb`)와 다른 컴포넌트다.
+   모바일·태블릿에서 햄버거를 누르면 이게 열린다.
+
+   실측
+     Mobile(sm)  드로어 폭 100% (360 기준) · 스크림 없음
+     Tablet(md)  드로어 폭 384(768의 절반) 우측 고정 · 좌측에 스크림
+     스크림       #151617 · 48%
+     여백         좌우 20 · 아래 20 · 위 0
+     상단 바      위아래 4 · 로고 89×24 좌 · 닫기 아이콘 20 우
+     상단 바↔목록 간격 20
+     목록         항목 간격 4 · 항목 사이 1px 구분선(#e4e6e8)
+     1차 항목     위아래 12 · Label1/Medium 16 · #151617 · 우측 셰브론 20
+     펼친 영역    위 8 아래 16
+     2차 항목     위아래 8 · Label1/Medium 16 · #7c8288 · 한 줄에 2칸
+     외부 링크    라벨 뒤에 blank 아이콘 20 (↗)
+     하단 유틸    좌 언어선택(earth 20 + KR + chevron 16) / 우 Solid sm Primary
+
+   마크업은 카탈로그.html 의 「GNB 드로어」 절을 복사해 쓴다.
+   여닫기는 `.is-open` 을 켜고 끄는 것으로 한다.
+   ============================================================ */
+
+/* ---------- 겉껍데기 ---------- */
+.drawer{
+  position:fixed;inset:0;z-index:100;
+  display:none;
+}
+.drawer.is-open{display:block}
+
+.drawer__scrim{
+  position:absolute;inset:0;
+  background:var(--neutral-900);opacity:var(--opacity-48);
+  border:0;padding:0;
+}
+
+/* ---------- 패널 ---------- */
+.drawer__panel{
+  position:absolute;top:0;right:0;bottom:0;
+  display:flex;flex-direction:column;
+  width:100%;                       /* Mobile(sm) — 전체 폭 */
+  padding:0 var(--container-pad) var(--container-pad);
+  background:var(--bg-normal);color:var(--label-normal);
+  overflow-y:auto;
+}
+@media (min-width:768px){
+  .drawer__panel{width:384px}       /* Tablet(md) — 우측 절반 */
+  .drawer__scrim{display:block}
+}
+@media (max-width:767px){
+  .drawer__scrim{display:none}      /* Mobile — 드로어가 화면을 다 덮는다 */
+}
+
+/* 내용은 위(로고+메뉴)와 아래(유틸)로 갈라 붙는다 */
+.drawer__body{
+  display:flex;flex-direction:column;justify-content:space-between;
+  flex:1 0 0;min-height:0;
+}
+.drawer__top{display:flex;flex-direction:column;gap:20px}
+
+/* ---------- 상단 바 ---------- */
+.drawer__bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-block:4px;
+}
+.drawer__logo{display:flex;align-items:center;padding-block:8px;color:inherit}
+
+/* ---------- 메뉴 목록 ---------- */
+.drawer__list{display:flex;flex-direction:column;gap:4px}
+
+.drawer__item + .drawer__item{
+  border-top:1px solid var(--line-normal);
+  padding-top:4px;margin-top:0;
+}
+
+/* 1차 항목 — Button/Text 를 폭 100%로 늘린 형태 */
+.drawer__link{
+  display:flex;align-items:center;gap:8px;width:100%;
+  border:0;background:none;padding:12px 0;cursor:pointer;
+  border-radius:var(--radius-xsmall);
+  font:var(--label-1-medium);color:var(--label-normal);text-align:left;
+}
+.drawer__link > span{flex:1 0 0;min-width:0}
+.drawer__link .icon{transition:transform .15s ease}
+.drawer__item.is-open .drawer__link .icon{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.drawer__link .icon{transition:none}}
+
+/* 펼친 하위 목록 — 한 줄에 2칸 */
+.drawer__sub{display:none;flex-direction:column;padding:8px 0 16px}
+.drawer__item.is-open .drawer__sub{display:flex}
+.drawer__sub-row{display:flex;align-items:flex-start}
+.drawer__sub-row a{
+  display:flex;align-items:center;gap:4px;
+  flex:1 0 0;min-width:0;padding-block:8px;
+  font:var(--label-1-medium);color:var(--label-alternative);
+}
+/* 외부 링크 한 칸만 쓰는 줄은 폭을 내용에 맞춘다 */
+.drawer__sub-row--auto a{flex:0 0 auto}
+.drawer__sub-row a:hover{color:var(--label-normal)}
+
+/* ---------- 하단 유틸 ---------- */
+.drawer__util{display:flex;align-items:center;justify-content:space-between}
+.drawer__lang{
+  display:inline-flex;align-items:center;gap:6px;
+  border:0;background:none;padding:8px 0;cursor:pointer;
+  font:var(--label-1-medium);color:var(--label-normal);
+}
+.drawer__lang-group{display:inline-flex;align-items:center;gap:2px}
+.drawer__lang-code{display:inline-block;width:22px}
+
+/* ============================================================
+   카탈로그 표시용 — 실제 화면에서는 쓰지 않는다
+   `.drawer` 는 원래 position:fixed 로 화면 전체를 덮는다. 카탈로그에서는
+   액자 안에 넣어 보여줘야 하므로 relative 로 내린다.
+   폭 규칙은 뷰포트(미디어쿼리) 기준이라, 넓은 화면에서 모바일 형태를
+   보여주려면 `.drawer--sm` / `.drawer--md` 로 폭을 못박는다.
+   ============================================================ */
+.drawer--inline{position:relative;inset:auto;display:block;height:640px}
+.drawer--inline .drawer__scrim{position:absolute}
+.drawer--inline .drawer__panel{position:absolute}
+.drawer--sm .drawer__panel{width:100%}
+.drawer--sm .drawer__scrim{display:none}
+.drawer--md .drawer__panel{width:384px}
+.drawer--md .drawer__scrim{display:block}

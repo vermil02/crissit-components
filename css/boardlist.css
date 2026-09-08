@@ -1,0 +1,239 @@
+/* ============================================================
+   Board list — 피그마 Content / Board list
+   Content/Boardlist/Main      (1008:7744) 변형 6 — 대표 기사 1건
+   Content/Boardlist/Common    (1008:7915) 변형 8 — 목록/그리드 카드
+   Content/Boardlist/Recommand (1008:8040) 변형 2 — 제목만 있는 추천 줄
+
+   State=Hover 는 전부 카드 전체 불투명도 48% 다 (피그마 opacity 변수 48).
+
+   실측
+   Main (Desktop lg, 1533×292)
+     좌우 배치 gap 48 · 이미지 505 폭, 높이 꽉 · radius 4 · 선 #e4e6e8
+     날짜 Body2/Medium 16 #7c8288
+     제목 Title2/Bold 24 (ls -0.24) #151617
+     요약 Body1/Regular 18 #414549 (한 줄 …)
+     배지 그룹 gap 8 · 배지는 `.badge--strong` (면 #e4e6e8)
+     아래 줄 = 이전·다음 Icon/Outlined lg 두 개(gap 12) + 우측 재생 버튼
+
+   Common Horizontal (Desktop lg, 높이 182)
+     아래 1px 선 · 위아래 32 · 본문/이미지 gap 16
+     날짜 Label2/Medium 14 · 제목 Label1/Bold 16 최대 2줄
+     배지는 `.badge`(기본, 면 #f5f6f7) — Main 과 면 색이 다르다
+     이미지 176×122 radius 4 선 #f5f6f7
+
+   Common Vertical (Desktop lg, 295 폭)
+     이미지 190 높이 · 아래 gap 16 · 텍스트 블록 gap 20
+     날짜 Label1/Medium 16 · 제목 Body/Bold 18 최대 2줄
+
+   Recommand (295 폭)
+     아래 1px 선 · 위아래 16 · 제목 Label2/Bold 14 최대 2줄
+
+   Tablet/Mobile (f2h 덤프 실측 — 더 이상 추정 아님)
+   Main md (768×686) / sm (518×398)  — 세로 배치로 바뀐다
+     카드 gap 16 · 이미지 md 480 높이 / sm 200 높이
+     본문 gap 24 · new_Content gap 16 · Content gap 8 · Heading gap 6(lg는 8)
+     날짜 16 Medium(동일) · 제목 16 Bold(lg는 24) · 요약 14 Regular(lg는 18)
+     이전·다음·재생 버튼 md는 Outlined md(40) / sm은 Outlined sm(32)
+   Common md-sm Horizontal (높이 102)
+     위아래 20 · 텍스트 블록 gap 12(lg는 20) · 날짜↔제목 gap 4(lg는 8)
+     날짜 12 Medium(lg는 14) · 제목 14 Bold(lg는 16)
+     이미지 68×40 (lg는 176×122) · 배지 gap 6(lg는 10) + badge--sm
+   Common md-sm Vertical (220×226)
+     카드 gap 12(lg는 16) · 이미지 142 높이(lg는 190)
+     본문 gap 16(lg는 20) · 날짜↔제목 gap 4(lg는 8)
+     날짜 14 Medium(lg는 16) · 제목 16 Bold(lg는 18) · 배지 badge--sm
+
+   정책 — 가이드 문서 [Media_Web_Desktop] 기능 및 정책 정의서 (1010:17159)
+     Main       최대 5건 · 날짜 표기 YY.MM.DD
+                제목 line-clamp 2 · 요약 line-clamp 1
+                8초마다 다음 건으로 자동 전환 (Delay Second : 8s)
+                1건뿐이면 이전·다음 버튼을 노출하지 않는다 → `.bl-main--single`
+                일시정지 버튼: 진입 시 일시정지 아이콘으로 시작(=자동 재생 중)
+     Common     한 번에 최대 10건 · 넘으면 페이지네이션
+     Recommand  최대 5건 (보여줄 목록을 직접 고른다)
+   ============================================================ */
+
+/* 공통 — hover 는 카드 전체가 흐려진다 */
+.bl{display:block;color:inherit;transition:opacity .15s ease}
+.bl:hover{opacity:var(--opacity-48)}
+@media (prefers-reduced-motion:reduce){.bl{transition:none}}
+
+.bl__date{font:var(--body-2-medium);color:var(--label-alternative)}
+.bl__badges{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bl__img{
+  background:var(--neutral-100) center/cover no-repeat;
+  border-radius:var(--radius-xsmall);
+  box-shadow:inset 0 0 0 1px var(--line-normal);
+}
+/* 2줄 자르기 */
+.bl__clamp2{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;
+}
+
+/* ============================================================
+   Main — 대표 기사
+   ============================================================ */
+.bl-main{display:flex;align-items:stretch;gap:48px}
+.bl-main .bl__img{width:505px;flex:none;align-self:stretch;min-height:292px}
+.bl-main__body{
+  flex:1 0 0;min-width:0;
+  display:flex;flex-direction:column;justify-content:space-between;gap:48px;
+}
+.bl-main__head{display:flex;flex-direction:column;gap:24px}
+.bl-main__text{display:flex;flex-direction:column;gap:16px}
+/* 제목 2줄 · 요약 1줄에서 자른다 (정의서 🅑 🅒) */
+.bl-main__title{
+  margin:0;font:var(--title-2-bold);letter-spacing:-.01em;
+  color:var(--label-normal);
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;
+}
+.bl-main__summary{
+  margin:0;font:var(--body-1-regular);color:var(--label-neutral);
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;
+  overflow:hidden;
+}
+
+.bl-main .bl__badges{gap:8px}
+.bl-main__nav{display:flex;align-items:center;justify-content:space-between}
+.bl-main__nav-group{display:flex;align-items:center;gap:12px}
+/* 보도자료가 1건뿐이면 이전·다음을 감춘다 (정의서 🅓).
+   재생·일시정지 버튼은 그대로 남는다 */
+.bl-main--single .bl-main__nav-group{display:none}
+
+/* ============================================================
+   Common — Horizontal (목록형)
+   ============================================================ */
+.bl-h{
+  display:flex;align-items:flex-start;gap:16px;
+  padding-block:32px;
+  border-bottom:1px solid var(--line-normal);
+}
+.bl-h__body{flex:1 0 0;min-width:0;display:flex;flex-direction:column;gap:20px}
+.bl-h__text{display:flex;flex-direction:column;gap:8px}
+.bl-h .bl__date{font:var(--label-2-medium)}
+.bl-h__title{margin:0;font:var(--label-1-bold);color:var(--neutral-1000)}
+.bl-h .bl__img{
+  width:176px;height:122px;flex:none;
+  box-shadow:inset 0 0 0 1px var(--line-alternative);
+}
+
+/* ============================================================
+   Common — Vertical (그리드형)
+   ============================================================ */
+.bl-v{display:flex;flex-direction:column;gap:16px;width:295px;max-width:100%}
+.bl-v .bl__img{width:100%;height:190px}
+.bl-v__body{display:flex;flex-direction:column;gap:20px}
+.bl-v__text{display:flex;flex-direction:column;gap:8px}
+.bl-v__title{margin:0;font:700 18px/1.5 var(--font-sans);color:var(--label-normal)}
+
+/* ============================================================
+   Recommand — 제목만
+   ============================================================ */
+.bl-rec{
+  display:block;padding-block:16px;
+  border-bottom:1px solid var(--line-normal);
+}
+.bl-rec__title{
+  margin:0;width:295px;max-width:100%;
+  font:var(--label-2-bold);color:var(--label-normal);
+}
+
+/* ============================================================
+   Tablet / Mobile — 위 주석의 실측값 그대로
+   ============================================================ */
+@media (max-width:1023px){
+  /* --- Main : 세로 배치 --- */
+  .bl-main{flex-direction:column;gap:16px}
+  .bl-main .bl__img{width:100%;min-height:0;height:480px}
+  .bl-main__body{gap:24px}
+  .bl-main__head{gap:16px}
+  .bl-main__text{gap:8px}
+  .bl-main__title{font:700 16px/1.5 var(--font-sans);letter-spacing:0}
+  .bl-main__summary{font:400 14px/1.55 var(--font-sans)}
+
+  /* --- Common Horizontal --- */
+  .bl-h{padding-block:20px}
+  .bl-h__body{gap:12px}
+  .bl-h__text{gap:4px}
+  .bl-h .bl__date{font:var(--label-3-medium)}
+  .bl-h__title{font:var(--label-2-bold)}
+  .bl-h .bl__img{width:68px;height:40px}
+  .bl-h .bl__badges{gap:6px}
+
+  /* --- Common Vertical --- */
+  .bl-v{width:220px;gap:12px}
+  .bl-v .bl__img{height:142px}
+  .bl-v__body{gap:16px}
+  .bl-v__text{gap:4px}
+  .bl-v .bl__date{font:var(--label-2-medium)}
+  .bl-v__title{font:var(--label-1-bold)}
+}
+@media (max-width:767px){
+  .bl-main .bl__img{height:200px}
+  .bl-v{width:100%}
+}
+
+/* ============================================================
+   Progress — 대표 기사 자동 전환 남은 시간 표시
+   가이드 문서 [Media_Web_Desktop] 정의서 §1 · 목업 1010:17282~17321
+
+   일시정지 버튼(Icon/Outlined)의 테두리가 상단 중앙에서 출발해
+   시계방향으로 연속으로 차오른다. 한 바퀴가 자동 전환 주기(기본 8초)다.
+
+   ▸ 피그마 목업은 4장이지만 그건 정지 이미지가 연속 동작을 4프레임으로
+     보여준 것이다(우상 → 우하 → 좌하 → 좌상). 정의서 문구도 "차오르며"라
+     연속이 맞다. **프레임은 피그마의 표현 방식이지 컴포넌트의 상태가
+     아니므로 코드에는 남기지 않는다** — 각도는 그냥 연속으로 돈다.
+   ▸ 피그마 실측: 버튼 32×32, 선 2px · #000000 (Neutral/1000)
+   ▸ Round=All 용 원형 진행 표시는 피그마에 없다 — 사각(Round=Normal)만 있다.
+
+   마크업
+     <button class="ibtn ibtn--outlined ibtn--lg has-overlay bl-prog" data-bl-toggle>
+       <i class="icon i-pause"></i>
+       <span class="bl-prog__ring" aria-hidden="true"></span>
+     </button>
+
+   js/boardlist-main.js 가 붙은 자리에 두면 스크립트가 `.is-running` /
+   `.is-clock-paused` 와 `--bl-interval` 을 관리하고, 일시정지 상태에 맞춰
+   아이콘을 `i-pause` ↔ `i-play` 로 바꾼다.
+
+   ── 채우는 방식 ────────────────────────────────────────────
+   테두리를 그린 사각형 위에 conic-gradient 로 부채꼴 마스크를 씌워
+   `--bl-prog-angle` 만큼만 보이게 한다. 각도는 @property 로 등록해야
+   애니메이션이 걸린다(등록하지 않으면 CSS 변수는 중간값 없이 툭 바뀐다).
+   ============================================================ */
+@property --bl-prog-angle{
+  syntax:'<angle>';
+  inherits:false;
+  initial-value:0deg;
+}
+
+.bl-prog{position:relative}
+
+.bl-prog__ring{
+  position:absolute;inset:0;pointer-events:none;
+  border:2px solid var(--neutral-1000);
+  border-radius:inherit;
+  --bl-prog-angle:0deg;
+  -webkit-mask:conic-gradient(from 0deg,#000 var(--bl-prog-angle),#0000 0);
+          mask:conic-gradient(from 0deg,#000 var(--bl-prog-angle),#0000 0);
+}
+
+/* 한 바퀴가 한 주기. forwards 라 다 차면 그대로 멈춰 있고,
+   다음 기사로 넘어갈 때 스크립트가 애니메이션을 처음부터 다시 건다 */
+@keyframes bl-prog-fill{
+  from{--bl-prog-angle:0deg}
+  to  {--bl-prog-angle:360deg}
+}
+.bl-prog.is-running .bl-prog__ring{
+  animation:bl-prog-fill var(--bl-interval,8s) linear forwards;
+}
+/* 일시정지 — 되감지 않고 그 자리에 선다 (정의서 문구) */
+.bl-prog.is-clock-paused .bl-prog__ring{animation-play-state:paused}
+
+/* 움직임을 줄이는 설정이면 자동 전환 자체를 안 하므로 테두리도 비워 둔다 */
+@media (prefers-reduced-motion:reduce){
+  .bl-prog.is-running .bl-prog__ring{animation:none}
+}

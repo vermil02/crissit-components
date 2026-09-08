@@ -1,0 +1,40 @@
+/* ============================================================
+   Pagination — 피그마 Navigation / Pagenation
+   Navigation/Pagination (1008:7671) 변형 2  — md · sm
+   Icon Button/Num       (1008:7688) 변형 4  — 숫자 칸
+
+   구성: [◀] [1][2][3][4][5] [▶] · 사이 간격 8px
+   숫자 칸은 Icon/Background 가 아니라 전용 컴포넌트다.
+     md 40×40 · 글자 Label2/Bold 14 · 숫자 칸 폭 32
+     sm 32×32 · 글자 Label3/Bold 12
+   활성 칸만 면(Background/Assistive)을 갖는다.
+
+   화살표는 Button/Icon/Background 의 White 를 쓴다 — 흰색 반투명이라
+   더 이상 갈 페이지가 없을 때(12%)와 있을 때(32%)가 농도로 구분된다.
+
+   마크업
+     <nav class="pgn pgn--md">
+       <button class="ibtn ibtn--bg ibtn--white ibtn--md has-overlay" disabled>…</button>
+       <button class="pgn__num is-active">1</button>
+       …
+     </nav>
+   ============================================================ */
+
+.pgn{display:inline-flex;align-items:center;gap:8px}
+
+.pgn__num{
+  display:inline-flex;align-items:center;justify-content:center;
+  border:0;background:none;cursor:pointer;
+  border-radius:var(--radius-xsmall);
+  color:var(--label-neutral);
+  font-family:var(--font-sans);font-weight:700;
+}
+.pgn--md .pgn__num{
+  padding:10px 4px;font:700 14px/1.45 var(--font-sans);
+  min-width:40px;
+}
+.pgn--sm .pgn__num{
+  padding:7px 0;font:700 12px/1.5 var(--font-sans);
+  min-width:32px;
+}
+.pgn__num.is-active{background:var(--bg-assistive)}

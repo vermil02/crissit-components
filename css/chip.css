@@ -1,0 +1,82 @@
+/* ============================================================
+   Chip — 피그마 Action / Chip Button
+   Button/Chip/Filter        (1008:6628) 변형 9  — 정렬·필터 트리거
+   Button/Chip/Filter/Active (1008:6674) 변형 4  — 펼쳐진 목록의 한 줄
+
+   면도 테두리도 없다. 굵은 글자 + 셰브론만으로 되어 있다.
+
+   축
+     크기   .chip--sm | --md | --lg
+     상태   (기본 Normal) | .chip--expand  ← 셰브론이 위로 뒤집힌다
+     비활성 disabled
+
+   마크업
+     <button class="chip chip--md">
+       <span>텍스트</span><i class="chip__caret"></i>
+     </button>
+   ============================================================ */
+
+.chip{
+  display:inline-flex;align-items:center;
+  border:0;background:none;padding:0;
+  color:var(--label-normal);cursor:pointer;
+  font-family:var(--font-sans);font-weight:700;
+}
+.chip:disabled,.chip.is-disabled{color:var(--label-disable);cursor:default}
+
+/* 높이는 padding + 줄높이 — sm 24 · md 32 · lg 40 */
+.chip--sm{padding-block:3px;gap:2px;font:700 12px/1.5 var(--font-sans)}
+.chip--md{padding-block:6px;gap:3px;font:700 14px/1.45 var(--font-sans)}
+.chip--lg{padding-block:8px;gap:4px;font:700 16px/1.5 var(--font-sans)}
+
+.chip__caret{
+  display:inline-block;flex:none;background:currentColor;
+  -webkit-mask:url(../assets/icon-chevron-down.svg) center/contain no-repeat;
+          mask:url(../assets/icon-chevron-down.svg) center/contain no-repeat;
+  transition:transform .15s ease;
+}
+.chip--sm .chip__caret{width:12px;height:12px}
+.chip--md .chip__caret{width:14px;height:14px}
+.chip--lg .chip__caret{width:16px;height:16px}
+.chip--expand .chip__caret{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.chip__caret{transition:none}}
+
+/* ---------- 펼쳐진 목록의 한 줄 ----------
+   피그마 폭은 320 고정. 실제로는 드롭다운 폭을 따라가게 두는 게 낫다 */
+.chip-option{
+  display:flex;align-items:center;justify-content:center;
+  width:320px;max-width:100%;
+  border:0;background:none;cursor:pointer;text-align:left;
+  border-radius:var(--radius-xsmall);
+  color:var(--label-alternative);
+  font-family:var(--font-sans);font-weight:700;
+}
+.chip-option > span{flex:1 0 0;min-width:0}
+.chip-option--md{padding:6px 8px;font:700 14px/1.45 var(--font-sans)}
+.chip-option--lg{padding:8px;gap:10px;font:700 16px/1.5 var(--font-sans)}
+.chip-option.is-active{color:var(--label-normal)}
+
+/* ---------- 콘텐츠 배지 ----------
+   Content/Content Badge/info (1008:5144) — 변형 3개. 게시판 카드의 분류 태그.
+   Boardlist 에서 함께 쓰므로 여기 둔다.
+   크기 이름은 피그마와 같게 맞췄다 (lg / md / sm).
+     lg  여백 4/8 · Label1/Medium 16 · 높이 32  → Board list / Main (lg)
+     md  여백 3/6 · Label2/Medium 14 · 높이 26  → Common (lg) · Main (md·sm)
+     sm  여백 2/6 · Label3/Medium 12 · 높이 22  → Common (md-sm)
+   면은 #e4e6e8 (Background/Normal/Assistive) 하나다.
+
+   ▸ 덤프에서는 배지 42개가 두 색으로 갈려 보였다 — Main 18개는 #e4e6e8,
+     Common 24개는 #f5f6f7. 원인은 변형이 아니라 **반영 안 된 옛 상태**였다:
+     같은 컴포넌트(`Size=md`)를 물고 있는데 Main 인스턴스에는 면을 덮는 `bg`
+     레이어가 있고 Common 인스턴스에는 없다. Common 쪽이 옛 배지를 붙든
+     상태이고, 그때 프레임 자체의 fill(#f5f6f7)이 드러나 보였던 것이다.
+     최신 상태인 #e4e6e8 로 통일한다 (2026-09-07 확정) */
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--semantic-background-normal-assistive);
+  color:var(--label-alternative);
+  border-radius:var(--radius-xsmall);white-space:nowrap;
+}
+.badge--lg{padding:4px 8px;font:500 16px/1.5 var(--font-sans)}
+.badge--md{padding:3px 6px;font:500 14px/1.45 var(--font-sans)}
+.badge--sm{padding:2px 6px;font:500 12px/1.5 var(--font-sans)}
