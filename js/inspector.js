@@ -318,7 +318,7 @@
            '<span class="insp-arw">→</span><span class="insp-val">' + esc(tokens[name]) + "</span></dd></div>";
     } else {
       h += '<div class="insp-row"><dt>선언</dt><dd>' +
-           linkifyVars(raw[name] || "(미디어쿼리 안에서만 정해진다)") + "</dd></div>";
+           linkifyVars(raw[name] || "(미디어쿼리 안에서만 정해집니다)") + "</dd></div>";
     }
 
     if (med && med.length) {
@@ -390,7 +390,7 @@
   function setHint() {
     hint.innerHTML = pinned
       ? '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기'
-      : "요소 위에 마우스를 올리면 값이 나온다. 클릭하면 고정된다";
+      : "요소 위에 마우스를 올리면 값이 나옵니다. 클릭하면 고정됩니다";
     // ▸ 알림은 반드시 innerHTML 을 쓴 **뒤에** — 메모가 여기에 버튼을 끼워 넣는데,
     //   먼저 부르면 그 버튼이 innerHTML 로 지워진다
     for (var i = 0; i < pinListeners.length; i++) {
@@ -408,7 +408,7 @@
     toggle.className = "insp-toggle";
     toggle.type = "button";
     toggle.setAttribute("aria-pressed", "false");
-    toggle.title = "요소의 글꼴·색·여백을 오른쪽에 보여준다 (마우스가 올라간 상태의 값이라 hover 값이 나온다)";
+    toggle.title = "요소의 글꼴·색·여백을 오른쪽에 보여줍니다 (마우스가 올라간 상태의 값이라 hover 값이 나옵니다)";
     toggle.innerHTML =
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
       '<circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"/>' +
@@ -417,10 +417,14 @@
 
     panel = document.createElement("aside");
     panel.className = "insp-panel";
+    /* 패널은 열(column) 두 개까지 담는다 — 왼쪽이 검사, 오른쪽은 메모가 붙인다.
+       화면이 좁으면 CSS 가 위아래로 쌓는다 */
     panel.innerHTML =
-      '<div class="insp-panel__head"><h2>검사</h2></div>' +
-      '<div class="insp-panel__hint"></div>' +
-      '<div class="insp-panel__body"></div>';
+      '<div class="insp-col insp-col--main">' +
+        '<div class="insp-panel__head"><h2>검사</h2></div>' +
+        '<div class="insp-panel__hint"></div>' +
+        '<div class="insp-panel__body"></div>' +
+      "</div>";
 
     detail = document.createElement("div");
     detail.className = "insp-detail";
@@ -438,7 +442,7 @@
 
     hint = panel.querySelector(".insp-panel__hint");
     body = panel.querySelector(".insp-panel__body");
-    panel.appendChild(detail);
+    panel.querySelector(".insp-col--main").appendChild(detail);
     setHint();
 
     buildIndex();

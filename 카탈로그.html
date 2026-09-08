@@ -226,6 +226,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>제목 계열</h3>
+    <p class="note">크기가 화면 폭을 따라 바뀐다. 아래 「보기」는 <b>지금 이 창 폭</b> 기준이라, 창을 좁히면 실제로 작아진다.</p>
     <table class="tk">
       <tr><th style="width:150px">스타일</th><th style="width:120px">유틸</th><th>보기</th></tr>
       <tr><td><code>Display</code></td><td><code>.t-display</code></td><td><span class="t-display">처음의 설계</span></td></tr>
@@ -239,24 +240,28 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 
   <div class="card">
     <h3>본문 · 라벨</h3>
+    <p class="note"><b>굵기</b>는 CSS <code>font-weight</code> 값이다 — 400 Regular · 500 Medium · 600 SemiBold · 700 Bold.
+    <b>행간</b>은 글자 크기의 몇 배인지다(<code>line-height</code>) — 18px 에 1.55 면 한 줄 높이가 27.9px 이다.
+    피그마에는 % 로 적혀 있어 155% 와 같은 값이다. 이 계열은 <b>화면 폭이 바뀌어도 크기가 그대로</b>다.</p>
     <table class="tk">
-      <tr><th style="width:180px">스타일</th><th style="width:150px">값</th><th>보기</th></tr>
-      <tr><td><code>Body 1/Regular</code></td><td>400 18 / 1.55</td><td><span class="t-body-1">도입이 필요한 환경을 파악합니다</span></td></tr>
-      <tr><td><code>Body 1/Medium</code></td><td>500 18 / 1.55</td><td><span class="t-body-1-md">도입이 필요한 환경을 파악합니다</span></td></tr>
-      <tr><td><code>Body 1/SemiBold</code></td><td>600 18 / 1.55</td><td><span class="t-body-1-sb">도입이 필요한 환경을 파악합니다</span></td></tr>
-      <tr><td><code>Body 1/Bold</code></td><td>700 18 / 1.55</td><td><span class="t-body-1-b">도입이 필요한 환경을 파악합니다</span></td></tr>
-      <tr><td><code>Body 1/Reading</code></td><td>400 <b>18</b> / 1.75</td><td><span class="t-body-1-reading">긴 본문에 쓰는 넓은 줄높이</span></td></tr>
-      <tr><td><code>Body 2/Regular</code></td><td>400 16 / 1.5</td><td><span class="t-body-2">보조 설명에 쓴다</span></td></tr>
-      <tr><td><code>Body 2/Reading</code></td><td>400 16 / 1.75</td><td><span class="t-body-2-reading">보조 설명의 긴 문단</span></td></tr>
-      <tr><td><code>Body 3/Regular</code></td><td>400 14 / 1.55</td><td><span class="t-body-3">캡션·주석</span></td></tr>
-      <tr><td><code>Label 1/Medium</code></td><td>500 16 / 1.5</td><td><span class="t-label-1">GNB 메뉴 · lg 버튼</span></td></tr>
-      <tr><td><code>Label 1/Bold</code></td><td>700 16 / 1.5</td><td><span class="t-label-1-b">목록 카드 제목</span></td></tr>
-      <tr><td><code>Label 2/Medium</code></td><td>500 14 / 1.45</td><td><span class="t-label-2">푸터 법인 정보</span></td></tr>
-      <tr><td><code>Label 2/Bold</code></td><td>700 14 / 1.45</td><td><span class="t-label-2-b">푸터 메뉴 항목</span></td></tr>
-      <tr><td><code>Label 3/Medium</code></td><td>500 12 / 1.5</td><td><span class="t-label-3">sm 버튼</span></td></tr>
-      <tr><td><code>Label 3/Bold</code></td><td>700 12 / 1.5</td><td><span class="t-label-3-b">sm 칩 · sm 페이지 번호</span></td></tr>
+      <tr><th style="width:150px">스타일</th><th style="width:56px">굵기</th><th style="width:56px">크기</th><th style="width:56px">행간</th><th>보기</th></tr>
+      <tr><td><code>Body 1/Regular</code></td><td>400</td><td>18px</td><td>1.55</td><td><span class="t-body-1">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Medium</code></td><td>500</td><td>18px</td><td>1.55</td><td><span class="t-body-1-md">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/SemiBold</code></td><td>600</td><td>18px</td><td>1.55</td><td><span class="t-body-1-sb">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Bold</code></td><td>700</td><td>18px</td><td>1.55</td><td><span class="t-body-1-b">도입이 필요한 환경을 파악합니다</span></td></tr>
+      <tr><td><code>Body 1/Reading</code></td><td>400</td><td>18px</td><td><b>1.75</b></td><td><span class="t-body-1-reading">긴 본문에 쓰는 넓은 줄높이</span></td></tr>
+      <tr><td><code>Body 2/Regular</code></td><td>400</td><td>16px</td><td>1.5</td><td><span class="t-body-2">보조 설명에 씁니다</span></td></tr>
+      <tr><td><code>Body 2/Reading</code></td><td>400</td><td>16px</td><td><b>1.75</b></td><td><span class="t-body-2-reading">보조 설명의 긴 문단</span></td></tr>
+      <tr><td><code>Body 3/Regular</code></td><td>400</td><td>14px</td><td>1.55</td><td><span class="t-body-3">캡션·주석</span></td></tr>
+      <tr><td><code>Label 1/Medium</code></td><td>500</td><td>16px</td><td>1.5</td><td><span class="t-label-1">GNB 메뉴 · lg 버튼</span></td></tr>
+      <tr><td><code>Label 1/Bold</code></td><td>700</td><td>16px</td><td>1.5</td><td><span class="t-label-1-b">목록 카드 제목</span></td></tr>
+      <tr><td><code>Label 2/Medium</code></td><td>500</td><td>14px</td><td>1.45</td><td><span class="t-label-2">푸터 법인 정보</span></td></tr>
+      <tr><td><code>Label 2/Bold</code></td><td>700</td><td>14px</td><td>1.45</td><td><span class="t-label-2-b">푸터 메뉴 항목</span></td></tr>
+      <tr><td><code>Label 3/Medium</code></td><td>500</td><td>12px</td><td>1.5</td><td><span class="t-label-3">sm 버튼</span></td></tr>
+      <tr><td><code>Label 3/Bold</code></td><td>700</td><td>12px</td><td>1.5</td><td><span class="t-label-3-b">sm 칩 · sm 페이지 번호</span></td></tr>
     </table>
-    <p class="spec">정의서와 실제 텍스트 스타일이 어긋난 것이 둘 있다(<code>Display</code> · <code>Body 1/Reading</code>) — 「확인 필요」 참고. 토큰은 <b>정의서</b>를 따랐다</p>
+    <p class="spec"><code>Reading</code> 은 같은 크기에 <b>행간만 넓힌</b> 판이다 — 긴 문단에서 줄을 놓치지 않게 한다.<br>
+    정의서와 실제 텍스트 스타일이 어긋난 것이 둘 있다(<code>Display</code> · <code>Body 1/Reading</code>) — 「확인 필요」 참고. 토큰은 <b>정의서</b>를 따랐다</p>
   </div>
 </section>
 

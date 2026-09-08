@@ -13,9 +13,9 @@
      받은 JSON 은 다시 불러오면 핀이 그대로 되살아난다.
 
    쓰는 법
-     검사 모드에서 요소를 클릭해 고정 → 패널의 「＋ 메모」
+     검사 모드에서 요소를 클릭해 고정 → 오른쪽 메모 열의 「＋ 메모」
      핀을 누르면 그 메모가 열린다
-     패널 위 「메모 N」 → 목록 · 내보내기 · 불러오기
+     메모 열 아래 — JSON 내보내기 · 불러오기 · 전부 지우기
 
    저장 형태 (내보내기 파일)
      {
@@ -37,7 +37,7 @@
   var KEY = "crissit-catalog-memo-v1";
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];
-  var layer, listEl, editEl, countBtn;
+  var layer, col, bodyEl, footEl, countBtn;
   var editing = null;             // 지금 쓰고 있는 메모 id (새 메모면 null)
   var target = null;              // 새 메모를 붙일 요소
 
@@ -87,7 +87,7 @@
     });
   }
   function renderCount() {
-    countBtn.textContent = "메모 " + notes.length;
+    countBtn.textContent = notes.length;
     countBtn.classList.toggle("is-some", notes.length > 0);
   }
 
@@ -96,31 +96,32 @@
     editing = note ? note.id : null;
     target = el || (note && api && api.resolve(note.sel)) || null;
     var label = note ? note.label : (target && api ? api.label(target) : "");
-    editEl.innerHTML =
-      '<div class="memo-pane__head"><b>' + (note ? "메모 고치기" : "메모 남기기") + "</b>" +
-      '<button type="button" class="memo-x" aria-label="닫기">✕</button></div>' +
-      '<div class="memo-pane__body">' +
+    bodyEl.innerHTML =
       '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
-      '<textarea class="memo-text" rows="4" placeholder="무엇을 어떻게 고쳤으면 하는지 적어 주세요">' +
-      esc(note ? note.text : "") + "</textarea>" +
+      '<textarea class="memo-text" rows="5" placeholder="무엇을 어떻게 고쳤으면 하는지 적어 주세요">' +
+      esc(note ? note.text : "") + "</textarea>";
+    footEl.innerHTML =
       '<div class="memo-btns">' +
       '<button type="button" class="memo-save">저장</button>' +
+      '<button type="button" class="memo-cancel">취소</button>' +
       (note ? '<button type="button" class="memo-del">삭제</button>' : "") +
-      "</div></div>";
-    show(editEl);
-    var ta = editEl.querySelector(".memo-text");
+      "</div>";
+    var ta = bodyEl.querySelector(".memo-text");
     ta.focus();
     ta.selectionStart = ta.value.length;
   }
 
   function commit() {
-    var text = editEl.querySelector(".memo-text").value.trim();
-    if (!text) { hide(editEl); return; }
+    var ta = bodyEl.querySelector(".memo-text");
+    if (!ta) return;
+    var text = ta.value.trim();
+    if (!text) { openList(); return; }
     if (editing) {
-      var n = notes.filter(function (x) { return x.id === editing; })[0];
-      if (n) { n.text = text; n.at = new Date().toISOString(); }
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].id === editing) { notes[i].text = text; notes[i].at = new Date().toISOString(); break; }
+      }
     } else {
-      if (!target || !api) { hide(editEl); return; }
+      if (!target || !api) { openList(); return; }
       notes.push({
         id: uid(),
         at: new Date().toISOString(),
@@ -132,7 +133,7 @@
       });
     }
     save();
-    hide(editEl);
+    openList();
   }
 
   /* ── 목록 ─────────────────────────────────────────────── */
@@ -145,21 +146,17 @@
             '<span class="memo-meta">' + esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
-      : '<li class="memo-empty">아직 메모가 없다. 검사 모드에서 요소를 클릭한 뒤 「＋ 메모」를 누른다.</li>';
+      : '<li class="memo-empty">아직 메모가 없습니다.<br>왼쪽에서 요소를 클릭해 고정한 뒤 <b>「＋ 메모」</b>를 누르세요.</li>';
 
-    listEl.innerHTML =
-      '<div class="memo-pane__head"><b>메모 ' + notes.length + "개</b>" +
-      '<button type="button" class="memo-x" aria-label="닫기">✕</button></div>' +
-      '<div class="memo-pane__body">' +
-      '<ul class="memo-list">' + rows + "</ul>" +
-      '<div class="memo-btns memo-btns--wide">' +
+    bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
+    footEl.innerHTML =
+      '<div class="memo-btns">' +
       '<button type="button" class="memo-export">JSON 내보내기</button>' +
       '<label class="memo-import">불러오기<input type="file" accept="application/json,.json" hidden></label>' +
       (notes.length ? '<button type="button" class="memo-clear">전부 지우기</button>' : "") +
       "</div>" +
-      '<p class="memo-hint">메모는 이 브라우저에만 쌓인다. <b>JSON 으로 내보내 전달</b>하면 받은 쪽에서 불러와 핀까지 그대로 볼 수 있다.</p>' +
-      "</div>";
-    show(listEl);
+      '<p class="memo-hint">메모는 이 브라우저에만 쌓입니다. <b>JSON 으로 내보내 전달</b>하시면 받는 쪽에서 불러와 핀까지 그대로 볼 수 있습니다.</p>';
+    editing = null;
   }
 
   function exportJson() {
@@ -179,13 +176,16 @@
       try {
         var d = JSON.parse(fr.result);
         if (!d || !d.notes) throw 0;
-        // 같은 id 는 덮어쓰고 나머지는 뒤에 붙인다 — 두 사람 것을 합칠 수 있게
+        // 같은 id 는 덮어쓰고 나머지는 뒤에 붙입니다 — 두 사람 것을 합칠 수 있게
         d.notes.forEach(function (n) {
-          var i = notes.findIndex(function (x) { return x.id === n.id; });
+          var i = -1;
+          for (var k = 0; k < notes.length; k++) if (notes[k].id === n.id) { i = k; break; }
           if (i >= 0) notes[i] = n; else notes.push(n);
         });
         save(); openList();
-      } catch (e) { alert("메모 파일이 아닌 것 같다. 내보내기로 만든 JSON 을 넣어 달라."); }
+      } catch (e) {
+        alert("메모 파일이 아닌 것 같습니다. 「JSON 내보내기」로 만든 파일을 넣어 주세요.");
+      }
     };
     fr.readAsText(file);
   }
@@ -196,8 +196,6 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
   }
-  function show(el) { hide(el === listEl ? editEl : listEl); el.style.display = "block"; }
-  function hide(el) { el.style.display = "none"; }
 
   function build() {
     api = window.catInspect || null;
@@ -207,73 +205,63 @@
     document.body.appendChild(layer);
 
     var panel = api && api.panel();
-    if (!panel) return;                     // 검사기가 없으면 메모도 안 붙인다
+    if (!panel) return;                     // 검사기가 없으면 메모도 안 붙입니다
 
-    countBtn = document.createElement("button");
-    countBtn.type = "button";
-    countBtn.className = "memo-count";
+    /* 검사 패널의 **오른쪽 열**로 들어갑니다. 넓은 화면이면 나란히,
+       좁으면 CSS 가 아래로 내려 쌓습니다 */
+    col = document.createElement("div");
+    col.className = "insp-col insp-col--memo";
+    col.innerHTML =
+      '<div class="memo-head"><h2>메모</h2><span class="memo-count"></span></div>' +
+      '<div class="memo-body"></div>' +
+      '<div class="memo-foot"></div>';
+    panel.appendChild(col);
 
-    listEl = document.createElement("div");
-    listEl.className = "memo-pane";
-    listEl.style.display = "none";
-    editEl = document.createElement("div");
-    editEl.className = "memo-pane";
-    editEl.style.display = "none";
+    countBtn = col.querySelector(".memo-count");
+    bodyEl = col.querySelector(".memo-body");
+    footEl = col.querySelector(".memo-foot");
 
-    panel.querySelector(".insp-panel__head").appendChild(countBtn);
-    panel.appendChild(listEl);
-    panel.appendChild(editEl);
-
-    load(); renderCount(); renderPins();
+    load(); renderCount(); renderPins(); openList();
     bind(panel);
   }
 
   function bind(panel) {
-    countBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      listEl.style.display === "block" ? hide(listEl) : openList();
-    });
-
-    // 고정된 요소가 바뀌면 패널 위쪽에 「＋ 메모」 버튼을 끼워 넣는다
+    // 고정된 요소가 바뀌면 메모 머리에 「＋ 메모」를 끼워 넣습니다
     api.onPin(function (el) {
-      var head = panel.querySelector(".insp-panel__hint");
-      var old = panel.querySelector(".memo-add");
+      var old = col.querySelector(".memo-add");
       if (old) old.remove();
       if (!el) return;
       var b = document.createElement("button");
       b.type = "button";
       b.className = "memo-add";
       b.textContent = "＋ 메모";
-      head.appendChild(b);
+      col.querySelector(".memo-head").appendChild(b);
     });
 
     panel.addEventListener("click", function (e) {
       var t = e.target;
       if (!t.closest) return;
 
-      if (t.closest(".memo-add")) {
-        e.stopPropagation();
-        openEditor(null, api.getPinned());
-        return;
-      }
-      if (t.closest(".memo-x")) { hide(t.closest(".memo-pane")); return; }
+      if (t.closest(".memo-add")) { e.stopPropagation(); openEditor(null, api.getPinned()); return; }
       if (t.closest(".memo-save")) { commit(); return; }
+      if (t.closest(".memo-cancel")) { openList(); return; }
       if (t.closest(".memo-del")) {
         notes = notes.filter(function (x) { return x.id !== editing; });
-        save(); hide(editEl); openList(); return;
+        save(); openList(); return;
       }
       if (t.closest(".memo-export")) { exportJson(); return; }
       if (t.closest(".memo-clear")) {
-        if (confirm("메모 " + notes.length + "개를 전부 지운다. 되돌릴 수 없다.")) {
+        if (confirm("메모 " + notes.length + "개를 전부 지웁니다. 되돌릴 수 없습니다.")) {
           notes = []; save(); openList();
         }
         return;
       }
       var go = t.closest(".memo-go");
       if (go) {
-        var n = notes.filter(function (x) { return x.id === go.getAttribute("data-id"); })[0];
+        var id = go.getAttribute("data-id"), n = null;
+        for (var i = 0; i < notes.length; i++) if (notes[i].id === id) { n = notes[i]; break; }
         var el = n && api.resolve(n.sel);
-        if (!el) { alert("그 요소를 못 찾겠다. 마크업이 바뀐 것 같다."); return; }
+        if (!el) { alert("그 요소를 찾지 못했습니다. 마크업이 바뀐 것 같습니다."); return; }
         el.scrollIntoView({ block: "center" });
         api.pin(el);
         setTimeout(function () { openEditor(n, el); }, 60);
@@ -285,23 +273,23 @@
       if (f && e.target.files && e.target.files[0]) importJson(e.target.files[0]);
     });
 
-    // 핀을 누르면 그 메모가 열린다
+    // 핀을 누르면 그 메모가 열립니다
     layer.addEventListener("click", function (e) {
       var p = e.target.closest(".memo-pin");
       if (!p) return;
-      var n = notes.filter(function (x) { return x.id === p.getAttribute("data-id"); })[0];
+      var id = p.getAttribute("data-id"), n = null;
+      for (var i = 0; i < notes.length; i++) if (notes[i].id === id) { n = notes[i]; break; }
       if (!n) return;
       var el = api.resolve(n.sel);
       if (el) api.pin(el);
       openEditor(n, el);
     });
 
-    // 창 크기가 바뀌면 핀도 따라간다
+    // 창 크기가 바뀌면 핀도 따라갑니다
     var t = 0;
     addEventListener("resize", function () {
       clearTimeout(t); t = setTimeout(renderPins, 150);
     });
-    // 접힌 것이 펼쳐지는 등 뒤늦게 자리가 바뀌는 경우
     addEventListener("load", renderPins);
   }
 

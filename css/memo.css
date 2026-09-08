@@ -17,42 +17,46 @@
 .memo-pin:hover{transform:scale(1.15)}
 .memo-pin.is-done{background:var(--label-assistive)}
 
-/* ---------- 패널 머리의 개수 단추 ---------- */
-.memo-count{
-  flex:none;border:1px solid var(--line-normal);border-radius:9999px;
-  padding:3px 10px;background:none;cursor:pointer;
-  font:var(--label-3-bold);color:var(--label-alternative);
+/* ---------- 메모 열 ----------
+   검사 패널의 오른쪽 열. 좁은 화면에서는 아래로 내려와 쌓인다 */
+.insp-col--memo{
+  border-top:1px solid var(--line-normal);
+  background:var(--bg-alternative);
+  max-height:46%;
 }
-.memo-count:hover{border-color:var(--label-alternative);color:var(--label-normal)}
-.memo-count.is-some{border-color:#e5484d;color:#e5484d}
+@media (min-width:1600px){
+  .insp-col--memo{max-height:none}
+}
 
-/* 고정된 요소가 있을 때만 나타나는 「＋ 메모」 */
+.memo-head{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;
+  padding:16px 18px;border-bottom:1px solid var(--line-normal);
+  background:var(--bg-alternative);
+}
+.memo-head h2{font:var(--label-1-bold);margin:0}
+.memo-count{
+  min-width:20px;height:20px;padding:0 6px;border-radius:9999px;
+  background:var(--neutral-200);color:var(--label-alternative);
+  text-align:center;
+  font:700 11px/20px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.memo-count.is-some{background:#e5484d;color:#fff}
+
+/* 고정된 요소가 있을 때만 나타난다 */
 .memo-add{
-  margin-left:8px;border:0;border-radius:9999px;padding:3px 10px;
+  margin-left:auto;border:0;border-radius:9999px;padding:4px 11px;
   background:#e5484d;color:#fff;cursor:pointer;
   font:var(--label-3-bold);
 }
 .memo-add:hover{filter:brightness(1.08)}
 
-/* ---------- 아래쪽 창 — 토큰 정보창과 같은 자리를 쓴다 ---------- */
-.memo-pane{
-  flex:0 0 auto;max-height:56%;overflow:auto;
-  border-top:2px solid #e5484d;background:var(--bg-alternative);
+.memo-body{flex:1 1 auto;min-height:0;overflow:auto;padding:12px 18px}
+.memo-foot{
+  flex:0 0 auto;padding:12px 18px 16px;
+  border-top:1px solid var(--line-normal);background:var(--bg-alternative);
 }
-.memo-pane__head{
-  position:sticky;top:0;z-index:1;
-  display:flex;align-items:center;gap:8px;
-  padding:11px 18px;background:var(--bg-alternative);
-  border-bottom:1px solid var(--line-normal);
-}
-.memo-pane__head b{flex:1 1 auto;font:var(--label-2-bold);color:var(--label-normal)}
-.memo-x{
-  flex:none;border:0;background:none;padding:2px 4px;cursor:pointer;
-  font:12px/1 var(--font-sans);color:var(--label-assistive);
-}
-.memo-x:hover{color:var(--label-normal)}
-.memo-pane__body{padding:14px 18px 18px}
 
+/* ---------- 메모 쓰기 ---------- */
 .memo-target{
   margin:0 0 8px;word-break:break-all;
   font:500 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -66,7 +70,7 @@
 }
 .memo-text:focus{outline:2px solid #e5484d;outline-offset:-1px;border-color:transparent}
 
-.memo-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.memo-btns{display:flex;flex-wrap:wrap;gap:8px}
 .memo-btns button,.memo-import{
   border:1px solid var(--line-normal);border-radius:var(--radius-xsmall);
   padding:6px 12px;background:var(--bg-normal);cursor:pointer;
@@ -77,11 +81,12 @@
 .memo-del,.memo-clear{color:#e5484d!important}
 
 /* ---------- 목록 ---------- */
-.memo-list{list-style:none;margin:0 0 4px;padding:0}
+.memo-list{list-style:none;margin:0;padding:0}
 .memo-item{
   display:flex;align-items:flex-start;gap:10px;
   padding:10px 0;border-bottom:1px solid var(--line-normal);
 }
+.memo-item:last-child{border-bottom:0}
 .memo-item > div{flex:1 1 auto;min-width:0}
 .memo-item b{
   display:block;font:var(--label-2-medium);color:var(--label-normal);
@@ -103,5 +108,5 @@
   font:var(--label-3-medium);color:var(--label-alternative);
 }
 .memo-go:hover{border-color:var(--insp-accent);color:var(--insp-accent)}
-.memo-empty{font:var(--label-2-medium);color:var(--label-assistive);padding:8px 0 12px}
+.memo-empty{font:var(--label-2-medium);color:var(--label-assistive);padding:4px 0}
 .memo-hint{margin:10px 0 0;font:var(--label-3-medium);color:var(--label-assistive)}

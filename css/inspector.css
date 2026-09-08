@@ -32,16 +32,29 @@
   background:var(--insp-accent);color:#fff;border-color:var(--insp-accent);
 }
 
-/* ---------- 오른쪽 패널 ---------- */
+/* ---------- 오른쪽 패널 ----------
+   열(column) 두 개를 담는다 — 왼쪽이 검사, 오른쪽이 메모.
+   좁은 화면에서는 한 열로 접어 위아래로 쌓는다. 좌우로 쪼개면 둘 다
+   너무 좁아져서 값도 메모도 못 읽기 때문이다 */
 .insp-panel{
   position:fixed;top:0;right:0;bottom:0;width:var(--insp-w);z-index:9997;
-  display:none;flex-direction:column;
+  display:none;grid-template-columns:1fr;grid-template-rows:1fr auto;
   background:var(--bg-normal);
   border-left:1px solid var(--line-normal);
   box-shadow:-8px 0 24px rgb(0 0 0 / .06);
 }
-.insp-on .insp-panel{display:flex}
-/* 넓은 화면에서는 본문을 밀어서 가리지 않게 한다 */
+.insp-on .insp-panel{display:grid}
+
+.insp-col{display:flex;flex-direction:column;min-height:0;min-width:0}
+.insp-col--main{overflow:hidden}
+
+/* 넓은 화면 — 패널을 넓혀 좌우 2열로 가른다 */
+@media (min-width:1600px){
+  :root{--insp-w:680px}
+  .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+  .insp-col--memo{border-left:1px solid var(--line-normal);border-top:0}
+}
+/* 본문을 밀어서 패널이 가리지 않게 한다 */
 @media (min-width:1180px){
   .insp-on .cat{padding-right:var(--insp-w)}
 }
