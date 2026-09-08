@@ -12,12 +12,19 @@
 
 :root{
   --insp-w:340px;
-  --insp-accent:#543efa;
+  --insp-accent:var(--purple-500);   /* 문서 UI 지만 색은 팔레트를 따른다 */
 }
 
-/* ---------- 여는 버튼 ---------- */
-.insp-toggle{
+/* ---------- 여는 버튼 ----------
+   검사와 메모를 따로 켠다. 값만 볼 때가 있고 메모만 볼 때가 있어서,
+   한 버튼이 둘을 같이 여는 건 늘 한쪽이 방해가 됐다 */
+.insp-dock{
   position:fixed;right:20px;bottom:20px;z-index:9998;
+  display:flex;gap:8px;
+}
+.insp-on .insp-dock{right:calc(var(--insp-w) + 20px)}
+
+.insp-toggle{
   display:inline-flex;align-items:center;gap:8px;
   height:44px;padding:0 16px;
   border:1px solid var(--line-normal);border-radius:9999px;
@@ -27,8 +34,7 @@
 }
 .insp-toggle:hover{border-color:var(--label-alternative)}
 .insp-toggle svg{width:18px;height:18px;flex:none}
-.insp-on .insp-toggle{
-  right:calc(var(--insp-w) + 20px);
+.insp-show-main .insp-toggle{
   background:var(--insp-accent);color:#fff;border-color:var(--insp-accent);
 }
 
@@ -45,14 +51,17 @@
 }
 .insp-on .insp-panel{display:grid}
 
-.insp-col{display:flex;flex-direction:column;min-height:0;min-width:0}
-.insp-col--main{overflow:hidden}
+/* 열은 켜진 것만 보인다 */
+.insp-col{display:none;flex-direction:column;min-height:0;min-width:0}
+.insp-show-main .insp-col--main{display:flex;overflow:hidden}
+.insp-show-memo .insp-col--memo{display:flex}
 
-/* 넓은 화면 — 패널을 넓혀 좌우 2열로 가른다 */
+/* 넓은 화면에서 **둘 다 켜졌을 때만** 패널을 넓혀 좌우로 가른다.
+   하나만 켰으면 340px 그대로다 — 넓힐 이유가 없다 */
 @media (min-width:1600px){
-  :root{--insp-w:680px}
-  .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
-  .insp-col--memo{border-left:1px solid var(--line-normal);border-top:0}
+  .insp-two{--insp-w:680px}
+  .insp-two .insp-panel{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+  .insp-two .insp-col--memo{border-left:1px solid var(--line-normal);border-top:0;max-height:none}
 }
 /* 본문을 밀어서 패널이 가리지 않게 한다 */
 @media (min-width:1180px){

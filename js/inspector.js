@@ -29,9 +29,12 @@
   "use strict";
 
   var ACCENT = "#543efa";
-  var panel, body, hint, detail, hl, hlPad, toggle, probe;
+  var panel, body, hint, detail, hl, hlPad, dock, toggle, probe;
+  /* 열마다 따로 켜고 끈다 — 값만 보고 싶을 때가 있고, 메모만 볼 때가 있다.
+     둘 중 하나라도 켜져 있으면 요소 고르기(마우스 따라다니기·클릭 고정)는 돈다 */
+  var showMain = false, showMemo = false;
   var on = false, pinned = null, hovered = null, rafId = 0;
-  var pinListeners = [];
+  var pinListeners = [], showListeners = [];
 
   var tokens = {};      // 이름 → 지금 값 (var() 가 다 풀린 최종값)
   var raw = {};         // 이름 → tokens.css 에 적힌 그대로 (별칭이면 var(--…) 인 채)
@@ -378,15 +381,28 @@
   }
   function queue() { if (!rafId) rafId = requestAnimationFrame(follow); }
 
-  function ours(el) { return !!(el && el.closest && el.closest(".insp-panel,.insp-toggle")); }
+  function ours(el) { return !!(el && el.closest && el.closest(".insp-panel,.insp-dock")); }
 
   /* ── 켜고 끄기 ─────────────────────────────────────────── */
-  function setOn(v) {
-    on = v;
-    document.documentElement.classList.toggle("insp-on", on);
-    toggle.setAttribute("aria-pressed", on ? "true" : "false");
-    if (!on) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); setHint(); }
+  function setShow(which, v) {
+    if (which === "main") showMain = v; else showMemo = v;
+    apply();
   }
+  function apply() {
+    on = showMain || showMemo;
+    var c = document.documentElement.classList;
+    c.toggle("insp-on", on);
+    c.toggle("insp-show-main", showMain);
+    c.toggle("insp-show-memo", showMemo);
+    c.toggle("insp-two", showMain && showMemo);   // 둘 다면 패널이 넓어진다
+    toggle.setAttribute("aria-pressed", showMain ? "true" : "false");
+    for (var i = 0; i < showListeners.length; i++) {
+      try { showListeners[i](showMain, showMemo); } catch (e) { /* 메모 쪽 오류가 검사기를 멈추면 안 된다 */ }
+    }
+    if (!on) { pinned = hovered = null; hl.style.display = "none"; body.innerHTML = ""; closeDetail(); }
+    setHint();
+  }
+  function setOn(v) { setShow("main", v); }
   function setHint() {
     hint.innerHTML = pinned
       ? '<span class="insp-pin">고정됨</span> ↑ ↓ 로 부모·자식 이동 · Esc 로 풀기'
@@ -403,6 +419,9 @@
     probe = document.createElement("span");
     probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none";
     document.body.appendChild(probe);
+
+    dock = document.createElement("div");
+    dock.className = "insp-dock";
 
     toggle = document.createElement("button");
     toggle.className = "insp-toggle";
@@ -436,7 +455,8 @@
     hlPad.className = "insp-hl__pad";
     hl.appendChild(hlPad);
 
-    document.body.appendChild(toggle);
+    dock.appendChild(toggle);
+    document.body.appendChild(dock);
     document.body.appendChild(panel);
     document.body.appendChild(hl);
 
@@ -450,7 +470,7 @@
   }
 
   function bind() {
-    toggle.addEventListener("click", function (e) { e.stopPropagation(); setOn(!on); });
+    toggle.addEventListener("click", function (e) { e.stopPropagation(); setShow("main", !showMain); });
 
     document.addEventListener("mousemove", function (e) {
       if (!on || pinned) return;
@@ -583,6 +603,11 @@
       return o;
     },
     isOn: function () { return on; },
+    /* 열을 켜고 끈다 — 메모 버튼이 이걸 쓴다 */
+    show: function (which, v) { setShow(which, v); },
+    isShown: function (which) { return which === "main" ? showMain : showMemo; },
+    onShow: function (fn) { showListeners.push(fn); },
+    dock: function () { return dock; },
     pin: function (el) { if (!on) setOn(true); pinned = el; render(el); setHint(); queue(); },
     getPinned: function () { return pinned; },
     /* 요소가 고정될 때마다 알린다 — 메모 창이 대상을 따라가야 하므로 */

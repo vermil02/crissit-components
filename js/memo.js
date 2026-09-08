@@ -13,9 +13,12 @@
      받은 JSON 은 다시 불러오면 핀이 그대로 되살아난다.
 
    쓰는 법
-     검사 모드에서 요소를 클릭해 고정 → 오른쪽 메모 열의 「＋ 메모」
+     오른쪽 아래 「메모」 버튼 → 화면에서 고칠 곳을 클릭 → 「＋ 메모」
      핀을 누르면 그 메모가 열린다
      메모 열 아래 — JSON 내보내기 · 불러오기 · 전부 지우기
+
+   ▸ 「검사」와 따로 켜진다. 값을 보면서 메모를 쓰려면 둘 다 켜면
+     화면이 넓을 때 좌우로 나란히 선다.
 
    저장 형태 (내보내기 파일)
      {
@@ -37,7 +40,7 @@
   var KEY = "crissit-catalog-memo-v1";
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];
-  var layer, col, bodyEl, footEl, countBtn;
+  var layer, col, bodyEl, footEl, countBtn, toggleBtn, badgeEl;
   var editing = null;             // 지금 쓰고 있는 메모 id (새 메모면 null)
   var target = null;              // 새 메모를 붙일 요소
 
@@ -89,6 +92,8 @@
   function renderCount() {
     countBtn.textContent = notes.length;
     countBtn.classList.toggle("is-some", notes.length > 0);
+    // 열지 않아도 메모가 있는지 보이게 버튼에도 개수를 붙입니다
+    if (badgeEl) badgeEl.textContent = notes.length ? String(notes.length) : "";
   }
 
   /* ── 메모 쓰기 ─────────────────────────────────────────── */
@@ -146,7 +151,7 @@
             '<span class="memo-meta">' + esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
-      : '<li class="memo-empty">아직 메모가 없습니다.<br>왼쪽에서 요소를 클릭해 고정한 뒤 <b>「＋ 메모」</b>를 누르세요.</li>';
+      : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
 
     bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
     footEl.innerHTML =
@@ -221,11 +226,34 @@
     bodyEl = col.querySelector(".memo-body");
     footEl = col.querySelector(".memo-foot");
 
+    /* 여는 버튼 — 검사 버튼 옆에 나란히 선다 */
+    toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "memo-toggle";
+    toggleBtn.setAttribute("aria-pressed", "false");
+    toggleBtn.title = "고칠 곳에 핀을 꽂아 메모를 남깁니다";
+    toggleBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<path d="M12 3c-3.6 0-6.5 2.5-6.5 5.6 0 3.4 3.6 6.9 5.8 8.8a1 1 0 0 0 1.4 0c2.2-1.9 5.8-5.4 5.8-8.8C18.5 5.5 15.6 3 12 3Z" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="12" cy="8.6" r="2.2" fill="currentColor"/></svg>' +
+      "<span>메모</span><span class=\"memo-badge\"></span>";
+    api.dock().appendChild(toggleBtn);
+    badgeEl = toggleBtn.querySelector(".memo-badge");
+
     load(); renderCount(); renderPins(); openList();
     bind(panel);
   }
 
   function bind(panel) {
+    toggleBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      api.show("memo", !api.isShown("memo"));
+    });
+    api.onShow(function (main, memo) {
+      toggleBtn.setAttribute("aria-pressed", memo ? "true" : "false");
+    });
+
     // 고정된 요소가 바뀌면 메모 머리에 「＋ 메모」를 끼워 넣습니다
     api.onPin(function (el) {
       var old = col.querySelector(".memo-add");

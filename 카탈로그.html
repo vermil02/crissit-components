@@ -1473,7 +1473,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 <!-- ══════════════ 확인 필요 ══════════════ -->
 <section class="sec" id="gaps">
   <h2>확인 필요</h2>
-  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>12건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
+  <p class="desc">피그마 덤프로 값을 전수 검증한 뒤 남은 것들이다. <b>13건</b> — 값을 못 읽은 게 아니라 <b>피그마에 설계가 없거나 파일이 어긋난</b> 것들이라, 조사가 아니라 결정이 필요하다.</p>
   <p class="src">검증 근거 · <code>가이드 / Content / Navigation / Action .f2h.json</code> (2026-09-07 내보냄) · <code>Definition / Icon / Logo .f2h.json</code> (2026-09-08 내보냄) — 색·여백·효과·활자·아이콘·컴포넌트 세트 변형을 전수 대조</p>
 
   <div class="card">
@@ -1481,6 +1481,7 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
     <table class="tk">
       <tr><th style="width:230px">항목</th><th>지금 상태</th><th>필요한 결정</th></tr>
       <tr><td>Section Heading 태블릿·모바일</td><td>48 → 36 → 28px 로 축소(이쪽에서 정함)</td><td>컴포넌트 세트에 <code>Breakpoint=Desktop (lg)</code> 변형 하나뿐임을 확인. md·sm 설계가 필요하다</td></tr>
+      <tr><td>그라디언트 두 색에 변수가 없다</td><td><code>--blue-500 #2977fd</code> · <code>--violet-500 #7e29fd</code> — 이쪽에서 이름을 붙였다</td><td>Section Heading 강조 줄(<code>--gradient-accent</code>)의 두 색이 피그마에서 <b>변수가 아니라 노드에 직접 그려져</b> 있어 이름이 없다. 팔레트의 다른 색은 전부 변수인데 이 둘만 예외다. 피그마 변수로 올려 주시면 이름을 맞추겠다</td></tr>
       <tr><td>Section Heading 어두운 배경</td><td><code>.sh--inverse</code> — Label/Inverse 토큰으로 대응</td><td>같은 이유로 피그마에 변형이 없다</td></tr>
       <tr><td>Button/Text hover 폭 밀림</td><td>굵기가 Medium→Bold 로 바뀌는 피그마 설계 그대로</td><td>나란히 놓으면 옆 요소가 밀린다. 그대로 갈지, 폭을 미리 확보할지(<code>.btn--stable</code>) 결정</td></tr>
       <tr><td>GNB CTA 버튼 라운드</td><td><code>Round=Normal</code> (다수 쪽)</td><td>28개 변형 중 <code>Desktop(xl) Mode=Black</code> 하나만 <code>Brand</code>다. 푸터를 Normal 로 바꾸셨으니 이것도 Normal 이 의도로 보이는데, 피그마에서 정리 필요</td></tr>

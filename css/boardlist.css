@@ -217,6 +217,8 @@
   border:2px solid var(--neutral-1000);
   border-radius:inherit;
   --bl-prog-angle:0deg;
+  /* 여기 #000 · #0000 은 **색이 아니라 마스크의 불투명/투명**이다.
+     mask 는 알파만 보므로 토큰을 넣을 자리가 아니다 */
   -webkit-mask:conic-gradient(from 0deg,#000 var(--bl-prog-angle),#0000 0);
           mask:conic-gradient(from 0deg,#000 var(--bl-prog-angle),#0000 0);
 }
