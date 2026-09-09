@@ -1,0 +1,103 @@
+/* ============================================================
+   머리(히어로) — 화면에 붙은 한 화면 + 스크롤 전환. **회사소개·파트너사가 함께 쓴다.**
+   원본은 「01. 피그마 JSON 웹 반영 소스화/02. 연혁 프로토타입/v66.html」 1번 화면이다.
+   2026-09-09 — 회사소개에만 있던 것을 공통으로 뺐다(같은 코드를 화면마다 복사하고 있었다).
+
+   무엇이 일어나나
+     · 머리가 sticky 로 붙어 --hero-run 만큼 굴리는 동안 배경이 6% 커지며 흐려지고,
+       앞 문구(A)가 물러나면서 뒤 문구(B)가 올라온다
+     · --hero-hold 만큼 B 로 머문 뒤 본문(.pg-main)이 위로 올라와 머리를 덮는다
+     · 진입 효과(.is-intro) — 배경 세 축(어둠·확대 1.14→1·흐림 풀림) 2.5s, 문구 0.9s 순차
+     · 아래 화살표는 이 파일이 아니라 `css/cue.css` 에 있다 — 연혁도 함께 쓴다
+     · 동작은 `js/hero.js` — --p(전환) · --q(덮임) · 화살표 투명도를 채운다
+
+   화면이 정하는 것 — 그림 두 장을 **화면 CSS 에서 직접** 넣는다
+       .pg-hero__img{background-image:url(img/hero-bg.jpg)}
+       .pg-hero__sblur,.pg-hero__blur{background-image:url(img/hero-bg-blur.jpg)}
+   ⚠ CSS 변수로 넘기면 안 된다 — 변수 안의 url() 은 그 변수를 **쓰는** 파일(이 hero.css) 기준으로
+     풀려서 `css/img/hero-bg.jpg` 를 찾다 실패한다(2026-09-09 실측으로 확인).
+   두 장은 `히어로-그림.py 원본.jpg 화면폴더` 가 만든다. 흐림은 스크롤마다 blur 를 계산하지 않고
+   **미리 흐려 둔 그림**(GaussianBlur 10)의 투명도만 올린다 — 매 프레임 화면 전체를 다시 그리지 않으려고(v56).
+
+   손잡이
+       --hero-run         A → B 로 바뀌는 거리 (기본 100vh)
+       --hero-hold        B 로 머무는 거리 (기본 40vh)
+       --hero-dark        B 상태에서 덧씌우는 어둠 (v66 확정값 0)
+       --hero-cover-dark  본문이 올라와 덮는 동안 머리를 가라앉히는 어둠 (0.85)
+                          없으면 위쪽에 흐린 배경 조각만 남아 깨진 것처럼 보인다(2026-09-08 확인)
+   ============================================================ */
+
+.pg-stack{
+  position:relative;
+  --p:0;--q:0;
+  --hero-run:100vh;--hero-hold:40vh;--hero-dark:0;--hero-cover-dark:.85;
+}
+
+.pg-hero{
+  position:sticky;top:0;
+  height:100vh;min-height:560px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-inverse-alternative);
+  color:var(--label-inverse-normal);
+  text-align:center;padding:0 var(--container-pad);
+  overflow:hidden;                       /* 6% 키운 배경이 삐져나오지 않게 */
+}
+
+.pg-hero__bg,.pg-hero__in,.pg-hero__zoom,.pg-hero__img,.pg-hero__veil{position:absolute;inset:0}
+.pg-hero__bg{overflow:hidden;background:var(--bg-inverse-alternative)}
+/* will-change 로 층을 띄운다 — 진입의 확대(1.14→1)와 굴림의 확대(--p)가 같은 배경을 매 프레임 다른
+   크기로 그리면, 크롬이 배경 타일을 다시 그리다 못 따라가 왼쪽 위 한 조각만 남고 나머지가 검게 비는
+   화면이 2초쯤 보인다(2026-09-08 회사소개에서 확인 · Playwright 프레임으로 재현).
+   층으로 띄우면 한 번 그린 그림을 GPU 가 변형만 해서 그 화면이 나오지 않는다 */
+.pg-hero__in,.pg-hero__zoom{will-change:transform,opacity}
+.pg-hero__zoom{transform:scale(calc(1 + var(--p) * .06))}
+
+.pg-hero__img{background-position:center;background-size:cover;background-repeat:no-repeat}
+.pg-hero__sblur{transform:scale(1.06);opacity:var(--p);will-change:opacity}   /* 굴리면 흐려진다 */
+.pg-hero__blur{transform:scale(1.06);opacity:0;will-change:opacity}           /* 진입 때만 쓴다 */
+
+.pg-hero__veil{
+  background:var(--bg-inverse-alternative);
+  opacity:calc(var(--p) * var(--hero-dark) + var(--q) * var(--hero-cover-dark));
+}
+
+/* 문구 두 벌 — grid 의 같은 칸에 겹친다. absolute 로 겹치면 부모 높이가 0 이 되어 흔들린다(v66) */
+.pg-hero__titles{position:relative;display:grid;place-items:center;width:100%}
+.pg-hero__title{grid-area:1 / 1;margin:0;width:100%;will-change:opacity,transform}
+.pg-hero__title--a{                      /* 앞 문구 — 물러난다. p 0.5 에서 사라진다 */
+  opacity:calc(1 - var(--p) * 2);
+  transform:translateY(calc(var(--p) * -28px));
+}
+.pg-hero__title--b{                      /* 뒤 문구 — 올라온다. p 0.42 부터 나타나 잠깐 겹친다 */
+  opacity:calc((var(--p) - .42) * 2);
+  transform:translateY(calc((1 - var(--p)) * 28px));
+}
+.pg-hero__title span{display:block}
+.pg-in{display:block;font-style:normal}
+
+.pg-hero__spacer{height:calc(var(--hero-run) + var(--hero-hold))}
+.pg-main{position:relative;z-index:1;background:var(--bg-normal)}   /* 머리 위로 올라와 덮는다 */
+
+/* ── 진입 — .is-intro 가 붙으면 한 번 ────────────────────────
+   배경 어둠·확대 1.14→1·흐림 풀림 2.5s · 문구 떠오름 0.9s (배경보다 0.52s 늦게 한 줄씩) */
+.pg-stack.is-intro .pg-hero__in{animation:pg-bg-in 2500ms cubic-bezier(.22,.61,.36,1) backwards}
+.pg-stack.is-intro .pg-hero__blur{animation:pg-unblur 2500ms cubic-bezier(.22,.61,.36,1) backwards}
+.pg-stack.is-intro .pg-hero__title--a .pg-in{animation:pg-rise 900ms cubic-bezier(.22,.61,.36,1) both}
+.pg-stack.is-intro .pg-hero__title--a span:nth-child(1) .pg-in{animation-delay:520ms}
+.pg-stack.is-intro .pg-hero__title--a span:nth-child(2) .pg-in{animation-delay:620ms}
+@keyframes pg-bg-in{from{opacity:0;transform:scale(1.14)}to{opacity:1;transform:scale(1)}}
+@keyframes pg-unblur{from{opacity:1}to{opacity:0}}
+@keyframes pg-rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* 아래로 유도하는 화살표(.pg-cue)는 `css/cue.css` 로 옮겼다 — 연혁도 같은 것을 쓴다(2026-09-09).
+   투명도는 `js/hero.js` 가 굴림에 따라 정한다 */
+
+@media (prefers-reduced-motion:reduce){
+  .pg-stack.is-intro .pg-hero__in,
+  .pg-stack.is-intro .pg-hero__blur,
+  .pg-stack.is-intro .pg-in{animation:none}
+}
+
+@media (max-width:767px){
+  .pg-stack{--hero-hold:20vh}
+}

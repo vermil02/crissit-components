@@ -11,23 +11,24 @@
      새로 받으므로 **파일을 고칠 때마다 아래 값을 바꾼다.**
      지금 값: v=20260908g  (날짜 + 그날의 순번)
      ──────────────────────────────────────────────────────────── -->
+<link rel="icon" href="assets/logo-crissit-symbol.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260908s">
-<link rel="stylesheet" href="css/base.css?v=20260908s">
-<link rel="stylesheet" href="css/icons.css?v=20260908s">
-<link rel="stylesheet" href="css/button.css?v=20260908s">
-<link rel="stylesheet" href="css/icon-button.css?v=20260908s">
-<link rel="stylesheet" href="css/chip.css?v=20260908s">
-<link rel="stylesheet" href="css/pagination.css?v=20260908s">
-<link rel="stylesheet" href="css/dropdown.css?v=20260908s">
-<link rel="stylesheet" href="css/drawer.css?v=20260908s">
-<link rel="stylesheet" href="css/heading.css?v=20260908s">
-<link rel="stylesheet" href="css/filter.css?v=20260908s">
-<link rel="stylesheet" href="css/gnb.css?v=20260908s">
-<link rel="stylesheet" href="css/footer.css?v=20260908s">
-<link rel="stylesheet" href="css/boardlist.css?v=20260908s">
+<link rel="stylesheet" href="css/tokens.css?v=20260909a">
+<link rel="stylesheet" href="css/base.css?v=20260909a">
+<link rel="stylesheet" href="css/icons.css?v=20260909a">
+<link rel="stylesheet" href="css/button.css?v=20260909a">
+<link rel="stylesheet" href="css/icon-button.css?v=20260909a">
+<link rel="stylesheet" href="css/chip.css?v=20260909a">
+<link rel="stylesheet" href="css/pagination.css?v=20260909a">
+<link rel="stylesheet" href="css/dropdown.css?v=20260909a">
+<link rel="stylesheet" href="css/drawer.css?v=20260909a">
+<link rel="stylesheet" href="css/heading.css?v=20260909a">
+<link rel="stylesheet" href="css/filter.css?v=20260909a">
+<link rel="stylesheet" href="css/gnb.css?v=20260909a">
+<link rel="stylesheet" href="css/footer.css?v=20260909a">
+<link rel="stylesheet" href="css/boardlist.css?v=20260909a">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260908s">
+<link rel="stylesheet" href="componote/componote.css?v=20260909a">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -133,20 +134,29 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
 /* hover 상태를 고정해서 보여주는 데모용 */
 .demo-hover.has-overlay::after{opacity:var(--interaction-hover)}
 .demo-hover.btn--text{font-weight:700}
-.demo-hover.bl{opacity:var(--opacity-48)}
+/* 카드 hover — 흐려지는 덩이가 컴포넌트마다 다르다 (2026-09-09).
+   Recommand 만 카드 전체가 흐려지고, Common 가로·세로는 글자만 흐려진다 */
+.demo-hover.bl-rec{opacity:var(--opacity-48)}
+.demo-hover.bl-h .bl-h__text,
+.demo-hover.bl-v .bl-v__body{opacity:var(--opacity-48)}
+.demo-hover .bl__img-zoom{transform:scale(1.03)}
 /* 카탈로그 전용 — 이미지 자리가 단색 회색이라 1.03 확대가 눈에 안 보인다.
    빗줄 무늬를 깔아 **움직이는 것을 볼 수 있게** 한다. 실제 사이트에서는
    여기에 사진이 들어가므로 이 무늬는 카탈로그 화면 안에만 있다 */
-.bl-main .bl__img-zoom{
+/* ⚠ `.bl .bl__img-zoom` 로 클래스 2개를 맞춘 것은 실수가 아니다.
+   되돌리려는 상대가 `boardlist.css` 의 `.bl-h .bl__img-zoom{background:inherit}` 인데
+   그쪽이 클래스 2개다. `.bl__img-zoom`(1개)로 적으면 **나중에 읽히는데도 밀려서**
+   무늬가 안 깔린다(2026-09-09 실측). `background` 는 이어붙이는 속성이 아니라
+   `inherit` 하나가 background-image 까지 덮는다 */
+.bl .bl__img-zoom{
   background-image:repeating-linear-gradient(45deg,
     var(--neutral-200) 0 10px, var(--neutral-100) 10px 20px);
 }
-.bl-main .bl__img{position:relative}
-.bl-main .bl__img::after{
+.bl__img[data-label]::after{
   content:attr(data-label);
   position:absolute;left:50%;top:50%;translate:-50% -50%;
   font:var(--label-3-medium);color:var(--label-assistive);
-  pointer-events:none;
+  pointer-events:none;z-index:1;
 }
 
 .frame{border:1px solid var(--line-normal);border-radius:var(--radius-medium);
@@ -165,9 +175,9 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260908s" defer></script>
-<script src="js/gnb-lang.js?v=20260908s" defer></script>
-<script src="js/kit.js?v=20260908s" defer></script>
+<script src="js/boardlist-main.js?v=20260909a" defer></script>
+<script src="js/gnb-lang.js?v=20260909a" defer></script>
+<script src="js/kit.js?v=20260909a" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -187,7 +197,7 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="componote/componote.js?v=20260908s" defer></script>
+<script src="componote/componote.js?v=20260909a" defer></script>
 </head>
 <body>
 
@@ -216,6 +226,8 @@ window.componote = {
   <a href="#drawer">GNB 드로어</a>
   <a href="#footer">Footer</a>
   <a href="#pgn">Pagination</a>
+
+  <a href="#screen">화면 조립용 (시연 없음)</a>
 
   <div class="grp">Content</div>
   <a href="#bl-main">Board list / Main</a>
@@ -348,6 +360,9 @@ window.componote = {
       <tr><td><code>Body 1/Bold</code></td><td>700</td><td>18px</td><td>1.55</td><td><span class="t-body-1-b">도입이 필요한 환경을 파악합니다</span></td></tr>
       <tr><td><code>Body 1/Reading</code></td><td>400</td><td>18px</td><td><b>1.75</b></td><td><span class="t-body-1-reading">긴 본문에 쓰는 넓은 줄높이</span></td></tr>
       <tr><td><code>Body 2/Regular</code></td><td>400</td><td>16px</td><td>1.5</td><td><span class="t-body-2">보조 설명에 씁니다</span></td></tr>
+      <tr><td><code>Body 2/Medium</code></td><td>500</td><td>16px</td><td>1.5</td><td><span style="font:var(--body-2-normal-medium)">보조 설명에 씁니다</span></td></tr>
+      <tr><td><code>Body 2/SemiBold</code></td><td>600</td><td>16px</td><td>1.5</td><td><span style="font:var(--body-2-normal-semibold)">보조 설명에 씁니다</span> <span class="aside" style="font:var(--label-3-medium)">← 2026-09-09 추가</span></td></tr>
+      <tr><td><code>Body 2/Bold</code></td><td>700</td><td>16px</td><td>1.5</td><td><span style="font:var(--body-2-normal-bold)">보조 설명에 씁니다</span></td></tr>
       <tr><td><code>Body 2/Reading</code></td><td>400</td><td>16px</td><td><b>1.75</b></td><td><span class="t-body-2-reading">보조 설명의 긴 문단</span></td></tr>
       <tr><td><code>Label 1/Medium</code></td><td>500</td><td>16px</td><td>1.5</td><td><span class="t-label-1">GNB 메뉴 · lg 버튼</span></td></tr>
       <tr><td><code>Label 1/Bold</code></td><td>700</td><td>16px</td><td>1.5</td><td><span class="t-label-1-b">목록 카드 제목</span></td></tr>
@@ -366,6 +381,10 @@ window.componote = {
   <h2>Section Heading</h2>
   <p class="desc">페이지·섹션 제목 블록. 강조 줄(그라디언트)과 설명 줄을 켜고 끄는 것으로 세 가지 형태가 나온다.</p>
   <p class="src">피그마 <code>Heading · 1010:15042</code> · 가이드 문서에서 발견</p>
+  <p class="desc"><b>좌우 여백은 두지 않는다</b>(2026-09-09 사용자 확인). 피그마 컴포넌트에는 20 이 들어 있는데
+    그건 컴포넌트를 낱개로 세워 두기 때문이고, 화면에 얹으면 감싸는 <code>.container</code> 의 20 과 더해져
+    40 이 되어 <b>제목만 다른 블록보다 20 밀린다</b> — 회사소개 「상상을 / 설계하는 사람들」 이 그랬다.
+    여백은 감싸는 쪽이 준다.</p>
 
   <div class="card">
     <h3>강조 줄 + 설명 줄</h3>
@@ -1149,12 +1168,24 @@ window.componote = {
 <section class="sec" id="footer">
   <h2>Footer</h2>
   <p class="desc">사이트 하단 공통 영역. 위에 붙는 CTA 블록(Section_Contact)은 켜고 끌 수 있는 선택 슬롯이다.</p>
+  <p class="desc"><b>CTA 위쪽 보라 글로우는 움직인다</b>(2026-09-09 채택 · 실험대 <code>_실험/푸터-오로라-LAB/</code> 방식 6개 비교).
+    부채꼴 셋이 박힌 원뿔이 불규칙하게 배회하고, 껍데기 두 겹이 흐름(37.8s)과 숨(24.2s)을 따로 맡는다 —
+    세 주기가 서로 안 맞는 배수라 반복이 눈에 안 읽힌다. 피그마의 정지 글로우는 지우지 않고 세기만 0.40 → 0.15 로 내렸다.
+    <b>CTA 를 끈 화면에는 오로라가 없다</b> — 오로라가 CTA 안에 있기 때문이고, 그것이 의도다.
+    <code>prefers-reduced-motion</code> 이면 멈추고 정지 글로우만 남는다.</p>
+  <p class="desc">밖으로 나가는 링크는 라벨 뒤에 <code>↗</code>(<code>i-blank</code>)를 붙인다 — <code>.ft__col-list a.is-blank</code>.
+    GNB 판의 「Knoden AI ↗」와 같은 방식이다.</p>
   <p class="src">피그마 <code>Footer · 1008:7323</code> · 변형 8 (Breakpoint 4 × Mode 2)</p>
 
   <div class="frame">
     <p class="frame__cap">Mode=Black · Section_Contact 켬</p>
     <div class="ft ft--black">
-      <div class="ft__cta"><div class="ft__cta-inner">
+      <div class="ft__cta">
+        <!-- 오로라 — 움직이는 글로우. 껍데기 두 겹은 흐름·숨만 맡고 그림은 맨 안쪽에서만 그린다 -->
+        <div class="ft__aurora" aria-hidden="true">
+          <div class="ft__aurora-cx1"><div class="ft__aurora-cx2"><div class="ft__aurora-conic"></div></div></div>
+        </div>
+        <div class="ft__cta-inner">
         <div class="ft__cta-text">
           <h2><span class="ft__cta-lead">성공적인 AX 도입을</span><br>함께 만듭니다</h2>
           <p>도입이 필요한 환경을 파악하고 요청사항 및 보안 요건에 맞는 구성으로 제안합니다.</p>
@@ -1171,7 +1202,7 @@ window.componote = {
             </div>
             <div class="ft__col">
               <p class="ft__col-head">제품</p>
-              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a href="#footer">Knoden AI</a></div>
+              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a class="is-blank" href="#footer"><span>Knoden AI</span><i class="icon icon--16 i-blank" aria-hidden="true"></i></a></div>
             </div>
             <div class="ft__col">
               <p class="ft__col-head">미디어</p>
@@ -1205,7 +1236,7 @@ window.componote = {
             </div>
             <div class="ft__col">
               <p class="ft__col-head">제품</p>
-              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a href="#footer">Knoden AI</a></div>
+              <div class="ft__col-list"><a href="#footer">Prixm AI</a><a href="#footer">Toxmind</a><a class="is-blank" href="#footer"><span>Knoden AI</span><i class="icon icon--16 i-blank" aria-hidden="true"></i></a></div>
             </div>
             <div class="ft__col">
               <p class="ft__col-head">미디어</p>
@@ -1383,6 +1414,10 @@ window.componote = {
       </div>
     </div>
     <p class="spec">좌우 간격 48 · 이미지 폭 505 · 본문 위·아래 벌림 gap 48 · 제목 Title2/Bold 24(2줄 자름) · 요약 Body1/Regular 18(1줄 자름) · 배지 lg, 간격 8 · 아래 줄 = 이전·다음(간격 12) + 우측 일시정지</p>
+    <p class="spec">버튼 hover — 이전·다음은 <b>색 반전</b>(검은 면·흰 아이콘)인데
+      <b>일시정지만 연회색</b>(<code>--bg-assistive</code> #e4e6e8)이다. 이 버튼에는 남은 시간을 도는
+      검정 2px 링이 그려져 있어서, 면까지 검게 만들면 검정 위 검정이 되어 <b>링이 사라진다</b> —
+      8초가 얼마 남았는지 보려고 올린 손인데 그 순간 눈금이 없어진다 (2026-09-08 결정).</p>
     <p class="spec"><b>hover</b> — 버튼은 <b>색 반전</b>(검은 면·흰 아이콘) · 그 밖의 곳은 <b>이미지 1.03 확대</b>(0.4초) + 카드 전체가 미디어 페이지 링크. 버튼에 올린 동안에는 이미지를 키우지 않는다</p>
     <p class="note"><b>피그마와 다르다.</b> 피그마 <code>State=Hover</code> 는 카드 전체 불투명도 48%인데, Main 은 카드 안에 버튼이 있어 전체를 흐리면 <b>누르려는 버튼까지 같이 옅어진다.</b> 그래서 버튼과 그 밖을 갈랐다 — 2026-09-08 결정. Common·Recommand 는 안에 버튼이 없어 48% 그대로다.</p>
   </div>
@@ -1450,7 +1485,7 @@ window.componote = {
           </div>
           <div class="bl__badges"><span class="badge badge--md">보도자료</span><span class="badge badge--md">수상</span></div>
         </div>
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="176×122"><span class="bl__img-zoom"></span></div>
       </a>
       <a class="bl bl-h" href="#bl-common">
         <div class="bl-h__body">
@@ -1459,26 +1494,62 @@ window.componote = {
             <h3 class="bl-h__title bl__clamp2">뉴스 제목은 최대 2줄입니다.</h3>
           </div>
         </div>
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="176×122"><span class="bl__img-zoom"></span></div>
       </a>
       <a class="bl bl-h demo-hover" href="#bl-common">
         <div class="bl-h__body">
           <div class="bl-h__text">
             <span class="bl__date">26.08.11</span>
-            <h3 class="bl-h__title bl__clamp2">State=Hover — 카드 전체가 48%로 흐려진다</h3>
+            <h3 class="bl-h__title bl__clamp2">hover — 날짜·제목만 48%로. 아래 선은 안 변하고 사진은 1.03배</h3>
           </div>
         </div>
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="176×122"><span class="bl__img-zoom"></span></div>
       </a>
     </div>
-    <p class="spec">위아래 32 · 아래 1px 선 · 제목 Label1/Bold 16 최대 2줄 · 날짜 Label2/Medium 14 · 이미지 176×122</p>
+    <p class="spec">위아래 32 · 아래 1px 선 · 제목 Label1/Bold 16 최대 2줄 · 날짜 Label2/Medium 14 · 이미지 176×122
+      · hover 는 <b>날짜·제목만</b> 48% (아래 선 안 변함 · 사진 1.03배)</p>
+    <p class="spec">사진 자리에 확대 층을 하나 넣는다 —
+      <code>&lt;div class="bl__img"&gt;&lt;span class="bl__img-zoom"&gt;&lt;/span&gt;&lt;/div&gt;</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Horizontal / wide — 사진이 큰 목록 <code>.bl-h--wide</code></h3>
+    <p class="desc"><b>피그마와 다르다.</b> 보도자료 목록에서 실제로 쓰는 판이다 — 목록 폭이 865~1240 인데
+      176×122 는 글보다 사진이 우표만 해 보였다 (2026-09-09 사용자 결정).
+      1024 이상에서는 날짜와 제목이 한 줄에 나란히 오고, 날짜 칸을 104px 로 못 박아 제목 시작점을 맞춘다.</p>
+    <div>
+      <a class="bl bl-h bl-h--wide" href="#bl-common">
+        <div class="bl-h__body">
+          <div class="bl-h__text">
+            <span class="bl__date">26.09.01</span>
+            <h3 class="bl-h__title bl__clamp2">1024 이상에서는 제목이 한 줄에서 잘린다 — 날짜와 나란히 온다</h3>
+          </div>
+          <div class="bl__badges"><span class="badge badge--md">보도자료</span></div>
+        </div>
+        <div class="bl__img" data-label="300×180"><span class="bl__img-zoom"></span></div>
+      </a>
+      <a class="bl bl-h bl-h--wide demo-hover" href="#bl-common">
+        <div class="bl-h__body">
+          <div class="bl-h__text">
+            <span class="bl__date">26.08.20</span>
+            <h3 class="bl-h__title bl__clamp2">hover — 날짜·제목만 48%로, 사진은 1.03배</h3>
+          </div>
+        </div>
+        <div class="bl__img" data-label="300×180"><span class="bl__img-zoom"></span></div>
+      </a>
+    </div>
+    <p class="spec">비율 300:180 = <b>1.667</b> 로 어느 폭에서나 같다 ·
+      1024 이상 300×180 · 768~1023 240×144 · 767 이하 140×84 ·
+      1024 이상에서 날짜 칸 104 고정 · 제목 Body1/Bold 18 한 줄 · 날짜 Label1/Medium 16</p>
+    <p class="spec">사진을 더 키우려면 제목을 Title2/Bold 24, 날짜를 Body2 16 으로 같이 올려야 한다 —
+      그러면 목록이 아니라 '큰 카드' 라 컴포넌트를 하나 더 만드는 쪽이 맞다</p>
   </div>
 
   <div class="card">
     <h3>Vertical — 그리드형</h3>
     <div class="row" style="align-items:flex-start;gap:16px">
       <a class="bl bl-v" href="#bl-common">
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="295×190"><span class="bl__img-zoom"></span></div>
         <div class="bl-v__body">
           <div class="bl-v__text">
             <span class="bl__date">26.09.01</span>
@@ -1488,7 +1559,7 @@ window.componote = {
         </div>
       </a>
       <a class="bl bl-v" href="#bl-common">
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="295×190"><span class="bl__img-zoom"></span></div>
         <div class="bl-v__body">
           <div class="bl-v__text">
             <span class="bl__date">26.08.20</span>
@@ -1497,16 +1568,17 @@ window.componote = {
         </div>
       </a>
       <a class="bl bl-v demo-hover" href="#bl-common">
-        <div class="bl__img"></div>
+        <div class="bl__img" data-label="295×190"><span class="bl__img-zoom"></span></div>
         <div class="bl-v__body">
           <div class="bl-v__text">
             <span class="bl__date">26.08.11</span>
-            <h3 class="bl-v__title bl__clamp2">State=Hover</h3>
+            <h3 class="bl-v__title bl__clamp2">hover — 글자만 48%, 사진은 1.03배</h3>
           </div>
         </div>
       </a>
     </div>
-    <p class="spec">폭 295 · 이미지 높이 190 · 이미지↔본문 간격 16 · 제목 Bold 18 최대 2줄 · 날짜 Label1/Medium 16</p>
+    <p class="spec">폭 295 · 이미지 높이 190 · 이미지↔본문 간격 16 · 제목 Bold 18 최대 2줄 · 날짜 Label1/Medium 16
+      · hover 는 <b>글자만</b> 48% (사진 1.03배) · 확대 층 마크업은 가로형과 같다</p>
   </div>
 </section>
 
@@ -1515,11 +1587,13 @@ window.componote = {
   <h2>Board list / Recommand</h2>
   <p class="desc">상세 페이지 사이드에서 다른 글을 추천하는 줄. 제목만 있고 이미지·날짜가 없다.</p>
   <p class="src">피그마 <code>Content/Boardlist/Recommand · 1008:8040</code> · 변형 2</p>
+  <p class="desc"><b>hover 로 카드 전체가 48% 로 흐려지는 것은 이 컴포넌트뿐이다.</b>
+    사진도 구분선도 없어 흐려질 것이 글자밖에 없다 — Main·Common 은 흐리면 버튼이나 구분선까지 죽어서 따로 정했다.</p>
   <div class="card">
     <div style="width:295px">
       <a class="bl bl-rec" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">타이틀은 2줄이 최대입니다.<br>타이틀은 2줄이 최대입니다.</h3></a>
       <a class="bl bl-rec" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">타이틀은 2줄이 최대입니다.</h3></a>
-      <a class="bl bl-rec demo-hover" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">State=Hover</h3></a>
+      <a class="bl bl-rec demo-hover" href="#bl-rec"><h3 class="bl-rec__title bl__clamp2">hover — 카드 전체가 48%</h3></a>
     </div>
     <p class="spec">폭 295 · 위아래 16 · 아래 1px 선 · 제목 Label2/Bold 14 최대 2줄</p>
   </div>
@@ -1671,6 +1745,64 @@ window.componote = {
     <p class="spec">crissit 가로형 89×19.2 (GNB 기준) · 심볼 20.3×19.2 · 워드마크 83×19.2 · We the Realizers 165×64 (푸터 기준)</p>
     <p class="aside">가로형 아트보드는 148×40 인데 실제 그림은 148×32 이고 위아래 4씩 여백이 있다. 그대로 <code>mask</code>에 쓰면 로고가 작아져서 파일의 <code>viewBox</code>를 <code>0 4 148 32</code>로 잘라 두었다 — 그 비율(4.625:1)이 GNB 실측 89×19.2 와 정확히 맞는다<br>
     피그마 변형은 <code>Type=Default</code>(심볼 보라+워드마크 검정) / <code>Dark</code>(전부 검정) / <code>White</code>(전부 흰색) 셋인데 <b>모양은 같고 색만 다르다</b>. 그래서 단색은 <code>mask</code> 한 파일로 처리하고, 두 색이 필요한 자리에만 <code>logo-crissit-color.svg</code>를 쓴다</p>
+  </div>
+</section>
+
+<!-- ══════════════ 화면 조립용 ══════════════ -->
+<section class="sec" id="screen">
+  <h2>화면 조립용 — 이 페이지에서 시연하지 않는다</h2>
+  <p class="desc">키트에는 담기지만 <b>이 카탈로그 화면에는 걸 수 없는</b> 파일들이다.
+    걸면 카탈로그 자체가 망가진다 — 그래서 여기에는 무엇이고 어디서 살아 움직이는지만 적는다.
+    실제로 도는 모습은 각 화면의 전달 묶음에서 본다.</p>
+  <p class="src">묶음 목록은 <code>03. 페이지 소스화/_전달/README.md</code> 의 차수 표가 정본이다</p>
+
+  <div class="card">
+    <table class="tk">
+      <tr><th style="width:150px">파일</th><th style="width:200px">무엇</th><th>걸 수 없는 이유 · 어디서 보나</th></tr>
+      <tr>
+        <td><code>css/gnb-site.css</code><br><code>js/gnb.js</code></td>
+        <td>GNB 를 실제 사이트처럼 움직이게 하는 층 — 맨 위 투명, 섹션 톤(<code>data-gnb</code>),
+            판 열림·판 사이 이동, 딤, 드로어 여닫기, 언어 목록</td>
+        <td>위 <a href="#gnb">GNB</a> 절은 변형 28개를 <b>정지 상태로</b> 늘어놓은 것이다.
+            이 파일을 걸면 그 시연이 전부 투명·닫힘 상태로 바뀐다.<br>
+            <b>채택안 LAB v15</b> · 실제 동작은 <code>_실험/윌슨-GNB-효과-LAB/</code>
+            (결정 기록은 그 폴더 README). 값 일부는 kakaocorp.com 헤더에서 실측했다.
+            <b>피그마 변형에 없는 동작이 들어 있다</b> — 디자이너 확인 필요</td>
+      </tr>
+      <tr>
+        <td><code>css/hero.css</code><br><code>js/hero.js</code></td>
+        <td>머리(히어로) — 한 화면이 붙어 있는 동안 배경이 커지며 흐려지고 앞 문구가 뒤 문구로 넘어간다.
+            그 뒤 본문이 위로 올라와 머리를 덮는다</td>
+        <td>화면 전체를 sticky 로 잡고 스크롤을 가져간다. 카탈로그는 스크롤로 훑는 페이지라 같이 못 쓴다.<br>
+            쓰는 화면 — <b>회사소개 · 파트너사</b>.
+            관성 스크롤(Lenis)은 <b>있으면 쓰고 없으면 기본 스크롤로 돈다</b>(선택).
+            배경 그림 두 장은 <b>화면이 직접 넣는다</b> — 컴포넌트가 갖고 있지 않다</td>
+      </tr>
+      <tr>
+        <td><code>css/cue.css</code></td>
+        <td>아래로 유도하는 화살표. 화면에 고정된다</td>
+        <td>걸면 카탈로그 위에 화살표가 늘 떠 있게 된다.<br>
+            쓰는 화면 — <b>회사소개 · 파트너사 · 연혁</b>.
+            층은 z-index 40 으로 <b>LNB 딤(45)보다 아래인 것이 의도다</b> — 판이 열리면 본문과 함께 가라앉는다</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>아직 카탈로그에 없는 컴포넌트 — 3종</h3>
+    <p class="aside">화면에서 만들어 쓰고 있는데 여기로 아직 안 올라온 것들이다.
+      다른 화면에서 쓸 일이 생기면 올린다.</p>
+    <table class="tk">
+      <tr><th style="width:150px">무엇</th><th>어디에 있나</th></tr>
+      <tr><td>사람 카드 세 모양<br><code>.cc</code> (Leader · Skill · Crew)</td>
+          <td>회사소개. 피그마 <code>Company/crew card</code> 의 <code>Type</code> 변형 그대로다.
+              치수는 <code>_소스/회사소개/만들기.py</code> 머리 주석</td></tr>
+      <tr><td>크루 상자<br><code>.grp__box</code></td><td>회사소개 — 크루 카드 5장을 담는 상자</td></tr>
+      <tr><td>이야기 카드<br><code>.pg-story</code></td>
+          <td>메인 하단. 피그마 메인의 <code>News</code> 인스턴스(295×342 · 그림 295×240 ·
+              제목 20/600 + 화살표 · 설명 16/500)인데 <b>컴포넌트 페이지에는 이 세트가 없다</b>.
+              hover 는 그림 1.04배 + 화살표 4px 이동</td></tr>
+    </table>
   </div>
 </section>
 

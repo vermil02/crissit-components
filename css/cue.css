@@ -1,0 +1,31 @@
+/* ============================================================
+   아래로 유도하는 화살표 — 화면에 고정. **회사소개 · 파트너사 · 연혁이 함께 쓴다.**
+   2026-09-09 — 세 화면이 각자 갖고 있었고 연혁만 굵은 아이콘(`-thick`)을 써서 굵기가 달랐다.
+   시안은 세 화면 모두 `Icon/Normal/Chevron Down` 이라(구조 실측) 하나로 합쳤다.
+
+   쓰는 법 — 스크롤 상자 **밖**(body 직속)에 둔다. 안에 넣으면 sticky/overflow 에 갇힌다.
+
+       <button class="pg-cue" type="button" aria-label="다음 내용으로 이동">
+         <i class="icon i-chevron-down" aria-hidden="true"></i>
+       </button>
+
+   투명도는 화면 스크립트가 굴림에 따라 정한다(`opacity:.48` 은 시안값이자 기본값) —
+   회사소개·파트너사는 `js/hero.js`, 연혁은 그 화면의 타임라인 스크립트가 맡는다.
+
+   층 — z-index 40 이다. 위에 있는 것들: 드로어 100 · GNB 50 · LNB 딤 45.
+   **딤보다 아래인 것이 의도다** — 판이 열리면 화살표도 본문과 함께 가라앉는다.
+   (연혁만 50 이어서 판 위에 떠 있었다. 2026-09-09 실측하고 40 으로 맞췼다.)
+   ============================================================ */
+
+.pg-cue{
+  position:fixed;left:50%;bottom:clamp(24px,3.7vh,40px);margin-left:-24px;
+  width:48px;height:48px;border:0;padding:0;background:none;cursor:pointer;
+  color:var(--label-inverse-normal);z-index:40;opacity:.48;
+  animation:pg-nudge 2s ease-in-out infinite;
+}
+.pg-cue .icon{width:48px;height:48px}
+@keyframes pg-nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+
+@media (prefers-reduced-motion:reduce){
+  .pg-cue{animation:none}
+}

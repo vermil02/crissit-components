@@ -4,8 +4,40 @@
 > 저장소 · <https://github.com/vermil02/crissit-components>
 
 피그마 「자사 홈페이지 v2」의 **컴포넌트 페이지**와 **가이드 문서**를 바닐라 HTML/CSS로 미리
-옮겨 둔 것이다. 2026-09-07 기준. 실제 개발 스택이 정해지기 전에 준비해 두는 것이므로, 개발사가 React를 쓰든
+옮겨 둔 것이다. **이 폴더가 정본이다** — 화면(`03. 페이지 소스화/_소스/`)은 여기서 내려받는다. 실제 개발 스택이 정해지기 전에 준비해 두는 것이므로, 개발사가 React를 쓰든
 퍼블리싱을 하든 **토큰과 치수는 그대로 옮겨 쓸 수 있게** 만들었다.
+
+## 지금 쓰는 것 / 안 쓰는 것 (2026-09-09)
+
+**이 표를 먼저 읽는다.** 사람도, AI 도 여기서 무엇이 살아 있는지 정한다.
+
+| 상태 | 무엇 | |
+|---|---|---|
+| **쓴다 · 손으로 고친다** | `css/` 의 15개 — `tokens` `base` `button` `icon-button` `chip` `dropdown` `filter` `heading` `drawer` `pagination` `gnb` `gnb-site` `hero` `cue` `footer` `boardlist` | 여기를 고친다 |
+| **쓴다 · 생성물** | `css/icons.css` | ⚠ **손으로 고치지 않는다.** `assets/*.svg` 를 고치고 `python3 아이콘-내장하기.py` |
+| **쓴다 · 원본** | `assets/` — SVG 69개(아이콘 64·로고 5) + LNB 그림 2장 | 아이콘 모양의 원본 |
+| **쓴다** | `카탈로그.html` — 정본 화면. 변형 전부와 실측값 | |
+| **쓴다** | `js/` — `boardlist-main` `gnb-lang` `gnb` `hero` (동작) · `kit` (카탈로그 화면 기능) | |
+| **쓴다 · 복사본** | `componote/` — 검사·메모 도구. 정본은 `업무도구/componote/` | 여기서 고치지 않는다 |
+| **안 쓴다** | `_변경기록.md` | 개발에 넘길 때 읽을 필요 없다. 왜 그 값인지 되짚을 때만 |
+
+### 카탈로그 화면에 걸지 않는 CSS·JS 가 셋 있다
+
+`gnb-site.css` · `hero.css`/`hero.js` · `cue.css` 는 **걸면 카탈로그 자체가 망가진다**
+(스크롤을 가져가거나, GNB 시연을 투명 상태로 바꾸거나, 화살표가 늘 떠 있게 된다).
+그래서 `<link>` 로 안 걸고 **`js/kit.js` 의 `EXTRA` 목록**으로 키트에 담는다.
+무엇이고 어디서 살아 움직이는지는 카탈로그의 **「화면 조립용」** 절에 적어 두었다.
+⚠ 이 셋이 늘면 `EXTRA` 도 함께 늘려야 한다 — 자동으로 안 잡힌다.
+
+### 고치는 순서 — 한 방향으로만 흐른다
+
+```
+assets/*.svg  →  이 폴더 css  →  아이콘-내장하기.py  →  _소스/css  →  화면
+   그림 원본        손으로 고친다        icons.css 생성          내려받기만       조립
+```
+
+화면 쪽(`_소스/css/`)에서 컴포넌트 CSS 를 고치면 **다음 내려받기에 덮인다.**
+2026-09-09 에 그렇게 16곳이 갈라져 있었고, 그날 전부 이 폴더로 올렸다.
 
 ## 처음 보는 사람은
 
@@ -36,8 +68,9 @@
   카탈로그.html        ← 정본. 전 변형을 눈으로 보는 페이지
   css/
     tokens.css        ← 색·타이포·라운드·레이아웃 변수. 여기가 단일 출처
-    base.css          ← 리셋 · 타이포 유틸 · 아이콘 슬롯 · 로고 · hover 오버레이
-    icons.css         ← 아이콘 이름 → 파일 매핑
+    base.css          ← 리셋 · 타이포 유틸 · 아이콘 슬롯 · hover 오버레이
+    icons.css         ← **생성물.** 아이콘 64 + 로고 4 + 칩 화살표의 SVG 가 CSS 안에 박혀 있다
+                         (`assets/` 를 가리키는 유일한 파일이라, 나머지는 손으로 읽는 판으로 남는다)
     button.css        ← Solid · Outlined · Text
     icon-button.css   ← Normal · Outlined · Solid · Background
     chip.css          ← Filter · Filter/Active · Content Badge
@@ -46,14 +79,20 @@
     heading.css       ← 섹션·페이지 제목 블록
     drawer.css        ← 모바일·태블릿 GNB 드로어
     pagination.css
-    gnb.css           ← 바 · 언어선택 · 메가메뉴(LNB) · 모바일 햄버거
+    gnb.css           ← 바 · 언어선택 · 메가메뉴(LNB) · 모바일 햄버거 (모양)
+    gnb-site.css      ← GNB 를 화면에 붙였을 때의 동작. 카탈로그에는 안 건다
+    hero.css          ← 머리(히어로) — 회사소개·파트너사. 카탈로그에는 안 건다
+    cue.css           ← 아래로 유도하는 화살표 — 회사소개·파트너사·연혁. 카탈로그에는 안 건다
     footer.css        ← 푸터 · CTA 블록(Section_Contact)
     boardlist.css     ← Main · Common(가로·세로) · Recommand
   js/
     boardlist-main.js ← 대표 기사 자동 전환 + Progress 동작
     gnb-lang.js       ← 언어 선택 드롭다운 여닫기 (실제 사이트에 들어간다)
+    gnb.js            ← GNB 전환·섹션 톤·판 열림·드로어. 카탈로그에는 안 건다
+    hero.js           ← 머리 스크롤 동작. 관성 스크롤(Lenis)은 있으면 쓰고 없으면 기본 스크롤
     kit.js            ← 「개발용 키트 받기」. **카탈로그 화면 기능**이라 키트에는 안 담긴다
-  assets/             ← 피그마에서 내린 SVG (아이콘 64 · 로고 5). 라이브러리 전체를 받아 뒀다
+  아이콘-내장하기.py     ← assets/*.svg → icons.css. **아이콘을 고친 뒤 이것을 돌린다**
+  assets/             ← 피그마에서 내린 SVG (아이콘 64 · 로고 5) + LNB 판 그림 2장(PNG)
   componote/          ← 검사기·메모·설명 도구. **복사본**이다
     componote.css     ← 정본은 `업무도구/componote/`
     componote.js      ← 같음

@@ -31,7 +31,7 @@
      이 값을 쓴다. CSS·아이콘·스크립트를 고칠 때 `?v=` 와 함께 올린다.
      받은 시각이 아니라 **내용이 바뀐 시각**이어야 의미가 있다.
      날짜만으로는 같은 날 두 번 고쳤을 때 구분이 안 되므로 분까지 적는다 */
-  var UPDATED = "2026-09-08 15:10";
+  var UPDATED = "2026-09-09 18:40";
 
   /* 파일명에 쓸 꼴 — 공백과 콜론은 파일명에서 다루기 나쁘다.
      "2026-09-08 15:10" → "20260908-1510" */
@@ -95,6 +95,18 @@
     return new Blob(parts.concat(cd, [end]), { type: "application/zip" });
   }
 
+  /* 카탈로그 페이지에 <link>·<script> 로 걸 수 없는데 키트에는 담아야 하는 것.
+     걸면 카탈로그 화면을 망가뜨리는 것들이다 —
+       gnb-site.css  GNB 를 실제 사이트처럼 투명·전환 상태로 만든다. 카탈로그의 정적 GNB 시연이 깨진다
+       hero.css/js   화면 전체를 sticky 로 잡고 스크롤을 가져간다. 카탈로그는 스크롤로 훑는 페이지다
+       cue.css       화면에 고정된 아래 화살표가 카탈로그 위에 늘 떠 있게 된다
+     ⚠ 여기 적은 것은 **자동으로 안 잡힌다.** 파일을 늘리면 이 목록도 함께 늘린다.
+        시연할 수 있는 컴포넌트라면 여기가 아니라 카탈로그.html 에 <link> 를 넣는다 */
+  var EXTRA = {
+    css: ["css/gnb-site.css", "css/hero.css", "css/cue.css"],
+    js:  ["js/gnb.js", "js/hero.js"]
+  };
+
   /* ── 무엇을 담을지 페이지에서 뽑는다 ─────────────────────── */
   function collect() {
     var css = [], js = [];
@@ -107,18 +119,28 @@
       // 동작이 있는 컴포넌트 스크립트만. 도구와 이 파일 자신은 뺀다
       if (h.indexOf("js/") === 0 && h.indexOf("kit.js") === -1) js.push(h);
     });
+    EXTRA.css.forEach(function (f) { if (css.indexOf(f) === -1) css.push(f); });
+    EXTRA.js.forEach(function (f) { if (js.indexOf(f) === -1) js.push(f); });
     return { css: css, js: js };
   }
 
   /* 아이콘·로고 파일을 모은다.
-       ① CSS 안의 url(../assets/…)   — 아이콘 64개가 여기 있다
-       ② 이 문서 안의 assets/…       — 로고처럼 마크업에서 직접 쓰는 것
+       ① CSS 머리의 `/* @assets … *\/` 줄  — **내장판 icons.css 는 이 줄로만 알 수 있다**
+       ② CSS 안의 url(../assets/…)        — 아직 파일을 가리키는 판일 때
+       ③ 이 문서 안의 assets/…            — 로고처럼 마크업에서 직접 쓰는 것
 
-     ②가 따로 필요한 이유: `logo-crissit-color.svg` 는 CSS 가 아니라
+     ①이 필요한 이유: `icons.css` 는 SVG 를 CSS 안에 박아 넣은 생성물이라
+     `url(../assets/…)` 가 한 곳도 남지 않는다. 그 줄을 안 읽으면 **키트에 SVG 가
+     0개로 들어간다** (2026-09-09 · `아이콘-내장하기.py` 가 그 줄을 쓴다).
+     ③이 따로 필요한 이유: `logo-crissit-color.svg` 는 CSS 가 아니라
      카탈로그 마크업의 `<img>` 에서만 쓰인다. CSS 만 보면 빠진다. */
   function assetsIn(texts) {
     var found = {};
     texts.forEach(function (t) {
+      var mf = /@assets([^*]+)/g, g;
+      while ((g = mf.exec(t))) {
+        g[1].trim().split(/\s+/).forEach(function (f) { if (f) found[f] = 1; });
+      }
       var re = /url\(\s*['"]?\.\.\/(assets\/[^'")]+)['"]?\s*\)/g, m;
       while ((m = re.exec(t))) found[m[1]] = 1;
     });

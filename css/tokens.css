@@ -198,6 +198,8 @@
   --body-1-reading:         400 18px/1.75 var(--font-sans);   /* 미디어 본문 */
   --body-2-normal-regular:  400 16px/1.5  var(--font-sans);   /* 보조 설명 */
   --body-2-normal-medium:   500 16px/1.5  var(--font-sans);
+  --body-2-normal-semibold: 600 16px/1.5  var(--font-sans);   /* 2026-09-09 추가 — body-1 에는 있는데 body-2 에만 없었다.
+                                                                회사소개 크루 카드 「한마디」가 시안에서 16/600 이다 */
   --body-2-normal-bold:     700 16px/1.5  var(--font-sans);
   --body-2-reading:         400 16px/1.75 var(--font-sans);
 

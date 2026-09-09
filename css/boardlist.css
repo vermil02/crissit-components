@@ -54,19 +54,35 @@
      Recommand  최대 5건 (보여줄 목록을 직접 고른다)
    ============================================================ */
 
-/* 공통 — hover 는 카드 전체가 흐려진다.
-   **Main 은 빼 놓는다**(`:not(.bl-main)`) — 카드 안에 버튼이 있어서 전체를
-   흐리면 누를 버튼까지 같이 옅어진다. Main 은 아래에서 따로 정한다 */
+/* 공통 — hover.
+   피그마 `State=Hover` 는 카드 전체를 48% 로 흐린다. **그대로 쓰는 것은
+   Recommand(제목만) 뿐이다** (2026-09-08~09 사용자 결정 · 세 번에 걸쳐 좁혀졌다).
+
+     Main            카드 안에 버튼이 있다 — 전체를 흐리면 누를 버튼이 같이 옅어진다
+     Common 가로·세로 아래 구분선과 사진까지 옅어져 카드가 죽은 것처럼 보인다
+                     → **글자만** 옅어지고, 선은 그대로, 사진은 1.03배로 커진다
+     Recommand       사진도 선도 없어 흐려질 것이 글자뿐이다 — 피그마 그대로 둔다
+
+   ▸ `:not(...)` 로 예외를 쌓지 않고 **쓸 곳에만 켠다.** 예외를 쌓으면
+     `.bl:not(.bl-main):hover` 가 클래스 3개짜리가 되어, 화면 CSS 가 되돌리려 할 때
+     `.bl-h:hover`(2개)로는 못 이긴다 — 전달본에서 실제로 이 문제에 걸려
+     `.bl.bl-h` 로 클래스를 하나 더 붙이는 우회가 생겼다(2026-09-09). */
 .bl{display:block;color:inherit;transition:opacity .15s ease}
-.bl:not(.bl-main):hover{opacity:var(--opacity-48)}
+.bl-rec:hover{opacity:var(--opacity-48)}
 @media (prefers-reduced-motion:reduce){.bl{transition:none}}
 
 .bl__date{font:var(--body-2-medium);color:var(--label-alternative)}
 .bl__badges{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* 테두리 — `border` 로 그린다 (2026-09-09 사용자 요청).
+   전역 `box-sizing:border-box` 라 칸 크기는 그대로이고 선이 안쪽으로 들어간다.
+   ▸ 이전에는 `inset box-shadow` 였는데, 그건 **배경 위**에 그려져서 확대 층
+     (`.bl__img-zoom`, position:absolute·inset:0)이 덮어 버렸다 — 밝은 사진이
+     배경에 붙어 보였다. `border` 는 절대 배치의 기준 상자(padding box) **밖**이라
+     확대 층이 덮지 않는다. 그래서 테두리를 다시 그리는 `::after` 우회가 필요 없다 */
 .bl__img{
   background:var(--neutral-100) center/cover no-repeat;
   border-radius:var(--radius-xsmall);
-  box-shadow:inset 0 0 0 1px var(--line-normal);
+  border:1px solid var(--line-normal);
 }
 /* 2줄 자르기 */
 .bl__clamp2{
@@ -159,6 +175,16 @@
   color:var(--neutral-0);
   box-shadow:inset 0 0 0 1px var(--neutral-1000);
 }
+/* 일시정지만 예외 — 연회색으로 (2026-09-08 결정).
+   이 버튼에는 남은 시간을 도는 **검정 2px 링**(`.bl-prog`)이 그려져 있다.
+   면까지 검게 반전하면 검정 위 검정이 되어 링이 사라진다 — 8초가 얼마 남았는지
+   보려고 올린 손인데 그 순간 눈금이 없어진다. 이전·다음은 링이 없어 반전 그대로다.
+   ▸ 테두리는 건드리지 않는다. `.ibtn--outlined` 의 `--line-normal` 이 그대로 남아야
+     한다 — 그 위에 검은 링이 도는데 테두리까지 진해지면 어디까지 찼는지 흐려진다 */
+.bl-main__nav .bl-prog:hover:not(:disabled){
+  background:var(--bg-assistive);        /* #e4e6e8 — 면만 바꾼다 */
+  color:var(--label-normal);             /* 아이콘은 검정 그대로. 연회색 위라 읽힌다 */
+}
 .bl-main__nav .ibtn{transition:background .15s ease,color .15s ease,box-shadow .15s ease}
 
 @media (prefers-reduced-motion:reduce){
@@ -181,7 +207,43 @@
 .bl-h__title{margin:0;font:var(--label-1-bold);color:var(--neutral-1000)}
 .bl-h .bl__img{
   width:176px;height:122px;flex:none;
-  box-shadow:inset 0 0 0 1px var(--line-alternative);
+  border-color:var(--line-alternative);   /* 가로 카드만 옅은 선 — 위 .bl__img 의 border 를 색만 바꾼다 */
+}
+
+/* hover — 글자만 옅어지고, 구분선은 그대로, 사진은 은은하게 커진다.
+   마크업에 확대 층을 하나 넣는다:  <div class="bl__img"><span class="bl__img-zoom"></span></div> */
+.bl-h__text{transition:opacity .2s ease}
+.bl-h:hover .bl-h__text{opacity:var(--opacity-48)}
+.bl-h .bl__img{overflow:hidden;position:relative}
+.bl-h .bl__img-zoom{position:absolute;inset:0;background:inherit;transition:transform .4s ease}
+.bl-h:hover .bl__img-zoom{transform:scale(1.03)}
+@media (prefers-reduced-motion:reduce){
+  .bl-h__text,.bl-h .bl__img-zoom{transition:none}
+  .bl-h:hover .bl__img-zoom{transform:none}
+}
+
+/* ---------- .bl-h--wide — 사진이 큰 목록 ----------
+   **피그마와 다르다.** 피그마 실측은 xl·lg·md 모두 176×122 이고 sm(400)만 100×62 다.
+   보도자료 목록에서 실제로 쓰는 판은 사진이 더 크다 — 목록 폭이 865~1240 인데
+   176×122 는 글보다 사진이 우표만 해 보였다(2026-09-09 사용자 결정, 전달본에 적용된 값).
+
+   비율은 300:180 = **1.667** 로 어느 폭에서나 같다.
+     1024 이상 300×180 · 768~1023 240×144 · 767 이하 140×84
+
+   ▸ 1024 이상에서는 날짜와 제목이 **한 줄에 나란히** 온다. 날짜 칸을 104px 로
+     못 박아 카드마다 제목 시작점이 같아진다. 제목은 한 줄에서 자른다.
+   ▸ 1023 이하에서는 다시 위아래로 쌓는다 — 가로로 두면 제목 칸이 너무 좁아진다.
+   ▸ 사진을 더 키우려면 제목을 Title2/Bold 24, 날짜를 Body2 16 으로 같이 올려야 한다.
+     그렇게 하면 목록이 아니라 '큰 카드' 가 되므로 컴포넌트를 하나 더 만드는 쪽이 맞다. */
+.bl-h--wide{--bl-thumb-w:300px}
+.bl-h--wide .bl__img{
+  width:var(--bl-thumb-w);
+  height:calc(var(--bl-thumb-w) / 1.667);
+}
+@media (min-width:1024px){
+  .bl-h--wide .bl-h__text{flex-direction:row;align-items:baseline;gap:32px}
+  .bl-h--wide .bl__date{flex:0 0 104px;font:var(--label-1-medium)}
+  .bl-h--wide .bl-h__title{font:var(--body-1-normal-bold);-webkit-line-clamp:1}
 }
 
 /* ============================================================
@@ -192,6 +254,18 @@
 .bl-v__body{display:flex;flex-direction:column;gap:20px}
 .bl-v__text{display:flex;flex-direction:column;gap:8px}
 .bl-v__title{margin:0;font:700 18px/1.5 var(--font-sans);color:var(--label-normal)}
+
+/* hover — 가로 카드와 같은 규칙. 다만 옅어지는 덩이가 `__body` 다
+   (세로 카드는 날짜·제목이 `__body` 안에 함께 들어 있다) */
+.bl-v__body{transition:opacity .2s ease}
+.bl-v:hover .bl-v__body{opacity:var(--opacity-48)}
+.bl-v .bl__img{overflow:hidden;position:relative}
+.bl-v .bl__img-zoom{position:absolute;inset:0;background:inherit;transition:transform .4s ease}
+.bl-v:hover .bl__img-zoom{transform:scale(1.03)}
+@media (prefers-reduced-motion:reduce){
+  .bl-v__body,.bl-v .bl__img-zoom{transition:none}
+  .bl-v:hover .bl__img-zoom{transform:none}
+}
 
 /* ============================================================
    Recommand — 제목만
@@ -225,6 +299,7 @@
   .bl-h .bl__date{font:var(--label-3-medium)}
   .bl-h__title{font:var(--label-2-bold)}
   .bl-h .bl__img{width:68px;height:40px}
+  .bl-h--wide{--bl-thumb-w:240px}
   .bl-h .bl__badges{gap:6px}
 
   /* --- Common Vertical --- */
@@ -237,6 +312,7 @@
 }
 @media (max-width:767px){
   .bl-main .bl__img{height:200px}
+  .bl-h--wide{--bl-thumb-w:140px}
   .bl-v{width:100%}
 }
 

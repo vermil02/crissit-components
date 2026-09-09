@@ -29,10 +29,14 @@
 .chip--md{padding-block:6px;gap:3px;font:700 14px/1.45 var(--font-sans)}
 .chip--lg{padding-block:8px;gap:4px;font:700 16px/1.5 var(--font-sans)}
 
+/* 화살표 그림은 이 파일이 가리키지 않는다 — `icons.css` 가 `--icon` 으로 넘겨준다.
+   `assets/` 를 가리키는 곳을 icons.css 한 파일로 몰아 두었다(2026-09-09). icons.css 는
+   아이콘을 CSS 안에 박아 넣은 **생성물**이고, 생성물을 한 개로 유지하면 나머지 CSS 는
+   손으로 읽고 고치는 판으로 남는다 */
 .chip__caret{
   display:inline-block;flex:none;background:currentColor;
-  -webkit-mask:url(../assets/icon-chevron-down.svg) center/contain no-repeat;
-          mask:url(../assets/icon-chevron-down.svg) center/contain no-repeat;
+  -webkit-mask:var(--icon) center/contain no-repeat;
+          mask:var(--icon) center/contain no-repeat;
   transition:transform .15s ease;
 }
 .chip--sm .chip__caret{width:12px;height:12px}

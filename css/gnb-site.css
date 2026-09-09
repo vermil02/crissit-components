@@ -1,0 +1,157 @@
+/* ============================================================
+   GNB — 화면에 붙였을 때의 동작. 컴포넌트 `gnb.css`(🔒 모양) 위에 얹는다.
+   채택안 = `_실험/윌슨-GNB-효과-LAB` v22 (2026-09-09). 값·이유는 그 폴더 README 「결정 기록」.
+
+   무엇이 여기 있나
+     · 바        sticky · 맨 위 투명 → 굴리면 반투명(70%) + 블러 8px + 선 (js/gnb.js 가 클래스를 쓴다) · 모드 전환 0.2s
+                  판이 열린 동안에는 반투명을 그만두고 완전히 채운다 (v17)
+     · 판(LNB)   배경 한 장(.gnb__lnb-back)이 높이로 자라고(0.28s) 내용(.gnb__lnb)이 스며 나온다(0.35s)
+                 곡선은 easeOutCubic — kakaocorp.com 헤더에서 읽은 값
+     · 판 사이   배경은 이어지고 내용만 교차 — 나가는 것 0.16s, 들어오는 것은 아래서 8px 떠오름
+     · 판 닫힘   딤이 다 사라질 때까지(--lnb-dim-out) 바·판이 채운 상태를 유지하고, 그 뒤 바 재질로 돌아간다 (v22)
+     · 딤        본문 위 검정 48% + 블러 8px · 등장 0.12s(거의 즉시) · 닫힘 0.2s
+     · 선        판 아래 1px — 페이드. 닫힐 때 배경보다 먼저 지워진다(맨 위에서 툭 끊기지 않게)
+     · 그림      판마다 한 장 · 항목에 올리면 1.06배 (그림은 안 바뀐다)
+     · 아이콘    검정 바에서 햄버거·언어가 흰색 · 어두운 면 흰 hover 막
+     · 언어      목록이 같은 곡선으로 스며 나온다(클릭으로만 연다 — js/gnb-lang.js)
+   피그마에 없는 것(전환·딤·판 등장)은 컴포넌트에 올릴 때 확인받는다 — 컴포넌트에-올릴-것.md
+   ============================================================ */
+
+:root{
+  --lnb-dim-blur:8px;        /* 딤 블러 — 32 는 세다는 지적(v9) */
+  --lnb-dim-alpha:.48;       /* 딤 어둠 */
+  --lnb-dim-t:120ms;         /* 딤 등장 — 판보다 먼저, 거의 즉시 */
+  --lnb-dim-out:200ms;       /* 딤 사라짐 — js/gnb.js 가 이 값을 읽어 is-closing 을 유지한다 (v22) */
+}
+.pg-gnb{
+  position:sticky;top:0;z-index:50;
+  --gnb-t:120ms;                                 /* 모드(색·배경·선) 전환. 200ms 였고 2026-09-09 에 줄였다 —
+                                                    ease 곡선이라 옅은 색이 183ms 동안 끌려 투명해지는 게 느리게 보였다 */
+  --gnb-ease:cubic-bezier(.33,1,.68,1);          /* easeOutCubic — 빨리 빠지고 부드럽게 끝난다 */
+  --lnb-t:350ms;                                 /* 판 내용 페이드 */
+  --lnb-back-t:280ms;                            /* 판 배경 높이 */
+  --lnb-ease:cubic-bezier(.33,1,.68,1);          /* easeOutCubic */
+  /* 블러(backdrop-filter)도 배경색과 같이 빠지게 넣었다 — 전에는 클래스가 바뀌는 순간 툭 사라져 색만 남았다.
+     3회 측정에서 블러를 전환에 넣어도 걸리는 시간은 늘지 않았다 (2026-09-09) */
+  transition:background-color var(--gnb-t) var(--gnb-ease),color var(--gnb-t) var(--gnb-ease),
+             box-shadow var(--gnb-t) var(--gnb-ease),
+             -webkit-backdrop-filter var(--gnb-t) var(--gnb-ease),backdrop-filter var(--gnb-t) var(--gnb-ease);
+}
+.pg-gnb.is-expanded{box-shadow:none}             /* 펼친 동안 바 아래 선은 끈다 — 선은 판 아래 하나만 */
+
+/* 굴린 뒤 바 배경 — 불투명 채움 대신 반투명 + 블러. 반투명 70% · 블러 8px (2026-09-09 사용자 확정 · LAB v18 에서 슬라이더로 고른 값).
+   바 높이 64px 띠에만 걸리는 backdrop-filter 라 가볍다. 끄려면 --gnb-blur:0 · --gnb-tint:1 */
+.pg-gnb{--gnb-blur:8px;--gnb-tint:.7}
+.pg-gnb.is-scrolled{background:rgba(255,255,255,var(--gnb-tint));-webkit-backdrop-filter:blur(var(--gnb-blur));backdrop-filter:blur(var(--gnb-blur))}
+.pg-gnb.gnb--black.is-scrolled{background:rgba(0,0,0,var(--gnb-tint))}
+
+/* 판이 열리는 동안 바는 반투명·투명을 그만두고 완전히 채운다 (2026-09-09 사용자 요청 · LAB v17).
+   맨 위 투명 상태에서 메뉴에 올리면 바 띠로 뒤 화면이 그대로 보이던 것을 막는다.
+   색은 섹션 톤을 따른다 — gnb--white 면 흰색, gnb--black 이면 검정. 전환은 .pg-gnb 의 background-color 0.2s.
+   판을 닫으면 원래 상태(맨 위=투명 · 굴린 뒤=반투명+블러)로 돌아온다 */
+.pg-gnb.is-expanded{background:var(--bg-normal);-webkit-backdrop-filter:none;backdrop-filter:none}
+.pg-gnb.gnb--black.is-expanded{background:var(--bg-inverse)}
+
+/* 닫는 동안(is-closing · js/gnb.js 가 --lnb-dim-out 만큼 붙였다 뗀다)에도 채운 상태를 유지한다 (2026-09-09 사용자 지적 「번쩍인다」 · LAB v22).
+   딤은 본문 위 검정 48% 인데 <body> 직속 fixed 라 **바 뒤까지 덮는다**(딤 z-index 45 · 바 50).
+   그래서 딤이 사라지는 200ms 동안 바가 먼저 반투명 70% 로 돌아가면 그 딤이 비쳐 바가 잠깐 회색이 된다 —
+   흰 본문에서 40ms 쯤에 가장 짙어 255 → 237 (7%) 까지 내려앉았다가 돌아오는 것이 번쩍임으로 보였다(계산).
+   딤이 다 사라진 뒤에 재질을 바꾸면 비칠 것이 없다. 판 배경 층도 같은 이유로 아래에서 함께 잡아 둔다 */
+/* box-shadow 는 건드리지 않는다 — 바 아래 선은 닫는 즉시 켠다. 판이 다 사라진 뒤로 늦췄더니
+   제품→고객사처럼 판 없는 메뉴로 옮길 때 선이 늦게 생긴다는 지적을 받았다(2026-09-09) */
+.pg-gnb.is-closing{background:var(--bg-normal);-webkit-backdrop-filter:none;backdrop-filter:none}
+.pg-gnb.gnb--black.is-closing{background:var(--bg-inverse)}
+
+/* 맨 위에서 바가 투명할 때 첫 화면이 바 뒤로 들어가야 한다. 어두운 머리를 가진 화면이 첫 요소에 붙인다
+   (회사소개 .pg-stack · 보도자료 상세 <main>). 흰 화면은 안 붙여도 티가 안 난다 */
+.gnb-under{margin-top:calc(-1 * var(--gnb-h))}
+@media (max-width:1023px){.gnb-under{margin-top:calc(-1 * var(--gnb-h-compact))}}
+
+/* ---------- 판 배경 층 — 높이만 움직인다 ---------- */
+.pg-gnb .gnb__lnb-back{
+  position:absolute;left:0;right:0;top:100%;margin-top:-1px;   /* 바와 1px 겹쳐 소수점 틈을 막는다 */
+  height:0;overflow:hidden;
+  background:var(--bg-normal);box-shadow:inset 0 -1px 0 var(--line-normal);
+  transition:height var(--lnb-back-t) var(--lnb-ease),background-color var(--gnb-t) ease,box-shadow var(--gnb-t) ease,
+             -webkit-backdrop-filter var(--gnb-t) ease,backdrop-filter var(--gnb-t) ease;
+}
+.pg-gnb.gnb--black .gnb__lnb-back{background:var(--bg-inverse);box-shadow:inset 0 -1px 0 var(--line-inverse)}
+.pg-gnb:not(.is-expanded) .gnb__lnb-back{box-shadow:inset 0 -1px 0 transparent}   /* 닫힐 때 선 먼저 */
+
+/* 닫히는 동안 판 배경 층은 **바의 「닫힌 상태」 재질**을 그대로 따라간다 (2026-09-09 사용자 지적 · LAB v20→v21).
+   바는 --gnb-t 120ms 로 제 상태로 돌아가는데 배경 층은 높이만 --lnb-back-t 280ms 로 줄어서,
+   이미 바뀐 바 아래에 옛 재질의 띠만 남아 접히는 것이 보였다.
+     · 맨 위 (gnb--transparent) 바가 투명   → 층도 투명. 접히는 움직임 자체가 안 보인다        (v20)
+     · 굴린 뒤 (is-scrolled)    바가 반투명 70% + 블러 8px → 층도 같은 재질로 접힌다            (v21)
+   is-expanded 인 동안에는 위 두 규칙이 다 꺼져 바도 층도 완전히 채워진 상태다.
+   닫힌 층은 height:0 · overflow:hidden 이라 backdrop-filter 가 걸릴 면적이 없다 — 딤에서 겪은
+   「투명한데 계속 흐리는 층」(아래 .gnb__dim 주석) 문제는 여기서는 생기지 않는다 */
+.pg-gnb.gnb--transparent:not(.is-expanded):not(.is-closing) .gnb__lnb-back{background-color:transparent}
+.pg-gnb.is-scrolled:not(.is-expanded):not(.is-closing) .gnb__lnb-back{
+  background-color:rgba(255,255,255,var(--gnb-tint));
+  -webkit-backdrop-filter:blur(var(--gnb-blur));backdrop-filter:blur(var(--gnb-blur));
+}
+.pg-gnb.gnb--black.is-scrolled:not(.is-expanded):not(.is-closing) .gnb__lnb-back{background-color:rgba(0,0,0,var(--gnb-tint))}
+
+/* ---------- 판 — 내용만. 배경은 위 층이 맡는다 ---------- */
+.pg-gnb .gnb__lnb,
+.pg-gnb.gnb--black .gnb__lnb{
+  display:block;position:absolute;left:0;right:0;top:100%;margin-top:-1px;
+  background:transparent;box-shadow:none;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:color var(--gnb-t) ease;            /* 나가는 내용은 즉시 */
+}
+.pg-gnb .gnb__lnb.is-open{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity var(--lnb-t) var(--lnb-ease),visibility 0s,color var(--gnb-t) ease;
+}
+.pg-gnb .gnb__lnb.is-cut{transition:opacity 160ms var(--lnb-ease),visibility 0s linear 160ms}   /* 판 사이 — 나가는 쪽 */
+.pg-gnb .gnb__lnb.is-switch .gnb__lnb-inner{animation:lnb-rise var(--lnb-t) var(--lnb-ease) both}   /* 들어오는 쪽 */
+@keyframes lnb-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pg-gnb .gnb__lnb-list a{transition:color var(--gnb-t) ease}
+
+/* 판 그림 — 한 장. 겹(.gnb__lnb-img-layer)이 그림을 갖고, 항목에 올리면 겹만 커진다(상자의 모서리 컷 안에서) */
+.gnb__lnb-img{position:relative;overflow:hidden;background:var(--neutral-100)}
+.gnb__lnb-img-layer{position:absolute;inset:0;background:center/cover no-repeat;transition:transform 450ms var(--lnb-ease,ease)}
+.gnb__lnb-img.is-zoom .gnb__lnb-img-layer{transform:scale(1.06)}
+.gnb__lnb-img--company .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-company.png)}   /* 디자이너 제공 2026-09-08 · 640×800 */
+.gnb__lnb-img--product .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-product.png)}
+
+/* ---------- 딤 — 판이 펼쳐진 동안 본문을 덮는다. <body> 직속, 바(50)보다 아래 ---------- */
+.gnb__dim{
+  position:fixed;inset:0;z-index:45;
+  background:rgba(0,0,0,var(--lnb-dim-alpha));
+  -webkit-backdrop-filter:blur(var(--lnb-dim-blur));backdrop-filter:blur(var(--lnb-dim-blur));
+  opacity:0;visibility:hidden;pointer-events:none;
+  /* ⚠ visibility:hidden 이 중요하다 — 투명(opacity 0)만으로는 backdrop-filter 가 계속 살아서 화면 전체를 매 프레임
+     흐리는 층이 깔린 채 스크롤하게 된다(2026-09-09 회사소개에서 굴림이 무거워지고 머리 흐림이 이상해 보인 원인) */
+  transition:opacity var(--lnb-dim-out) ease,visibility 0s linear var(--lnb-dim-out);
+}
+.gnb__dim.is-on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity var(--lnb-dim-t) ease-out,visibility 0s}
+
+/* ---------- 바 안 아이콘 색 · hover 막 ----------
+   icon-button.css 가 `.ibtn{color:var(--label-normal)}` 로 어두운 색을 못박아 검정 바에서 햄버거가 안 보였다 */
+.gnb--white .gnb__toggle,.gnb--white .gnb__lang{color:var(--label-normal)}
+.gnb--black .gnb__toggle,.gnb--black .gnb__lang{color:var(--label-inverse-normal)}
+.gnb--black .gnb__toggle.has-overlay::after{background:var(--overlay-light)}
+.gnb--black .gnb__toggle.has-overlay:hover::after{opacity:var(--interaction-hover-light)}
+.drawer .ibtn{color:var(--label-normal)}         /* 드로어는 항상 흰 면 */
+
+/* ---------- 언어 목록 — 스며 나온다 (dropdown.css 의 display 토글 위에 얹는다) ---------- */
+.lang .dd-lang{
+  display:flex;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;
+  transition:opacity 200ms var(--lnb-ease,ease),transform 200ms var(--lnb-ease,ease),visibility 0s linear 200ms;
+}
+.lang.is-open .dd-lang{
+  opacity:1;visibility:visible;transform:none;pointer-events:auto;
+  transition:opacity 200ms var(--lnb-ease,ease),transform 200ms var(--lnb-ease,ease),visibility 0s;
+}
+.drawer .lang .dd-lang{transform:translateY(6px)}          /* 드로어 하단은 위로 연다 */
+.drawer .lang.is-open .dd-lang{transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .pg-gnb,.pg-gnb .gnb__lnb-back,.pg-gnb .gnb__lnb,.gnb__dim,.gnb__lnb-img-layer,.lang .dd-lang{transition:none}
+  .pg-gnb .gnb__lnb.is-switch .gnb__lnb-inner{animation:none}
+  .gnb__lnb-img.is-zoom .gnb__lnb-img-layer{transform:none}
+  .lang .dd-lang{transform:none}
+}

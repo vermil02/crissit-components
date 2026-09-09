@@ -72,50 +72,12 @@ img,svg{display:block;max-width:100%}
 .icon--24{width:24px;height:24px}
 
 /* ---------- 로고 ----------
-   출처: 피그마 `Crissit_Main` Logo 38:4175 (f2h 덤프 2026-09-08)
-
-   crissit 가로형은 아트보드가 148×40 인데 실제 그림(Shape 프레임)은
-   148×32 이고 위아래로 4 씩 여백이 들어 있다. 그대로 쓰면 mask 의
-   `contain` 이 여백까지 맞추느라 로고가 작아진다. 그래서 내려받은 파일의
-   viewBox 를 `0 4 148 32` 로 잘라 두었다 — 그 결과 비율이 4.625:1 이고,
-   GNB 에서 실측한 89×19.2 와 정확히 맞는다.
-
-   ▸ 단색(mask)과 원본 색(파일) 둘 다 있다
-       .logo-crissit          단색. 글자색을 따라간다 (밝은 바·어두운 바 공용)
-       logo-crissit-color.svg 심볼 보라 + 워드마크 검정. <img> 나 인라인으로 쓴다
-     피그마 변형은 Type=Default(두 색) / Dark(전부 검정) / White(전부 흰색)
-     세 가지인데, 모양은 셋 다 같고 색만 다르다. 그래서 단색은 한 파일로
-     충분하고, 두 색이 필요한 자리에만 `-color` 를 쓴다.
-
-   ▸ 조각 로고도 따로 있다 — 심볼만 34×32, 워드마크만 108×25
+   `icons.css` 로 옮겼다 (2026-09-09). 로고도 아이콘과 같은 mask 방식이라
+   `assets/` 를 가리키는 곳을 한 파일로 모으는 편이 낫다 — icons.css 는 SVG 를
+   CSS 안에 박아 넣은 **생성물**이고, 그 한 파일만 생성물로 두면 이 파일은
+   손으로 읽고 고치는 판으로 남는다.
+       .logo-crissit · .logo-crissit-symbol · .logo-crissit-title · .logo-realizers
    ------------------------------------------------------------ */
-.logo-crissit{
-  display:block;width:89px;height:19.2px;
-  background:currentColor;
-  -webkit-mask:url(../assets/logo-crissit.svg) center/contain no-repeat;
-          mask:url(../assets/logo-crissit.svg) center/contain no-repeat;
-}
-/* 심볼만 — 파비콘·앱 아이콘·좁은 자리 */
-.logo-crissit-symbol{
-  display:block;width:20.3px;height:19.2px;   /* 34:32 비율 */
-  background:currentColor;
-  -webkit-mask:url(../assets/logo-crissit-symbol.svg) center/contain no-repeat;
-          mask:url(../assets/logo-crissit-symbol.svg) center/contain no-repeat;
-}
-/* 워드마크만 — 심볼을 이미 보여준 화면에서 쓴다 */
-.logo-crissit-title{
-  display:block;width:83px;height:19.2px;     /* 108:25 비율 */
-  background:currentColor;
-  -webkit-mask:url(../assets/logo-crissit-title.svg) center/contain no-repeat;
-          mask:url(../assets/logo-crissit-title.svg) center/contain no-repeat;
-}
-/* We the Realizers — 아트보드 124×48 에 그림이 꽉 차 있어 자를 것이 없다 */
-.logo-realizers{
-  display:block;width:165px;height:64px;
-  background:currentColor;
-  -webkit-mask:url(../assets/logo-realizers.svg) left center/contain no-repeat;
-          mask:url(../assets/logo-realizers.svg) left center/contain no-repeat;
-}
 
 /* ---------- 컨테이너 ---------- */
 .container{

@@ -63,6 +63,10 @@
 .ft__col-list a{font:var(--label-2-bold);color:var(--label-inverse-normal)}
 .ft--white .ft__col-list a{color:var(--label-normal)}
 .ft__col-list a:hover{text-decoration:underline}
+/* 외부로 나가는 링크 — 글 오른쪽에 우측 대각선 아이콘. GNB 판의 「Knoden AI ↗」와 같은 방식 */
+.ft__col-list a.is-blank{display:inline-flex;align-items:center;gap:2px;width:fit-content}
+.ft__col-list a.is-blank > span{flex:0 0 auto}
+.ft__col-list a.is-blank .icon{flex:none}
 
 .ft__legal{
   display:flex;flex-direction:column;gap:6px;
@@ -107,6 +111,92 @@
 .ft--white .ft__cta-text p{color:var(--label-alternative)}
 
 /* ============================================================
+   오로라 — CTA 위쪽 글로우를 움직이게 한다 (2026-09-09 채택 · 실험대 v28)
+
+   값을 고른 실험대: `_실험/푸터-오로라-LAB/` — 방식 여섯을 비교해 「원뿔 · 불규칙 배회」로
+   정했다. 판정 근거와 실측은 그 폴더의 README 에 있다.
+
+   구조 — `.ft__cta` 는 이미 position:relative · overflow:hidden · isolation:isolate 라
+   손댈 것이 없다. 층만 넣는다.
+
+     .ft__cta::before   z:-1  정지 글로우 (--glow-cta-black). 지우지 않고 세기만 내린다
+     .ft__aurora        z:-1  움직이는 층. ::before 뒤에 오므로 그 위에 그려진다
+       .ft__aurora-cx1        흐름 translate (주기 ×2.7)   ← 껍데기. 아무것도 그리지 않는다
+         .ft__aurora-cx2      숨   scale     (주기 ×1.73)  ← 껍데기
+           .ft__aurora-conic  회전(불규칙 배회) ← **여기서만 그림을 그린다**
+     .ft__cta-inner     글 — 음수 z-index 층보다 위 (z-index 를 따로 안 줘도 된다)
+
+   ⚠ 왜 껍데기로 감쌌나 — 흐린 부채꼴은 맨 안쪽에서 **한 번만** 그려지고 브라우저가 그것을
+      텍스처로 캐시해 둔다. 껍데기는 transform 만 하므로 층을 더 그리는 비용이 없다.
+      부채꼴 층을 하나 더 얹는 것과는 성질이 다르다.
+   ⚠ 세 주기가 서로 **안 맞는 배수**여야 한다(×1 · ×1.73 · ×2.7). 정수배로 두면 셋이 같은
+      지점에서 같이 되돌아가 반복이 그대로 보인다.
+   ⚠ 회전은 360° 를 한 방향으로 돌지 않는다 — 그러면 「좌에서 우로 계속 도는」 느낌이 남는다.
+      왕복(ease-in-out+alternate)도 쓰지 않는다 — 양 끝에서 속도가 0 이 되어 「멈췄다 출발」한다
+      (실측: 반전 직후 초당 변화량이 정상의 11분의 1, 회복에 5~6초).
+      그래서 **여섯 지점을 불규칙한 간격으로 linear 로** 돈다.
+   ⚠ CTA 안에 있으므로 **CTA 를 끈 화면에는 오로라가 없다.** 그것이 의도다.
+   ============================================================ */
+
+/* 정지 글로우 — 토큰 기본은 0.40(피그마 실측)이지만 움직이는 층이 더해지므로 내린다 */
+.ft__cta::before{opacity:.15}
+
+.ft__aurora{
+  position:absolute;left:0;right:0;top:0;z-index:-1;
+  height:var(--glow-cta-height);
+  overflow:hidden;pointer-events:none;
+  /* 아래로 사라진다 — 없으면 층 아래끝에서 뚝 끊긴 선이 보인다 */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 100%);
+}
+
+/* 껍데기 — 그림이 아니라 틀이다. transform 만 한다 */
+.ft__aurora-cx1,
+.ft__aurora-cx2{position:absolute;inset:0;will-change:transform}
+.ft__aurora-cx1{animation:au-drift  37.8s ease-in-out infinite alternate}
+.ft__aurora-cx2{animation:au-breath 24.2s ease-in-out infinite alternate}
+@keyframes au-drift{
+  from{transform:translate3d(-6.3%,-3.6%,0)}
+  to  {transform:translate3d( 6.3%, 3.6%,0)}
+}
+@keyframes au-breath{
+  from{transform:scale(.856)}
+  to  {transform:scale(1.144)}
+}
+
+/* 그림 — 부채꼴 셋이 박힌 원뿔. 회전 중심이 층의 가운데(height 420% 의 절반)이고,
+   그 가운데를 층 상자의 50% 에 맞추려고 top 을 -160% 로 둔다 (= 50% − 210%) */
+.ft__aurora-conic{
+  position:absolute;left:-60%;top:-160%;width:220%;height:420%;
+  background:conic-gradient(from 0deg at 50% 50%,
+      transparent   0deg,var(--purple-500)  38deg,transparent  86deg,
+      transparent 140deg,var(--purple-500) 196deg,transparent 244deg,
+      transparent 296deg,var(--purple-500) 342deg,transparent 360deg);
+  filter:blur(80px);
+  opacity:.5;mix-blend-mode:screen;
+  will-change:transform;
+  animation:au-wander 56s linear infinite;
+}
+/* 불규칙 배회 — 간격(13·27·41·58·69·84%)과 각도가 불규칙해 리듬이 반복으로 안 읽힌다.
+   0% 와 100% 가 같은 값이라 이음매가 없다 */
+@keyframes au-wander{
+  0%   {transform:rotate(0deg)}
+  13%  {transform:rotate(84deg)}
+  27%  {transform:rotate(-36deg)}
+  41%  {transform:rotate(142deg)}
+  58%  {transform:rotate(44deg)}
+  69%  {transform:rotate(190deg)}
+  84%  {transform:rotate(70deg)}
+  100% {transform:rotate(0deg)}
+}
+
+/* 움직임을 원하지 않는 사람에게는 멈춘다 — 정지 글로우만 남는다.
+   ⚠ `> *`(직속 자식)가 아니라 `*`(모든 안쪽)이다 — 껍데기는 한 단 더 안쪽에 있다 */
+@media (prefers-reduced-motion:reduce){
+  .ft__aurora *{animation:none}
+}
+
+/* ============================================================
    Tablet(md) 768–1023 · Mobile(sm) 360–767 — f2h 실측값
    두 브레이크포인트가 규칙을 공유한다. 열 폭이 절반씩이라 화면 폭만
    달라지면 저절로 맞는다.
@@ -133,8 +223,10 @@
     gap:24px;padding:64px var(--container-pad) 32px;
   }
   .ft__cta-text{align-items:center;gap:20px;flex:none;width:100%}
-  .ft__cta::before{height:256px}
+  .ft__cta::before,
+  .ft__aurora{height:256px}
 }
 @media (max-width:767px){
-  .ft__cta::before{height:264px}
+  .ft__cta::before,
+  .ft__aurora{height:264px}
 }
