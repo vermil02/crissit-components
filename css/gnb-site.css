@@ -114,8 +114,15 @@
 .gnb__lnb-img{position:relative;overflow:hidden;background:var(--neutral-100)}
 .gnb__lnb-img-layer{position:absolute;inset:0;background:center/cover no-repeat;transition:transform 450ms var(--lnb-ease,ease)}
 .gnb__lnb-img.is-zoom .gnb__lnb-img-layer{transform:scale(1.06)}
-.gnb__lnb-img--company .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-company.png)}   /* 디자이너 제공 2026-09-08 · 640×800 */
-.gnb__lnb-img--product .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-product.png)}
+/* ⚠ 그림 파일은 **화면이 넣는다** — 이 파일에는 없다 (2026-09-09).
+   `hero.css` 의 배경 그림과 같은 규칙이다. 판 그림은 디자이너가 준 마케팅 사진이라
+   컴포넌트(공개 저장소)가 아니라 화면 자료다. `공통.py` 가 화면마다 아래 두 줄을 찍는다.
+
+       .gnb__lnb-img--company .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-company.png)}
+       .gnb__lnb-img--product .gnb__lnb-img-layer{background-image:url(../assets/img-lnb-product.png)}
+
+   ⚠ CSS 변수로 넘기면 안 된다 — 변수 안의 url() 은 그 변수를 **쓰는** CSS 파일 기준으로
+     풀려서 `css/assets/…` 를 찾다 실패한다 (hero.css 에서 실측으로 확인한 것과 같다). */
 
 /* ---------- 딤 — 판이 펼쳐진 동안 본문을 덮는다. <body> 직속, 바(50)보다 아래 ---------- */
 .gnb__dim{
