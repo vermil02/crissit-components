@@ -13,22 +13,22 @@
      ──────────────────────────────────────────────────────────── -->
 <link rel="icon" href="assets/logo-crissit-symbol.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260910b">
-<link rel="stylesheet" href="css/base.css?v=20260910b">
-<link rel="stylesheet" href="css/icons.css?v=20260910b">
-<link rel="stylesheet" href="css/button.css?v=20260910b">
-<link rel="stylesheet" href="css/icon-button.css?v=20260910b">
-<link rel="stylesheet" href="css/chip.css?v=20260910b">
-<link rel="stylesheet" href="css/pagination.css?v=20260910b">
-<link rel="stylesheet" href="css/dropdown.css?v=20260910b">
-<link rel="stylesheet" href="css/drawer.css?v=20260910b">
-<link rel="stylesheet" href="css/heading.css?v=20260910b">
-<link rel="stylesheet" href="css/filter.css?v=20260910b">
-<link rel="stylesheet" href="css/gnb.css?v=20260910b">
-<link rel="stylesheet" href="css/footer.css?v=20260910b">
-<link rel="stylesheet" href="css/boardlist.css?v=20260910b">
+<link rel="stylesheet" href="css/tokens.css?v=20260910c">
+<link rel="stylesheet" href="css/base.css?v=20260910c">
+<link rel="stylesheet" href="css/icons.css?v=20260910c">
+<link rel="stylesheet" href="css/button.css?v=20260910c">
+<link rel="stylesheet" href="css/icon-button.css?v=20260910c">
+<link rel="stylesheet" href="css/chip.css?v=20260910c">
+<link rel="stylesheet" href="css/pagination.css?v=20260910c">
+<link rel="stylesheet" href="css/dropdown.css?v=20260910c">
+<link rel="stylesheet" href="css/drawer.css?v=20260910c">
+<link rel="stylesheet" href="css/heading.css?v=20260910c">
+<link rel="stylesheet" href="css/filter.css?v=20260910c">
+<link rel="stylesheet" href="css/gnb.css?v=20260910c">
+<link rel="stylesheet" href="css/footer.css?v=20260910c">
+<link rel="stylesheet" href="css/boardlist.css?v=20260910c">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260910b">
+<link rel="stylesheet" href="componote/componote.css?v=20260910c">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -41,7 +41,21 @@ body{background:var(--neutral-50)}
   background:var(--bg-normal);
 }
 .cat__nav h1{font:var(--label-1-bold);margin:0 0 4px}
-.cat__nav .sub{font:var(--label-3-medium);color:var(--label-alternative);margin:0 0 24px}
+.cat__nav .sub{font:var(--label-3-medium);color:var(--label-alternative);margin:0 0 14px}
+.cat__help{margin:0 0 24px;font:var(--label-3-medium);color:var(--label-alternative)}
+.cat__help > summary{
+  cursor:pointer;color:var(--label-neutral);font-weight:700;
+  list-style:none;padding:5px 0;
+}
+.cat__help > summary::-webkit-details-marker{display:none}
+.cat__help > summary::before{content:"? ";opacity:.6}
+.cat__help[open] > summary{margin-bottom:6px}
+.cat__help p{margin:0 0 8px}
+.cat__help-where{color:var(--label-assistive)}
+.cat__hand{font:var(--label-3-medium);color:var(--label-assistive);margin:10px 0 4px}
+.cat__hand-list{list-style:none;margin:0;padding:0;font:var(--label-3-medium)}
+.cat__hand-list li{color:var(--label-assistive);margin-bottom:2px}
+.cat__hand-list a{color:var(--label-neutral);text-decoration:underline}
 .cat__nav a{display:block;padding:5px 0;font:var(--label-2-medium);color:var(--label-alternative)}
 .cat__nav a:hover{color:var(--label-normal)}
 .cat__nav .grp{margin-top:16px;font:var(--label-3-bold);color:var(--label-assistive);
@@ -235,11 +249,11 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260910b" defer></script>
-<script src="js/gnb-lang.js?v=20260910b" defer></script>
+<script src="js/boardlist-main.js?v=20260910c" defer></script>
+<script src="js/gnb-lang.js?v=20260910c" defer></script>
 <!-- 쓰임 — 실제로 쓰는 것만 보이게 한다. **카탈로그 화면 기능**이라 키트에는 안 담긴다 -->
-<script src="js/use.js?v=20260910b" defer></script>
-<script src="js/kit.js?v=20260910b" defer></script>
+<script src="js/use.js?v=20260910c" defer></script>
+<script src="js/kit.js?v=20260910c" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -259,15 +273,28 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="componote/componote.js?v=20260910b" defer></script>
+<script src="componote/componote.js?v=20260910c" defer></script>
 </head>
 <body>
 
 <div class="cat">
 <nav class="cat__nav">
   <h1>crissit 컴포넌트</h1>
-  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07<br><br>오른쪽 아래 <b>검사</b> 버튼을 켜면<br>가리키는 요소의 글꼴·색·여백과<br>해당 토큰 이름이 나옵니다.<br>고칠 곳은 <b>메모</b>로 핀을 꽂아<br>남겨 주세요 — 처음 열면<br><b>이름과 닉네임</b>을 묻습니다.<br>닉네임은 전달받으신 것을<br>넣으시면 됩니다.<br><br><b>설명</b> 버튼을 켜면 값의 출처와<br>판단 근거가 컴포넌트마다 붙습니다.
-  <br><br>맨 위 <b>「쓰는 것만」</b>은 우리<br>웹사이트가 실제로 붙인 것만<br>보여줍니다. 피그마에 있는 것<br>전부를 보려면 <b>「전부」</b>로<br>바꿉니다 — 절 머리에 어느<br>화면이 쓰는지 적혀 있습니다.</p>
+  <p class="sub">피그마 「자사 홈페이지 v2」<br>컴포넌트 페이지 + 가이드 문서<br>실측 · 2026-09-07</p>
+
+  <!-- 도움말은 접어 둔다. 처음 한 번 읽으면 되는 것이 15줄 내리 깔려 있으면
+       매번 목차를 가린다(2026-09-10 사용자 지적).
+       ▸ 「쓰는 것만」 설명은 여기서 뺐다 — 토글 바 바로 아래에 이미 적혀 있어서
+         같은 말이 두 군데 있었다. 설명은 그것이 있는 자리에 둔다.
+       ▸ <details> 라 자바스크립트가 필요 없고, 열어 둔 상태는 브라우저가 기억하지 않는다 -->
+  <details class="cat__help">
+    <summary>처음이신가요?</summary>
+    <p><b>검사</b> — 가리키는 요소의 글꼴·색·여백과 해당 토큰 이름이 나옵니다.</p>
+    <p><b>메모</b> — 고칠 곳에 핀을 꽂습니다. 처음 열면 <b>이름과 닉네임</b>을 묻습니다.
+      닉네임은 전달받으신 것을 넣으시면 됩니다.</p>
+    <p><b>설명</b> — 값의 출처와 판단 근거가 컴포넌트마다 붙습니다.</p>
+    <p class="cat__help-where">세 버튼은 <b>오른쪽 아래</b>에 있습니다.</p>
+  </details>
 
   <div class="grp">기반</div>
   <a href="#tokens">디자인 토큰</a>
@@ -303,11 +330,12 @@ window.componote = {
 
   <div class="cat__kit">
     <button type="button" data-kit-download>개발용 키트 받기</button>
-    <p class="what" style="margin-top:10px">
-      개발·AI 에게 넘길 때는 <a href="AGENTS.md" style="color:inherit;text-decoration:underline">AGENTS.md</a>(규칙 6KB)와
-      <a href="registry.json" style="color:inherit;text-decoration:underline">registry.json</a>(색인 4.5KB)만 주면 됩니다.
-      컴포넌트 낱개는 <code>registry/&lt;id&gt;.json</code>.
-    </p>
+    <!-- 폭이 130px 라 한 문장으로 두면 줄마다 끊긴다. 의도적으로 쌓아 둔다 -->
+    <p class="cat__hand">AI·개발에게 넘길 것 <b>13KB</b></p>
+    <ul class="cat__hand-list">
+      <li><a href="AGENTS.md">AGENTS.md</a> 규칙</li>
+      <li><a href="registry.json">registry.json</a> 색인</li>
+    </ul>
     <p class="when">컴포넌트 갱신<b><span data-kit-updated>—</span> KST</b></p>
     <p class="what">CSS · 아이콘 · 동작 스크립트를 zip 한 개로. 이 카탈로그 화면과 검토 도구는 빠집니다.</p>
   </div>
@@ -323,8 +351,7 @@ window.componote = {
   </div>
   <p class="use-bar__count" data-use-count></p>
   <p class="use-bar__count" style="flex:1 0 100%;margin:0">
-    「쓰는 것만」 = <code>_소스</code> 의 화면 마크업에 실제로 붙은 것.
-    <code>쓰임-조사.py</code> 가 세고 <code>쓰임.json</code> 에 적는다 — 손으로 적지 않는다.
+    우리 웹사이트가 실제로 붙인 것만 보여줍니다. 절 머리에 어느 화면이 쓰는지 적혀 있습니다.
   </p>
 </div>
 
