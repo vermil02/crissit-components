@@ -13,22 +13,22 @@
      ──────────────────────────────────────────────────────────── -->
 <link rel="icon" href="assets/logo-crissit-symbol.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260910f">
-<link rel="stylesheet" href="css/base.css?v=20260910f">
-<link rel="stylesheet" href="css/icons.css?v=20260910f">
-<link rel="stylesheet" href="css/button.css?v=20260910f">
-<link rel="stylesheet" href="css/icon-button.css?v=20260910f">
-<link rel="stylesheet" href="css/chip.css?v=20260910f">
-<link rel="stylesheet" href="css/pagination.css?v=20260910f">
-<link rel="stylesheet" href="css/dropdown.css?v=20260910f">
-<link rel="stylesheet" href="css/drawer.css?v=20260910f">
-<link rel="stylesheet" href="css/heading.css?v=20260910f">
-<link rel="stylesheet" href="css/filter.css?v=20260910f">
-<link rel="stylesheet" href="css/gnb.css?v=20260910f">
-<link rel="stylesheet" href="css/footer.css?v=20260910f">
-<link rel="stylesheet" href="css/boardlist.css?v=20260910f">
+<link rel="stylesheet" href="css/tokens.css?v=20260910g">
+<link rel="stylesheet" href="css/base.css?v=20260910g">
+<link rel="stylesheet" href="css/icons.css?v=20260910g">
+<link rel="stylesheet" href="css/button.css?v=20260910g">
+<link rel="stylesheet" href="css/icon-button.css?v=20260910g">
+<link rel="stylesheet" href="css/chip.css?v=20260910g">
+<link rel="stylesheet" href="css/pagination.css?v=20260910g">
+<link rel="stylesheet" href="css/dropdown.css?v=20260910g">
+<link rel="stylesheet" href="css/drawer.css?v=20260910g">
+<link rel="stylesheet" href="css/heading.css?v=20260910g">
+<link rel="stylesheet" href="css/filter.css?v=20260910g">
+<link rel="stylesheet" href="css/gnb.css?v=20260910g">
+<link rel="stylesheet" href="css/footer.css?v=20260910g">
+<link rel="stylesheet" href="css/boardlist.css?v=20260910g">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260910f">
+<link rel="stylesheet" href="componote/componote.css?v=20260910g">
 <script>
 /* 문이 필요한지 **그리기 전에** 정한다. defer 스크립트로 정하면 본문이 한 번 보였다가
    가려져서 깜빡인다 (2026-09-10). 여기서는 body 가 아직 없으므로 <html> 에 표시하고,
@@ -146,13 +146,10 @@ body{background:var(--neutral-50)}
   display:flex;align-items:center;justify-content:center;padding:24px;
   background:var(--neutral-0);
 }
-.gate__box{max-width:420px;text-align:center}
-.gate__eyebrow{font:var(--label-3-medium);color:var(--label-assistive);margin:0 0 10px;
-  letter-spacing:.04em;text-transform:uppercase}
-.gate__title{font:var(--title-1-bold);letter-spacing:-.01em;margin:0 0 10px;color:var(--label-normal)}
-.gate__desc{font:var(--label-2-medium);color:var(--label-alternative);margin:0 0 24px;line-height:1.6}
+.gate__box{max-width:340px;text-align:center}
+.gate__title{font:var(--title-1-bold);letter-spacing:-.01em;margin:0 0 28px;color:var(--label-normal)}
 .gate__box{text-align:left}
-.gate__eyebrow,.gate__title,.gate__desc{text-align:center}
+.gate__title{text-align:center}
 .gate__label{display:block;font:var(--label-3-medium);color:var(--label-alternative);margin:0 0 6px}
 .gate__input{
   display:block;width:100%;box-sizing:border-box;margin:0 0 16px;
@@ -307,11 +304,11 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260910f" defer></script>
-<script src="js/gnb-lang.js?v=20260910f" defer></script>
+<script src="js/boardlist-main.js?v=20260910g" defer></script>
+<script src="js/gnb-lang.js?v=20260910g" defer></script>
 <!-- 쓰임 — 실제로 쓰는 것만 보이게 한다. **카탈로그 화면 기능**이라 키트에는 안 담긴다 -->
-<script src="js/use.js?v=20260910f" defer></script>
-<script src="js/kit.js?v=20260910f" defer></script>
+<script src="js/use.js?v=20260910g" defer></script>
+<script src="js/kit.js?v=20260910g" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -331,8 +328,8 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="js/gate.js?v=20260910f" defer></script>
-<script src="componote/componote.js?v=20260910f" defer></script>
+<script src="js/gate.js?v=20260910g" defer></script>
+<script src="componote/componote.js?v=20260910g" defer></script>
 </head>
 <body>
 
@@ -351,20 +348,19 @@ window.componote = {
         아무것도 볼 수 없다. 주소는 이 파일 아래 `window.componote.memoServer` 에 있다 -->
 <div class="gate" id="gate" hidden>
   <form class="gate__box" data-gate-form novalidate>
-    <p class="gate__eyebrow">crissit 컴포넌트</p>
-    <h1 class="gate__title">이름과 닉네임을 넣어 주세요</h1>
-    <p class="gate__desc">
-      남기신 <b>메모에 이름이 붙습니다.</b> 닉네임은 <b>전달받으신 것</b>을 넣으시면 됩니다 —
-      모르시면 관리하는 사람에게 물어보세요.
-    </p>
+    <h1 class="gate__title">CRISSIT 컴포넌트</h1>
 
     <label class="gate__label" for="gateName">이름</label>
     <input class="gate__input" id="gateName" data-gate-name type="text"
            placeholder="예: 홍길동" autocomplete="name" autocapitalize="off">
 
     <label class="gate__label" for="gatePass">닉네임</label>
-    <input class="gate__input" id="gatePass" data-gate-pass type="password"
-           placeholder="정해 받은 닉네임" autocomplete="current-password">
+    <!-- ⚠ `type="password"` 로 두면 **한글이 안 들어간다** — macOS·iOS 가 비밀번호 칸에서
+         입력기를 영문으로 고정한다. 닉네임은 한글로 적는 것이라 글자칸으로 둔다
+         (2026-09-10 사용자 지적). 가릴 값도 아니다 — 서로 아는 이름이다 -->
+    <input class="gate__input" id="gatePass" data-gate-pass type="text"
+           placeholder="정해 받은 닉네임" lang="ko"
+           autocomplete="off" autocapitalize="off" spellcheck="false">
 
     <p class="gate__msg" data-gate-msg></p>
     <button class="gate__go" type="submit" data-gate-go>들어가기</button>
