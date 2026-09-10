@@ -45,6 +45,9 @@
      날짜 14 Medium(lg는 16) · 제목 16 Bold(lg는 18) · 배지 badge--sm
 
    정책 — 가이드 문서 [Media_Web_Desktop] 기능 및 정책 정의서 (1010:17159)
+   ⚠ 아래 값은 정의서에서 **옮긴 것**이다. 정본은 피그마이고 어긋나면 정의서가 맞다.
+     글로 옮긴 사본: `03. 페이지 소스화/정책/Media_Web_Desktop.md` (노드 id 가 붙어 있다)
+     ▸ **건수·주기 같은 값은 화면이 정한다.** 여기 적힌 것은 컴포넌트 기본값이다
      Main       최대 5건 · 날짜 표기 YY.MM.DD
                 제목 line-clamp 2 · 요약 line-clamp 1
                 8초마다 다음 건으로 자동 전환 (Delay Second : 8s)

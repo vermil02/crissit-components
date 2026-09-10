@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "상세 페이지 사이드에서 다른 글을 추천하는 줄.",
  "피그마": "피그마 Content/Boardlist/Recommand · 1008:8040 · 변형 2",
+ "식별 클래스": [
+  "bl-rec"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

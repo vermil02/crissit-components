@@ -5,6 +5,9 @@
  "상태": "예정",
  "한줄": "Chip / Filter 를 펼쳤을 때 아래에 뜨는 목록 패널.",
  "피그마": "피그마 Dropdown_list · 1010:17342 · 정책은 [Media_Web_Desktop] 기능 및 정책 정의서 §2",
+ "식별 클래스": [
+  "chip-option"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

@@ -5,6 +5,10 @@
  "상태": "현행",
  "한줄": "목록과 그리드에 반복해서 쓰는 카드.",
  "피그마": "피그마 Content/Boardlist/Common · 1008:7915 · 변형 8 (Breakpoint 2 × State 2 × Type 2)",
+ "식별 클래스": [
+  "bl-h",
+  "bl-v"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

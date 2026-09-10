@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "배경도 테두리도 없이 글자만 있는 버튼.",
  "피그마": "피그마 Button/Text · 1008:5957 · 변형 18 (State 에 Hover 가 별도로 있다)",
+ "식별 클래스": [
+  "btn--text"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

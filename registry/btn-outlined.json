@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "테두리만 있는 버튼.",
  "피그마": "피그마 Button/Outlined · 1008:5587 · 변형 36",
+ "식별 클래스": [
+  "btn--outlined"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

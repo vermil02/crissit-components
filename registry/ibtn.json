@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "아이콘만으로 동작을 표시하는 버튼.",
  "피그마": "피그마 Button/Icon/Normal 1008:6123 · Outlined 1008:6189 · Solid 1008:6308 · Background 1008:6479 · 변형 74",
+ "식별 클래스": [
+  "ibtn"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

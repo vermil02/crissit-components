@@ -220,6 +220,7 @@ def sections():
             "가족": fam.group(1),
             "제외": grab(attrs, "data-use-ignore").split(),
             "범위": grab(attrs, "data-use-scope").split() or None,
+            "식별": grab(attrs, "data-use-key").split() or None,
             "제목": clean(h2.group(1)) if h2 else sid,
             "한줄": first_sentence(clean(desc.group(1))) if desc else None,
             "피그마": clean(src.group(1)) if src else None,
@@ -351,6 +352,11 @@ def main():
             "상태": sec_status.get(sec["id"], {}).get("상태", status_of(fam)["상태"]),
             "한줄": sec["한줄"],
             "피그마": sec["피그마"],
+            # 식별 클래스 — 가족만으로 어느 컴포넌트인지 못 가리는 절이 있다.
+            # 버튼 세 절이 `btn` 을 공유해서, 화면이 버튼 하나만 써도 셋 다 걸렸다
+            # (화면 색인이 컴포넌트 14종으로 부풀었다 · 2026-09-10).
+            # 「이 클래스가 있으면 이 컴포넌트를 쓴 것」을 한 곳에 못박는다
+            "식별 클래스": sec["식별"] or [fam],
             "css": sorted(set(css_needed), key=css_needed.index),
             "종류": [entry(c) for c in kinds],
             "변형": [entry(c) for c in mods],
@@ -387,7 +393,8 @@ def main():
         ],
         "상태값": st.get("상태값", {}),
         "화면": screens,
-        "컴포넌트": [{k: c[k] for k in ("id", "이름", "가족", "상태", "한줄")} for c in comps],
+        "컴포넌트": [{k: c[k] for k in ("id", "이름", "가족", "상태", "식별 클래스", "한줄")}
+                    for c in comps],
         "아이콘": {"전체": len(icons), "현행": sum(1 for i in icons if i["상태"] == "현행"),
                   "낱개": f"{BASE_URL}/registry/아이콘.json"},
     }

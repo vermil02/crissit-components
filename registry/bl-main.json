@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "미디어·소식 영역의 대표 기사.",
  "피그마": "피그마 Content/Boardlist/Main · 1008:7744 · 변형 6 · 정책 [Media_Web_Desktop] 기능 및 정책 정의서 §1 · 동작 js/boardlist-main.js",
+ "식별 클래스": [
+  "bl-main"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

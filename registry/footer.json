@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "사이트 하단 공통 영역.",
  "피그마": "피그마 Footer · 1008:7323 · 변형 8 (Breakpoint 4 × Mode 2)",
+ "식별 클래스": [
+  "ft"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",

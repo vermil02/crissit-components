@@ -5,6 +5,9 @@
  "상태": "현행",
  "한줄": "배경색이 채워진 버튼.",
  "피그마": "피그마 Button/Solid · 1008:5233 · 변형 30 (Variant 2 × Size 3 × Round 3 × Disable 2)",
+ "식별 클래스": [
+  "btn--solid"
+ ],
  "css": [
   "css/tokens.css",
   "css/base.css",
