@@ -13,22 +13,36 @@
      ──────────────────────────────────────────────────────────── -->
 <link rel="icon" href="assets/logo-crissit-symbol.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260910c">
-<link rel="stylesheet" href="css/base.css?v=20260910c">
-<link rel="stylesheet" href="css/icons.css?v=20260910c">
-<link rel="stylesheet" href="css/button.css?v=20260910c">
-<link rel="stylesheet" href="css/icon-button.css?v=20260910c">
-<link rel="stylesheet" href="css/chip.css?v=20260910c">
-<link rel="stylesheet" href="css/pagination.css?v=20260910c">
-<link rel="stylesheet" href="css/dropdown.css?v=20260910c">
-<link rel="stylesheet" href="css/drawer.css?v=20260910c">
-<link rel="stylesheet" href="css/heading.css?v=20260910c">
-<link rel="stylesheet" href="css/filter.css?v=20260910c">
-<link rel="stylesheet" href="css/gnb.css?v=20260910c">
-<link rel="stylesheet" href="css/footer.css?v=20260910c">
-<link rel="stylesheet" href="css/boardlist.css?v=20260910c">
+<link rel="stylesheet" href="css/tokens.css?v=20260910f">
+<link rel="stylesheet" href="css/base.css?v=20260910f">
+<link rel="stylesheet" href="css/icons.css?v=20260910f">
+<link rel="stylesheet" href="css/button.css?v=20260910f">
+<link rel="stylesheet" href="css/icon-button.css?v=20260910f">
+<link rel="stylesheet" href="css/chip.css?v=20260910f">
+<link rel="stylesheet" href="css/pagination.css?v=20260910f">
+<link rel="stylesheet" href="css/dropdown.css?v=20260910f">
+<link rel="stylesheet" href="css/drawer.css?v=20260910f">
+<link rel="stylesheet" href="css/heading.css?v=20260910f">
+<link rel="stylesheet" href="css/filter.css?v=20260910f">
+<link rel="stylesheet" href="css/gnb.css?v=20260910f">
+<link rel="stylesheet" href="css/footer.css?v=20260910f">
+<link rel="stylesheet" href="css/boardlist.css?v=20260910f">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260910c">
+<link rel="stylesheet" href="componote/componote.css?v=20260910f">
+<script>
+/* 문이 필요한지 **그리기 전에** 정한다. defer 스크립트로 정하면 본문이 한 번 보였다가
+   가려져서 깜빡인다 (2026-09-10). 여기서는 body 가 아직 없으므로 <html> 에 표시하고,
+   아래 CSS 가 그것을 보고 감춘다 */
+(function(){
+  try{
+    var raw = localStorage.getItem("crissit-catalog-memo-who");
+    var me  = raw ? JSON.parse(raw) : null;
+    var ok  = !!(me && me.name && me.token) ||
+              localStorage.getItem("crissit-catalog-gate-skip") === "yes";
+    if(!ok) document.documentElement.setAttribute("data-gate","closed");
+  }catch(e){ /* 저장이 막힌 브라우저 — 문을 세우지 않는다 */ }
+})();
+</script>
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -124,6 +138,50 @@ body{background:var(--neutral-50)}
 
 /* 아이콘 목록 — 이름 길이가 제각각이라 flex 로 늘어놓으면 두 줄로 넘어가는
    칸 때문에 아이콘 높이가 어긋난다. 격자로 깔면 줄 안에서 자동으로 맞는다 */
+/* ============================================================
+   들어오기 문 — 마크업 쪽 주석에 왜 이렇게 했는지 적어 두었다
+   ============================================================ */
+.gate{
+  position:fixed;inset:0;z-index:9000;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  background:var(--neutral-0);
+}
+.gate__box{max-width:420px;text-align:center}
+.gate__eyebrow{font:var(--label-3-medium);color:var(--label-assistive);margin:0 0 10px;
+  letter-spacing:.04em;text-transform:uppercase}
+.gate__title{font:var(--title-1-bold);letter-spacing:-.01em;margin:0 0 10px;color:var(--label-normal)}
+.gate__desc{font:var(--label-2-medium);color:var(--label-alternative);margin:0 0 24px;line-height:1.6}
+.gate__box{text-align:left}
+.gate__eyebrow,.gate__title,.gate__desc{text-align:center}
+.gate__label{display:block;font:var(--label-3-medium);color:var(--label-alternative);margin:0 0 6px}
+.gate__input{
+  display:block;width:100%;box-sizing:border-box;margin:0 0 16px;
+  padding:11px 13px;border:0;border-radius:var(--radius-xsmall);
+  box-shadow:inset 0 0 0 1px var(--line-normal);
+  font:var(--label-2-medium);color:var(--label-normal);background:var(--neutral-0);
+}
+.gate__input:focus{outline:0;box-shadow:inset 0 0 0 2px var(--primary-normal)}
+.gate__msg{min-height:18px;margin:0 0 10px;font:var(--label-3-medium);color:var(--label-assistive)}
+.gate__msg.is-bad{color:#c0392b}
+.gate__go{
+  display:block;width:100%;border:0;cursor:pointer;
+  padding:13px 18px;border-radius:var(--radius-xsmall);
+  background:var(--neutral-1000);color:var(--neutral-0);font:var(--label-1-medium);font-weight:700;
+}
+.gate__go:disabled{background:var(--bg-assistive);color:var(--label-assistive);cursor:default}
+/* 문이 열릴 때까지 본문을 감춘다 — 뒤에 뭐가 있는지 비치지 않게 */
+/* 본문과 함께 **componote 의 버튼 막(.insp-dock)도** 가린다 — 문 위에 남아 있으면
+   문을 지나지 않고 도구를 쓸 수 있어서 문이 무의미해진다 (2026-09-10 실측으로 확인) */
+html[data-gate="closed"] .cat,
+html[data-gate="closed"] .insp-dock,
+body[data-gate="closed"] .cat,
+body[data-gate="closed"] .insp-dock{visibility:hidden}
+html[data-gate="closed"] body,
+body[data-gate="closed"]{overflow:hidden}
+/* 문 자체는 hidden 으로 시작한다 — gate.js 가 필요할 때만 연다.
+   다만 <html> 표시가 이미 있으면 스크립트를 기다리지 않고 바로 보여 준다 */
+html[data-gate="closed"] .gate{display:flex!important}
+
 /* ============================================================
    쓰임 표시 — 이 카탈로그는 피그마에 있는 것을 **전부** 옮긴 라이브러리다.
    그중 우리 웹사이트가 실제로 붙인 것만 보이게 하는 층이다.
@@ -249,11 +307,11 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260910c" defer></script>
-<script src="js/gnb-lang.js?v=20260910c" defer></script>
+<script src="js/boardlist-main.js?v=20260910f" defer></script>
+<script src="js/gnb-lang.js?v=20260910f" defer></script>
 <!-- 쓰임 — 실제로 쓰는 것만 보이게 한다. **카탈로그 화면 기능**이라 키트에는 안 담긴다 -->
-<script src="js/use.js?v=20260910c" defer></script>
-<script src="js/kit.js?v=20260910c" defer></script>
+<script src="js/use.js?v=20260910f" defer></script>
+<script src="js/kit.js?v=20260910f" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -273,9 +331,45 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="componote/componote.js?v=20260910c" defer></script>
+<script src="js/gate.js?v=20260910f" defer></script>
+<script src="componote/componote.js?v=20260910f" defer></script>
 </head>
 <body>
+
+<!-- ══════════════ 들어오기 ══════════════
+     이름을 넣기 전에는 화면을 안 보여준다 (2026-09-10 사용자 요청).
+     componote 가 메모를 쓸 때 묻던 로그인을 **페이지 앞으로 당긴** 것이다 —
+     그래야 남긴 메모에 누가 남겼는지가 반드시 붙는다.
+
+     ⚠ **이건 잠금이 아니라 이름표다.** 이 페이지는 GitHub Pages 정적 공개라
+        주소만 알면 HTML 과 css·json 을 그대로 받을 수 있다. 실제로 가려야 할 것이
+        생기면 비공개 저장소와 접근 제어가 따로 필요하다.
+     ⚠ componote 는 밖에서 부를 수 있는 API 가 없다. 그래서 도구를 고치지 않고
+        **문을 페이지가 갖는다** — 메모 버튼(`.memo-toggle`)을 대신 눌러 그쪽 로그인을 띄우고,
+        신원(localStorage `crissit-catalog-memo-who`)이 생기면 문을 연다.
+     ⚠ 서버 주소가 페이지에 없으면 문을 세우지 않는다 — 들어갈 방법이 없는데 막으면
+        아무것도 볼 수 없다. 주소는 이 파일 아래 `window.componote.memoServer` 에 있다 -->
+<div class="gate" id="gate" hidden>
+  <form class="gate__box" data-gate-form novalidate>
+    <p class="gate__eyebrow">crissit 컴포넌트</p>
+    <h1 class="gate__title">이름과 닉네임을 넣어 주세요</h1>
+    <p class="gate__desc">
+      남기신 <b>메모에 이름이 붙습니다.</b> 닉네임은 <b>전달받으신 것</b>을 넣으시면 됩니다 —
+      모르시면 관리하는 사람에게 물어보세요.
+    </p>
+
+    <label class="gate__label" for="gateName">이름</label>
+    <input class="gate__input" id="gateName" data-gate-name type="text"
+           placeholder="예: 홍길동" autocomplete="name" autocapitalize="off">
+
+    <label class="gate__label" for="gatePass">닉네임</label>
+    <input class="gate__input" id="gatePass" data-gate-pass type="password"
+           placeholder="정해 받은 닉네임" autocomplete="current-password">
+
+    <p class="gate__msg" data-gate-msg></p>
+    <button class="gate__go" type="submit" data-gate-go>들어가기</button>
+  </form>
+</div>
 
 <div class="cat">
 <nav class="cat__nav">
@@ -290,8 +384,7 @@ window.componote = {
   <details class="cat__help">
     <summary>처음이신가요?</summary>
     <p><b>검사</b> — 가리키는 요소의 글꼴·색·여백과 해당 토큰 이름이 나옵니다.</p>
-    <p><b>메모</b> — 고칠 곳에 핀을 꽂습니다. 처음 열면 <b>이름과 닉네임</b>을 묻습니다.
-      닉네임은 전달받으신 것을 넣으시면 됩니다.</p>
+    <p><b>메모</b> — 고칠 곳에 핀을 꽂습니다. 들어올 때 넣은 이름이 메모에 붙습니다.</p>
     <p><b>설명</b> — 값의 출처와 판단 근거가 컴포넌트마다 붙습니다.</p>
     <p class="cat__help-where">세 버튼은 <b>오른쪽 아래</b>에 있습니다.</p>
   </details>
