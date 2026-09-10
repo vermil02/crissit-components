@@ -791,7 +791,8 @@
   var SRV = "crissit-catalog-memo-server";   // 주소·열쇠를 이 브라우저에 저장한다
   var TRASH = "crissit-catalog-memo-trash";  // 지운 메모를 담아 두는 곳
   var WHO = "crissit-catalog-memo-who";      // 로그인해 둔 이름과 토큰
-  var SHOWDONE = "crissit-catalog-memo-showdone";  // 처리된 메모를 볼 것인가
+  var VIEW = "crissit-catalog-memo-view";    // 무엇을 볼 것인가 — open | done | all
+  var SHOWDONE = "crissit-catalog-memo-showdone";  // 옛 키(참/거짓). 아래에서 옮겨 담는다
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];      // 내 메모 (localStorage)
   var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
@@ -867,26 +868,36 @@
     for (var j = 0; j < shared.length; j++) if (!mine[shared[j].id]) out.push(shared[j]);
     return out.concat(notes);
   }
-  /* 처리된(`done`) 메모를 볼 것인가. 기본은 **안 본다** —
-     고친 것이 목록에 계속 남으면 남은 일이 몇 개인지 알 수 없다.
+  /* 무엇을 볼 것인가 — `전체 / 미해결 / 해결`. **기본은 미해결**이라
+     열면 남은 일이 바로 보인다. 「해결」만 따로 보는 것이 아카이빙 보기다.
      `done` 은 서버가 실어 보낸다(화면에서 찍는 수단은 아직 없다 · docs/BACKLOG.md).
      선택은 이 브라우저에만 기억한다 */
-  var showDone = false;
-  try { showDone = localStorage.getItem(SHOWDONE) === "yes"; } catch (e) {}
-  function setShowDone(v) {
-    showDone = !!v;
-    try {
-      if (v) localStorage.setItem(SHOWDONE, "yes");
-      else localStorage.removeItem(SHOWDONE);
-    } catch (e) {}
+  var MODES = { all: "전체", open: "미해결", done: "해결" };
+  var viewMode = "open";
+  try {
+    var saved = localStorage.getItem(VIEW);
+    if (saved && MODES[saved]) viewMode = saved;
+    else if (localStorage.getItem(SHOWDONE) === "yes") {
+      viewMode = "all";                      // 옛 키를 쓰던 사람을 끊지 않는다
+      localStorage.setItem(VIEW, "all");
+      localStorage.removeItem(SHOWDONE);
+    }
+  } catch (e) {}
+  function setView(v) {
+    if (!MODES[v]) return;
+    viewMode = v;
+    try { localStorage.setItem(VIEW, v); } catch (e) {}
   }
   /* 화면에 실제로 그릴 목록. **핀과 목록이 같은 것을 써야** 번호가 어긋나지 않는다 */
   function visible() {
-    if (showDone) return all();
-    return all().filter(function (n) { return !n.done; });
+    if (viewMode === "all") return all();
+    var want = viewMode === "done";
+    return all().filter(function (n) { return !!n.done === want; });
   }
-  function doneCount() {
-    return all().filter(function (n) { return !!n.done; }).length;
+  function counts() {
+    var a = all(), d = 0;
+    for (var i = 0; i < a.length; i++) if (a[i].done) d++;
+    return { all: a.length, done: d, open: a.length - d };
   }
 
   /* 남이 쓴 메모의 꼬리표. 이름이 있으면 이름을, 없으면 「공유」.
@@ -1124,7 +1135,9 @@
     });
   }
   function renderCount() {
-    var n = visible().length;      // 남은 일의 개수다 — 처리된 것은 세지 않는다
+    /* **미해결 개수를 센다.** 보고 있는 것을 세면 「해결」 보기에서 8 이 떠서
+       할 일이 8개인 것처럼 읽힌다 — 배지는 남은 일을 뜻해야 한다 */
+    var n = counts().open;
     countBtn.textContent = n;
     countBtn.classList.toggle("is-some", n > 0);
     // 열지 않아도 메모가 있는지 보이게 버튼에도 개수를 붙입니다
@@ -1221,29 +1234,33 @@
             esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
-      /* 「없다」와 「다 처리했다」는 다르다 — 처리된 것을 숨겨서 0개가 된 것을
+      /* 「없다」와 「다 해결했다」는 다르다 — 걸러서 0개가 된 것을
          「아직 메모가 없습니다」로 적으면 지워진 줄 안다 (2026-09-10) */
-      : (!showDone && doneCount()
-          ? '<li class="memo-empty"><b>열린 메모가 없습니다.</b><br>' +
-            doneCount() + "개 모두 처리됐습니다.</li>"
-          : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>');
+      : (function () {
+          var cc = counts();
+          if (viewMode === "open" && cc.done) {
+            return '<li class="memo-empty"><b>미해결 메모가 없습니다.</b><br>' +
+                   cc.done + "개 모두 해결됐습니다.</li>";
+          }
+          if (viewMode === "done") {
+            return '<li class="memo-empty"><b>해결된 메모가 없습니다.</b></li>';
+          }
+          return '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
+        })();
 
-    /* 처리된 것이 몇 개 숨었는지 **말해 준다** — 조용히 사라지면 지워진 줄 안다.
-
-       ⚠ 처음에는 「처리된 것까지 8개를 모두 보고 있습니다」 + 밑줄 글자 버튼이었는데,
-          패널 폭이 340px 라 문장이 두 줄로 꺾이고 **버튼처럼 보이지 않았다**
-          (2026-09-10 사용자 지적). 문구를 숫자만 남기고, 카탈로그의
-          「쓰는 것만 / 전부」와 같은 **세그먼트 토글**로 바꿨다 — 한 줄에 들어간다 */
-    var hid = doneCount();
-    var bar = (hid || showDone)
+    /* 세 갈래 — `전체 / 미해결 / 해결`. **개수를 세그먼트 안에 넣는다** —
+       따로 숫자 줄을 두면 같은 것을 두 번 말하게 되고 좁은 폭에서 두 줄로 꺾인다
+       (2026-09-10 사용자 결정).
+       ⚠ 처음에는 밑줄 글자 버튼이었는데 **버튼으로 안 읽혔다.** */
+    var c = counts();
+    var bar = c.all
       ? '<div class="memo-filter">' +
-        '<span class="memo-filter__n">열린 <b>' + (showDone ? all().length - hid : list.length) +
-        "</b> · 처리됨 <b>" + hid + "</b></span>" +
         '<span class="memo-filter__seg" role="group" aria-label="무엇을 보일지">' +
-        '<button type="button" class="memo-showdone" data-want="open"' +
-        ' aria-pressed="' + (!showDone) + '">열린 것</button>' +
-        '<button type="button" class="memo-showdone" data-want="all"' +
-        ' aria-pressed="' + (!!showDone) + '">전부</button>' +
+        ["all", "open", "done"].map(function (k) {
+          return '<button type="button" class="memo-view" data-want="' + k + '"' +
+                 ' aria-pressed="' + (viewMode === k) + '">' +
+                 MODES[k] + ' <span class="memo-view__n">' + c[k] + "</span></button>";
+        }).join("") +
         "</span></div>"
       : "";
 
@@ -1699,13 +1716,11 @@
         pull(function () { renderCount(); renderPins(); openList(); });
         return;
       }
-      var seg = t.closest(".memo-showdone");
+      var seg = t.closest(".memo-view");
       if (seg) {
-        /* 뒤집지 않고 **누른 쪽으로 정한다** — 세그먼트는 이미 켜진 것을 다시 눌러도
-           그대로여야 한다. 뒤집으면 켜진 쪽을 눌렀을 때 꺼진다 */
-        var want = seg.getAttribute("data-want") === "all";
-        if (want === showDone) return;
-        setShowDone(want);
+        var want = seg.getAttribute("data-want");
+        if (want === viewMode) return;       // 켜진 것을 다시 눌러도 그대로다
+        setView(want);
         renderCount(); renderPins(); openList();
         return;
       }

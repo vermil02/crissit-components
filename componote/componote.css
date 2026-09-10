@@ -459,27 +459,33 @@ button.insp-tok:hover{text-decoration:underline}
 /* ---------- 목록 ---------- */
 /* 걸러 보기 줄 — 처리된 메모가 몇 개 숨었는지 말해 준다.
    조용히 사라지면 지워진 줄 안다 (2026-09-10) */
+/* 무엇을 볼지 — `전체 / 미해결 / 해결`. 개수를 세그먼트 안에 넣어서
+   숫자 줄을 따로 두지 않는다 (2026-09-10)
+   ⚠ `font: … var(--memo-font, inherit)` 로 적었더니 **선언 전체가 무효**가 되어
+      16px 로 상속됐다 — `font` 단축 속성의 글꼴 자리에 `inherit` 는 못 쓴다
+      (「노안용처럼 크다」는 지적으로 찾았다). 이 파일의 다른 규칙들처럼
+      **호스트 토큰 + 대체값**으로 적는다. `font: inherit` 단독은 유효하다 */
 .memo-filter{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding:7px 8px 7px 12px;margin:0 0 8px;
-  background:#f5f6f7;border-radius:8px;
-  /* ⚠ `font: … var(--memo-font, inherit)` 로 적었더니 **선언 전체가 무효**가 되어
-     16px 로 상속됐다 — `font` 단축 속성의 글꼴 자리에 `inherit` 는 못 쓴다
-     (2026-09-10 사용자가 「노안용처럼 크다」고 지적해서 찾았다).
-     이 파일의 다른 규칙들처럼 **호스트 토큰 + 대체값**으로 적는다 */
-  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:#7c8288;
-}
-.memo-filter__n{white-space:nowrap}
-.memo-filter b{color:#2b2e31}
-/* 세그먼트 — 카탈로그의 「쓰는 것만 / 전부」와 같은 모양.
-   밑줄 글자 버튼은 버튼으로 안 읽혔다 (2026-09-10) */
-.memo-filter__seg{display:inline-flex;flex:none;background:#e4e6e8;border-radius:9999px;padding:2px}
-.memo-filter__seg button{
-  border:0;background:none;cursor:pointer;border-radius:9999px;
-  padding:3px 9px;color:#7c8288;white-space:nowrap;
+  display:flex;margin:0 0 10px;
   font:var(--label-3-medium, 500 12px/1.5 sans-serif);
 }
-.memo-filter__seg button[aria-pressed="true"]{background:#fff;color:#2b2e31;font-weight:700}
+.memo-filter__seg{
+  display:inline-flex;width:100%;gap:2px;
+  background:#f0f1f2;border-radius:8px;padding:2px;
+}
+.memo-filter__seg button{
+  flex:1 1 0;border:0;background:none;cursor:pointer;border-radius:6px;
+  padding:5px 4px;color:#7c8288;white-space:nowrap;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
+}
+.memo-filter__seg button:hover{color:#414549}
+.memo-filter__seg button[aria-pressed="true"]{
+  background:#fff;color:#2b2e31;font-weight:700;
+  box-shadow:0 1px 2px rgb(0 0 0 / .06);
+}
+/* 개수는 이름보다 한 급 옅게 — 이름이 먼저 읽혀야 한다 */
+.memo-view__n{color:#a3a8ad;font-weight:500}
+.memo-filter__seg button[aria-pressed="true"] .memo-view__n{color:#7c8288}
 
 .memo-list{list-style:none;margin:0;padding:0}
 .memo-item{
