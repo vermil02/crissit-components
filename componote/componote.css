@@ -460,16 +460,26 @@ button.insp-tok:hover{text-decoration:underline}
 /* 걸러 보기 줄 — 처리된 메모가 몇 개 숨었는지 말해 준다.
    조용히 사라지면 지워진 줄 안다 (2026-09-10) */
 .memo-filter{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:9px 12px;margin:0 0 8px;
-  background:#f5f6f7;border-radius:6px;
-  font:500 11.5px/1.5 var(--memo-font,inherit);color:#7c8288;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 8px 7px 12px;margin:0 0 8px;
+  background:#f5f6f7;border-radius:8px;
+  /* ⚠ `font: … var(--memo-font, inherit)` 로 적었더니 **선언 전체가 무효**가 되어
+     16px 로 상속됐다 — `font` 단축 속성의 글꼴 자리에 `inherit` 는 못 쓴다
+     (2026-09-10 사용자가 「노안용처럼 크다」고 지적해서 찾았다).
+     이 파일의 다른 규칙들처럼 **호스트 토큰 + 대체값**으로 적는다 */
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:#7c8288;
 }
+.memo-filter__n{white-space:nowrap}
 .memo-filter b{color:#2b2e31}
-.memo-filter button{
-  flex:none;border:0;background:none;padding:0;cursor:pointer;
-  font:inherit;color:#414549;text-decoration:underline;white-space:nowrap;
+/* 세그먼트 — 카탈로그의 「쓰는 것만 / 전부」와 같은 모양.
+   밑줄 글자 버튼은 버튼으로 안 읽혔다 (2026-09-10) */
+.memo-filter__seg{display:inline-flex;flex:none;background:#e4e6e8;border-radius:9999px;padding:2px}
+.memo-filter__seg button{
+  border:0;background:none;cursor:pointer;border-radius:9999px;
+  padding:3px 9px;color:#7c8288;white-space:nowrap;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
 }
+.memo-filter__seg button[aria-pressed="true"]{background:#fff;color:#2b2e31;font-weight:700}
 
 .memo-list{list-style:none;margin:0;padding:0}
 .memo-item{

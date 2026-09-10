@@ -1228,16 +1228,23 @@
             doneCount() + "개 모두 처리됐습니다.</li>"
           : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>');
 
-    /* 처리된 것이 몇 개 숨었는지 **말해 준다** — 조용히 사라지면 지워진 줄 안다 */
+    /* 처리된 것이 몇 개 숨었는지 **말해 준다** — 조용히 사라지면 지워진 줄 안다.
+
+       ⚠ 처음에는 「처리된 것까지 8개를 모두 보고 있습니다」 + 밑줄 글자 버튼이었는데,
+          패널 폭이 340px 라 문장이 두 줄로 꺾이고 **버튼처럼 보이지 않았다**
+          (2026-09-10 사용자 지적). 문구를 숫자만 남기고, 카탈로그의
+          「쓰는 것만 / 전부」와 같은 **세그먼트 토글**로 바꿨다 — 한 줄에 들어간다 */
     var hid = doneCount();
     var bar = (hid || showDone)
       ? '<div class="memo-filter">' +
-        "<span>" + (showDone
-          ? "처리된 것까지 <b>" + all().length + "개</b>를 모두 보고 있습니다"
-          : "열린 메모 <b>" + list.length + "개</b> · 처리된 <b>" + hid + "개</b>는 숨김") +
-        "</span>" +
-        '<button type="button" class="memo-showdone">' +
-        (showDone ? "처리된 것 숨기기" : "처리된 것도 보기") + "</button></div>"
+        '<span class="memo-filter__n">열린 <b>' + (showDone ? all().length - hid : list.length) +
+        "</b> · 처리됨 <b>" + hid + "</b></span>" +
+        '<span class="memo-filter__seg" role="group" aria-label="무엇을 보일지">' +
+        '<button type="button" class="memo-showdone" data-want="open"' +
+        ' aria-pressed="' + (!showDone) + '">열린 것</button>' +
+        '<button type="button" class="memo-showdone" data-want="all"' +
+        ' aria-pressed="' + (!!showDone) + '">전부</button>' +
+        "</span></div>"
       : "";
 
     view = "list";
@@ -1692,8 +1699,13 @@
         pull(function () { renderCount(); renderPins(); openList(); });
         return;
       }
-      if (t.closest(".memo-showdone")) {
-        setShowDone(!showDone);
+      var seg = t.closest(".memo-showdone");
+      if (seg) {
+        /* 뒤집지 않고 **누른 쪽으로 정한다** — 세그먼트는 이미 켜진 것을 다시 눌러도
+           그대로여야 한다. 뒤집으면 켜진 쪽을 눌렀을 때 꺼진다 */
+        var want = seg.getAttribute("data-want") === "all";
+        if (want === showDone) return;
+        setShowDone(want);
         renderCount(); renderPins(); openList();
         return;
       }
