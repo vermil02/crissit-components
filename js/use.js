@@ -252,23 +252,36 @@
           var state = src ? src.getAttribute("data-use-state") : null;
           /* 라벨을 상태별로 갈라 적는다 — 「안 씀」 하나로는 성질이 다른 셋이 같아 보인다.
              `이전판`(우리가 갈아탄 v1) · `라이브러리에만`(피그마에 있고 안 고른 것) */
-          if (h3) h3.appendChild(tag("off",
-            state === "이전판" ? "v1 · 이전 판" :
-            state === "라이브러리에만" ? "라이브러리에만" : "안 씀"));
+          if (h3) h3.appendChild(
+            state === "이전판" ? tag("prev", "v1 · 이전 판")
+            : tag("off", state === "라이브러리에만" ? "라이브러리에만" : "안 씀"));
           /* 이유는 `.use-why` — 접힘 안내(`.use-hidden`)와 달리 「전부」 모드에서도 보인다.
              흐려진 판을 보고 있는 사람에게 필요한 것은 「왜」이기 때문이다 */
-          if (h3 && why) h3.insertAdjacentHTML("afterend",
-            '<p class="use-why">' +
-            (state === "이전판" ? "" :
-             state === "라이브러리에만" ? "피그마에 있고 우리 시안에는 없습니다 — " :
-             "어느 화면도 안 씁니다 — ") + why + '.</p>');
+          /* 이유가 길면 카드 본문보다 먼저 읽힌다(사용자 지적). **첫 문장만** 보이고
+             뒤는 접는다 — 판단에 필요한 것은 「대신 무엇을 쓰나」 한 줄이다 */
+          if (h3 && why) {
+            var head = why.split(/(?<=\.)\s|(?<=습니다)\s|(?<=다)\.\s/)[0] || why;
+            var restTxt = why.slice(head.length).trim();
+            /* 한 문장뿐이면 접을 것이 없다 — 버튼만 붙으면 눌러도 아무 일이 안 나서
+               고장난 것으로 읽힌다 (2026-09-10 실측) */
+            if (restTxt.length < 8) { head = why; restTxt = ""; }
+            h3.insertAdjacentHTML("afterend",
+              '<p class="use-why">' +
+              (state === "이전판" ? "" :
+               state === "라이브러리에만" ? "피그마에 있고 우리 시안에는 없습니다 — " :
+               "어느 화면도 안 씁니다 — ") + head +
+              (restTxt ? ' <button type="button" class="use-why__more">왜</button>' +
+                         '<span class="use-why__rest" hidden>' + restTxt + "</span>" : "") +
+              "</p>");
+          }
           return;
         }
         if (off) {
           var prev = card.querySelectorAll('[data-use-state="이전판"]').length;
-          if (h3) h3.appendChild(tag("off",
-            prev ? ("이전 판 " + prev + "개" + (off > prev ? " · 안 쓰는 변형 " + (off - prev) + "개" : ""))
-                 : ("안 쓰는 변형 " + off + "개")));
+          if (h3) {
+            if (prev) h3.appendChild(tag("prev", "이전 판 " + prev + "개"));
+            if (off > prev) h3.appendChild(tag("off", "안 쓰는 변형 " + (off - prev) + "개"));
+          }
           var p = document.createElement("p");
           p.className = "use-hidden";
           p.innerHTML = (prev ? "이전 판 <b>" + prev + "개</b>" +
@@ -298,8 +311,14 @@
       var onlySoon = list.every(function (n) {
         return screens[n] && screens[n]["등급"] === "확정아님";
       });
-      h2.appendChild(tag(onlySoon ? "soon" : "on",
-        (onlySoon ? "예정 · " : "") + list.join(" · ")));
+      /* 화면 이름을 여섯 개까지 늘어놓으면 제목과 경쟁한다 —
+         절반을 넘게 쓰면 「전 화면」으로 줄인다. 자세한 것은 배지에 얹어 둔다 */
+      var total = Object.keys(screens).length;
+      var label = (list.length >= Math.max(3, total - 1))
+        ? "전 화면" : list.join(" · ");
+      var badge = tag(onlySoon ? "soon" : "on", (onlySoon ? "예정 · " : "") + label);
+      badge.title = "쓰는 화면 — " + list.join(" · ");
+      h2.appendChild(badge);
     });
 
     function tag(kind, text) {
@@ -311,15 +330,19 @@
 
     /* ④ 토글 */
     bar.hidden = false;
+    /* 숫자를 넷 다 한 줄에 늘어놓으니 읽히지 않았다(2026-09-10 사용자 지적).
+       **쓰는 것 / 안 쓰는 것** 둘만 세우고, 갈래와 조사 정보는 한 급 낮춰 뒤에 둔다 */
     var prevAll = document.querySelectorAll('[data-use-state="이전판"]').length;
+    var onlyLib = tally.off - prevAll;
+    var detail = [];
+    if (tally.soon) detail.push("예정 " + tally.soon);
+    if (prevAll) detail.push("이전 판 " + prevAll);
+    if (onlyLib) detail.push("라이브러리에만 " + onlyLib);
     bar.querySelector("[data-use-count]").innerHTML =
-      "현행 <b>" + tally.on + "</b>" +
-      " · 예정 <b>" + tally.soon + "</b>" +
-      " · 이전 판 <b>" + prevAll + "</b>" +
-      " · 라이브러리에만 <b>" + (tally.off - prevAll) + "</b>" +
-      " — 조사 " + (data["조사일"] || "") + " · 화면 " + Object.keys(screens).length + "장" +
-      " (정식 " + Object.keys(screens).filter(function (n) {
-        return screens[n]["등급"] === "정식"; }).length + ")";
+      '<span class="use-bar__n">쓰는 것 <b>' + (tally.on + tally.soon) + "</b></span>" +
+      '<span class="use-bar__n">안 쓰는 것 <b>' + tally.off + "</b></span>" +
+      (detail.length ? '<span class="use-bar__sub">' + detail.join(" · ") + "</span>" : "") +
+      '<span class="use-bar__sub">조사 ' + (data["조사일"] || "") + "</span>";
 
     function setMode(m) {
       document.body.setAttribute("data-use", m);
@@ -330,7 +353,12 @@
     }
     document.addEventListener("click", function (e) {
       var b = e.target.closest("[data-use-mode]");
-      if (b) setMode(b.getAttribute("data-use-mode"));
+      if (b) { setMode(b.getAttribute("data-use-mode")); return; }
+      var more = e.target.closest(".use-why__more");
+      if (more) {
+        var rest = more.parentElement.querySelector(".use-why__rest");
+        if (rest) { rest.hidden = !rest.hidden; more.textContent = rest.hidden ? "왜" : "접기"; }
+      }
     });
     var saved = null;
     try { saved = localStorage.getItem("crissit-use-mode"); } catch (e) {}

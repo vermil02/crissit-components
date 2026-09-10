@@ -1,5 +1,5 @@
 /* ============================================================
-   componote 20260908 — 합친 파일 (build.py 가 만든다. 직접 고치지 말 것)
+   componote 20260910 — 합친 파일 (build.py 가 만든다. 직접 고치지 말 것)
    원본은 src/inspector.js · memo.js · annotations.js
    컴포넌트 카탈로그 위에 얹어 값을 읽고 메모를 남기는 도구.
    사용법 · 붙이는 법: README.md
@@ -791,6 +791,7 @@
   var SRV = "crissit-catalog-memo-server";   // 주소·열쇠를 이 브라우저에 저장한다
   var TRASH = "crissit-catalog-memo-trash";  // 지운 메모를 담아 두는 곳
   var WHO = "crissit-catalog-memo-who";      // 로그인해 둔 이름과 토큰
+  var SHOWDONE = "crissit-catalog-memo-showdone";  // 처리된 메모를 볼 것인가
   var api = null;                 // window.catInspect — 검사기가 없으면 null
   var notes = [];      // 내 메모 (localStorage)
   var shared = [];     // 남이 쓴 메모 — 서버나 memos.json 에서 온다. 읽기만 된다
@@ -866,6 +867,28 @@
     for (var j = 0; j < shared.length; j++) if (!mine[shared[j].id]) out.push(shared[j]);
     return out.concat(notes);
   }
+  /* 처리된(`done`) 메모를 볼 것인가. 기본은 **안 본다** —
+     고친 것이 목록에 계속 남으면 남은 일이 몇 개인지 알 수 없다.
+     `done` 은 서버가 실어 보낸다(화면에서 찍는 수단은 아직 없다 · docs/BACKLOG.md).
+     선택은 이 브라우저에만 기억한다 */
+  var showDone = false;
+  try { showDone = localStorage.getItem(SHOWDONE) === "yes"; } catch (e) {}
+  function setShowDone(v) {
+    showDone = !!v;
+    try {
+      if (v) localStorage.setItem(SHOWDONE, "yes");
+      else localStorage.removeItem(SHOWDONE);
+    } catch (e) {}
+  }
+  /* 화면에 실제로 그릴 목록. **핀과 목록이 같은 것을 써야** 번호가 어긋나지 않는다 */
+  function visible() {
+    if (showDone) return all();
+    return all().filter(function (n) { return !n.done; });
+  }
+  function doneCount() {
+    return all().filter(function (n) { return !!n.done; }).length;
+  }
+
   /* 남이 쓴 메모의 꼬리표. 이름이 있으면 이름을, 없으면 「공유」.
      이름이 비는 경우 — 옛 공용 열쇠로 올린 메모다(서버가 누구인지 모른다) */
   function tagOf(n) {
@@ -1085,7 +1108,7 @@
 
   function renderPins() {
     layer.innerHTML = "";
-    all().forEach(function (n, i) {
+    visible().forEach(function (n, i) {
       var el = api && api.resolve(n.sel);
       if (!el) return;                        // 마크업이 바뀌어 못 찾는 경우
       var r = el.getBoundingClientRect();
@@ -1101,7 +1124,7 @@
     });
   }
   function renderCount() {
-    var n = all().length;
+    var n = visible().length;      // 남은 일의 개수다 — 처리된 것은 세지 않는다
     countBtn.textContent = n;
     countBtn.classList.toggle("is-some", n > 0);
     // 열지 않아도 메모가 있는지 보이게 버튼에도 개수를 붙입니다
@@ -1185,7 +1208,7 @@
 
   /* ── 목록 ─────────────────────────────────────────────── */
   function openList() {
-    var list = all();
+    var list = visible();
     var rows = list.length
       ? list.map(function (n, i) {
           var mine = isMine(n);
@@ -1198,10 +1221,27 @@
             esc(n.section ? n.section + " · " : "") + esc(n.label) + "</span></div>" +
             '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
         }).join("")
-      : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
+      /* 「없다」와 「다 처리했다」는 다르다 — 처리된 것을 숨겨서 0개가 된 것을
+         「아직 메모가 없습니다」로 적으면 지워진 줄 안다 (2026-09-10) */
+      : (!showDone && doneCount()
+          ? '<li class="memo-empty"><b>열린 메모가 없습니다.</b><br>' +
+            doneCount() + "개 모두 처리됐습니다.</li>"
+          : '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>');
+
+    /* 처리된 것이 몇 개 숨었는지 **말해 준다** — 조용히 사라지면 지워진 줄 안다 */
+    var hid = doneCount();
+    var bar = (hid || showDone)
+      ? '<div class="memo-filter">' +
+        "<span>" + (showDone
+          ? "처리된 것까지 <b>" + all().length + "개</b>를 모두 보고 있습니다"
+          : "열린 메모 <b>" + list.length + "개</b> · 처리된 <b>" + hid + "개</b>는 숨김") +
+        "</span>" +
+        '<button type="button" class="memo-showdone">' +
+        (showDone ? "처리된 것 숨기기" : "처리된 것도 보기") + "</button></div>"
+      : "";
 
     view = "list";
-    bodyEl.innerHTML = '<ul class="memo-list">' + rows + "</ul>";
+    bodyEl.innerHTML = bar + '<ul class="memo-list">' + rows + "</ul>";
     footEl.innerHTML =
       '<div class="memo-btns">' +
       (srv ? '<button type="button" class="memo-refresh">새로 받기</button>' : "") +
@@ -1650,6 +1690,11 @@
         linkAt = 0; linkWhy = ""; shared = [];
         renderLink(); renderCount(); renderPins();
         pull(function () { renderCount(); renderPins(); openList(); });
+        return;
+      }
+      if (t.closest(".memo-showdone")) {
+        setShowDone(!showDone);
+        renderCount(); renderPins(); openList();
         return;
       }
       if (t.closest(".memo-refresh")) {

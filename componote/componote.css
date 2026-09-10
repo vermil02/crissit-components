@@ -1,5 +1,5 @@
 /* ============================================================
-   componote 20260908 — 합친 파일 (build.py 가 만든다. 직접 고치지 말 것)
+   componote 20260910 — 합친 파일 (build.py 가 만든다. 직접 고치지 말 것)
    원본은 src/inspector.css · memo.css
    컴포넌트 카탈로그 위에 얹어 값을 읽고 메모를 남기는 도구.
    사용법 · 붙이는 법: README.md
@@ -457,6 +457,20 @@ button.insp-tok:hover{text-decoration:underline}
 .memo-out{color:var(--label-alternative, #7c8288)!important}
 
 /* ---------- 목록 ---------- */
+/* 걸러 보기 줄 — 처리된 메모가 몇 개 숨었는지 말해 준다.
+   조용히 사라지면 지워진 줄 안다 (2026-09-10) */
+.memo-filter{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 12px;margin:0 0 8px;
+  background:#f5f6f7;border-radius:6px;
+  font:500 11.5px/1.5 var(--memo-font,inherit);color:#7c8288;
+}
+.memo-filter b{color:#2b2e31}
+.memo-filter button{
+  flex:none;border:0;background:none;padding:0;cursor:pointer;
+  font:inherit;color:#414549;text-decoration:underline;white-space:nowrap;
+}
+
 .memo-list{list-style:none;margin:0;padding:0}
 .memo-item{
   display:flex;align-items:flex-start;gap:10px;
