@@ -487,6 +487,53 @@ button.insp-tok:hover{text-decoration:underline}
 .memo-view__n{color:#a3a8ad;font-weight:500}
 .memo-filter__seg button[aria-pressed="true"] .memo-view__n{color:#7c8288}
 
+/* ── 정책 정의 ─────────────────────────────────────────────
+   메모와 같은 저장소를 쓰고 `kind: "정책"` 으로만 갈린다.
+   쓰는 사람은 **규칙 한 줄만** 적는다 — 꽂힌 곳은 핀이 정한다 */
+.memo-kind{display:flex;gap:2px;margin:0 0 10px;background:#f0f1f2;border-radius:8px;padding:2px}
+.memo-kind button{
+  flex:1 1 0;border:0;background:none;cursor:pointer;border-radius:6px;
+  padding:6px 4px;color:#7c8288;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
+}
+.memo-kind button[aria-pressed="true"]{
+  background:#fff;color:#2b2e31;font-weight:700;box-shadow:0 1px 2px rgb(0 0 0 / .06);
+}
+.memo-pst{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
+.memo-pst button{
+  border:0;cursor:pointer;border-radius:9999px;padding:4px 10px;
+  background:#f0f1f2;color:#7c8288;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);
+}
+.memo-pst button[aria-pressed="true"]{background:#2b2e31;color:#fff;font-weight:700}
+.memo-why{display:block;margin:8px 0 0;color:#7c8288;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif)}
+.memo-why input{
+  display:block;width:100%;box-sizing:border-box;margin:4px 0 0;padding:7px 9px;
+  border:0;box-shadow:inset 0 0 0 1px #e4e6e8;border-radius:6px;
+  font:var(--label-3-medium, 500 12px/1.5 sans-serif);color:#2b2e31;
+}
+
+/* 섹션 머리 — 정책은 「이 섹션의 값을 이렇게」가 단위다 */
+.memo-sec{
+  display:flex;align-items:baseline;gap:6px;
+  margin:14px 0 4px;padding:0 0 4px;border-bottom:1px solid #e4e6e8;
+  font:var(--label-3-bold, 700 12px/1.5 sans-serif);color:#414549;
+}
+.memo-sec:first-child{margin-top:0}
+.memo-sec > span{margin-left:auto;color:#a3a8ad;font-weight:500}
+
+/* 상태 알약 — 메모의 번호 자리를 대신한다 */
+.memo-pill{
+  flex:none;display:inline-flex;align-items:center;justify-content:center;
+  min-width:34px;height:20px;padding:0 7px;border-radius:9999px;
+  font:700 10px/1 var(--memo-mono, ui-monospace);white-space:nowrap;
+}
+.memo-pill--draft{background:#f0f1f2;color:#7c8288}
+.memo-pill--ok{background:#e8f5ec;color:#1e7a3c}
+.memo-pill--off{background:#f0f1f2;color:#a3a8ad}
+.memo-item.is-policy > div > b{font-weight:500}
+
 .memo-list{list-style:none;margin:0;padding:0}
 .memo-item{
   display:flex;align-items:flex-start;gap:10px;

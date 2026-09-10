@@ -872,7 +872,23 @@
      열면 남은 일이 바로 보인다. 「해결」만 따로 보는 것이 아카이빙 보기다.
      `done` 은 서버가 실어 보낸다(화면에서 찍는 수단은 아직 없다 · docs/BACKLOG.md).
      선택은 이 브라우저에만 기억한다 */
-  var MODES = { all: "전체", open: "미해결", done: "해결" };
+  /* ── 정책 정의 ─────────────────────────────────────────
+     메모와 **같은 저장소·같은 서버**를 쓰고 `kind: "정책"` 으로만 갈린다.
+     서버는 메모를 JSON 덩이로 저장하므로 **칸을 더해도 서버를 안 고쳐도 된다**
+     (2026-09-10 확인 · server/cloudflare-worker.js 는 body 를 그대로 넣는다).
+
+     왜 화면에 꽂나 — 정의서는 시안 이미지 위에 🅐🅑🅒 를 얹는 방식이라, 그 표식이
+     어느 요소인지 사람이 매번 해석해야 했다. 실제 화면에 꽂으면 **핀이 곧 그 대상**이라
+     사람도 AI 도 바로 안다. 「어딘지 몰라서 확인이 안 된다」가 여기서 사라진다.
+
+     꽂는 단위는 둘이다 — **섹션**(「이 목록은 10개까지」)과 **요소**(「이 날짜는 YYYY.MM.DD」).
+     둘 다 componote 가 이미 기록한다(`section` · `sel`). 그래서 쓰는 사람은
+     **규칙 한 줄만** 적으면 된다 */
+  var PSTATE = ["초안", "확정", "보류", "보관"];
+  var PSTATE_DEFAULT = "초안";
+  function isPolicy(n) { return n && n.kind === "정책"; }
+
+  var MODES = { all: "전체", open: "미해결", done: "해결", policy: "정책" };
   var viewMode = "open";
   try {
     var saved = localStorage.getItem(VIEW);
@@ -890,14 +906,20 @@
   }
   /* 화면에 실제로 그릴 목록. **핀과 목록이 같은 것을 써야** 번호가 어긋나지 않는다 */
   function visible() {
-    if (viewMode === "all") return all();
+    if (viewMode === "policy") return all().filter(isPolicy);
+    var rest = all().filter(function (n) { return !isPolicy(n); });
+    if (viewMode === "all") return rest;      // 정책은 자기 보기에서만 본다
     var want = viewMode === "done";
-    return all().filter(function (n) { return !!n.done === want; });
+    return rest.filter(function (n) { return !!n.done === want; });
   }
   function counts() {
-    var a = all(), d = 0;
-    for (var i = 0; i < a.length; i++) if (a[i].done) d++;
-    return { all: a.length, done: d, open: a.length - d };
+    var a = all(), d = 0, p = 0;
+    for (var i = 0; i < a.length; i++) {
+      if (isPolicy(a[i])) { p++; continue; }
+      if (a[i].done) d++;
+    }
+    var m = a.length - p;                     // 메모 개수 (정책 제외)
+    return { all: m, done: d, open: m - d, policy: p };
   }
 
   /* 남이 쓴 메모의 꼬리표. 이름이 있으면 이름을, 없으면 「공유」.
@@ -1113,7 +1135,14 @@
   function sectionOf(el) {
     var sel = cfg("section", "section, article, [data-section]");
     var s = el.closest && el.closest(sel);
-    var h = s && s.querySelector(cfg("sectionTitle", "h1, h2, h3, [data-section-title]"));
+    if (!s) return "";
+    /* **섹션이 자기 이름을 직접 말할 수 있다** — `data-section-title="대표 기사"`.
+       안쪽 첫 제목을 쓰면 엉뚱한 것이 잡힌다. 목록 섹션의 첫 제목이 기사 제목이라
+       「크리스아이티 "전문분야 AI…"」가 섹션 이름이 됐다(2026-09-10 실측).
+       정책이 어느 섹션 것인지 읽혀야 하므로 이름은 화면이 정하게 둔다 */
+    var own = s.getAttribute && s.getAttribute("data-section-title");
+    if (own) return own.trim();
+    var h = s.querySelector(cfg("sectionTitle", "h1, h2, h3, [data-section-title]"));
     return h ? h.textContent.trim() : "";
   }
 
@@ -1145,6 +1174,7 @@
   }
 
   /* ── 메모 쓰기 ─────────────────────────────────────────── */
+  var newKind = "메모";          // 새로 쓸 때 어느 종류로 열지
   function openEditor(note, el) {
     // 공유 메모는 남이 쓴 것이라 여기서 고치지 않는다 — memos.json 에서 고친다
     var readonly = !!(note && !isMine(note));
@@ -1160,10 +1190,37 @@
       footEl.innerHTML = '<div class="memo-btns"><button type="button" class="memo-cancel">목록으로</button></div>';
       return;
     }
+    var kind = note ? (isPolicy(note) ? "정책" : "메모") : (newKind || "메모");
+    var pst = (note && note.pstate) || PSTATE_DEFAULT;
+    var sec = note ? note.section : sectionOf(target);
     bodyEl.innerHTML =
-      '<p class="memo-target">' + esc(label || "(대상 없음)") + "</p>" +
-      '<textarea class="memo-text" rows="5" placeholder="무엇을 어떻게 고쳤으면 하는지 적어 주세요">' +
-      esc(note ? note.text : "") + "</textarea>";
+      /* 종류를 먼저 고른다 — 무엇을 쓰는지에 따라 적을 말이 다르다 */
+      '<div class="memo-kind" role="group" aria-label="무엇을 쓸지">' +
+      ["메모", "정책"].map(function (k) {
+        return '<button type="button" data-kind="' + k + '"' +
+               ' aria-pressed="' + (kind === k) + '">' +
+               (k === "메모" ? "메모" : "정책 정의") + "</button>";
+      }).join("") + "</div>" +
+      /* 꽂힌 곳 — 쓰는 사람이 적는 것이 아니라 핀이 정한다 */
+      '<p class="memo-target">' + (sec ? "<b>" + esc(sec) + "</b> · " : "") +
+      esc(label || "(대상 없음)") + "</p>" +
+      (kind === "정책"
+        ? '<div class="memo-pst" role="group" aria-label="상태">' +
+          PSTATE.map(function (v) {
+            return '<button type="button" data-pst="' + v + '"' +
+                   ' aria-pressed="' + (pst === v) + '">' + v + "</button>";
+          }).join("") + "</div>"
+        : "") +
+      '<textarea class="memo-text" rows="5" placeholder="' +
+      (kind === "정책"
+        ? "이 자리의 값을 어떻게 하겠다고 정의합니다 — 예) 한 번에 최대 10개까지 보여주고, 넘으면 페이지네이션이 생긴다"
+        : "무엇을 어떻게 고쳤으면 하는지 적어 주세요") +
+      '">' + esc(note ? note.text : "") + "</textarea>" +
+      (kind === "정책"
+        ? '<label class="memo-why">근거 <input class="memo-src" type="text" ' +
+          'placeholder="피그마 노드나 링크 (선택)" value="' +
+          esc((note && note.src) || "") + '"></label>'
+        : "");
     footEl.innerHTML =
       '<div class="memo-btns">' +
       '<button type="button" class="memo-save">저장</button>' +
@@ -1181,9 +1238,25 @@
     if (!ta) return;
     var text = ta.value.trim();
     if (!text) { openList(); return; }
+    var kindBtn = bodyEl.querySelector('.memo-kind [aria-pressed="true"]');
+    var kind = kindBtn ? kindBtn.getAttribute("data-kind") : "메모";
+    var pstBtn = bodyEl.querySelector('.memo-pst [aria-pressed="true"]');
+    var pst = pstBtn ? pstBtn.getAttribute("data-pst") : PSTATE_DEFAULT;
+    var srcEl = bodyEl.querySelector(".memo-src");
+    var extra = kind === "정책"
+      ? { kind: "정책", pstate: pst, src: (srcEl ? srcEl.value.trim() : "") }
+      : { kind: undefined, pstate: undefined, src: undefined };
     if (editing) {
       for (var i = 0; i < notes.length; i++) {
-        if (notes[i].id === editing) { notes[i].text = text; notes[i].at = new Date().toISOString(); break; }
+        if (notes[i].id !== editing) continue;
+        notes[i].text = text;
+        notes[i].at = new Date().toISOString();
+        /* 종류를 바꿀 수 있게 한다 — 메모로 쓴 것이 실은 정책이었을 수 있다.
+           `undefined` 를 넣으면 JSON.stringify 가 그 칸을 빼므로 되돌리기도 된다 */
+        notes[i].kind = extra.kind;
+        notes[i].pstate = extra.pstate;
+        notes[i].src = extra.src;
+        break;
       }
     } else {
       if (!target || !api) { openList(); return; }
@@ -1194,7 +1267,10 @@
         sel: api.selectorPath(target),
         label: api.label(target),
         section: sectionOf(target),
-        values: api.summary(target)
+        values: api.summary(target),
+        kind: extra.kind,
+        pstate: extra.pstate,
+        src: extra.src
       });
     }
     save();
@@ -1245,6 +1321,11 @@
           if (viewMode === "done") {
             return '<li class="memo-empty"><b>해결된 메모가 없습니다.</b></li>';
           }
+          if (viewMode === "policy") {
+            return '<li class="memo-empty"><b>정책이 아직 없습니다.</b><br>' +
+                   "화면에서 <b>섹션이나 요소를 클릭해 고른 뒤</b> 「＋ 메모」를 누르고 " +
+                   "<b>정책 정의</b>로 바꿔 쓰세요.</li>";
+          }
           return '<li class="memo-empty">아직 메모가 없습니다.<br>화면에서 고칠 곳을 <b>클릭해 고른 뒤</b> 위의 <b>「＋ 메모」</b>를 누르세요.</li>';
         })();
 
@@ -1253,16 +1334,34 @@
        (2026-09-10 사용자 결정).
        ⚠ 처음에는 밑줄 글자 버튼이었는데 **버튼으로 안 읽혔다.** */
     var c = counts();
-    var bar = c.all
+    /* 메모가 0 이어도 **정책이 있으면 줄을 낸다** — 안 그리면 정책 보기로 갈 길이 없다
+       (2026-09-10 실측: 정책만 1건인 상태에서 세그먼트가 아예 안 나왔다) */
+    var bar = (c.all || c.policy)
       ? '<div class="memo-filter">' +
         '<span class="memo-filter__seg" role="group" aria-label="무엇을 보일지">' +
-        ["all", "open", "done"].map(function (k) {
+        ["all", "open", "done", "policy"].map(function (k) {
           return '<button type="button" class="memo-view" data-want="' + k + '"' +
                  ' aria-pressed="' + (viewMode === k) + '">' +
                  MODES[k] + ' <span class="memo-view__n">' + c[k] + "</span></button>";
         }).join("") +
         "</span></div>"
       : "";
+
+    /* 정책 보기는 **섹션별로 묶는다** — 「이 섹션의 값을 이렇게 하겠다」가
+       정의서의 단위이기 때문이다(2026-09-10 사용자 확인) */
+    if (viewMode === "policy" && list.length) {
+      var bySec = {}, order = [];
+      list.forEach(function (n) {
+        var k = n.section || "(섹션 없음)";
+        if (!bySec[k]) { bySec[k] = []; order.push(k); }
+        bySec[k].push(n);
+      });
+      rows = order.map(function (k) {
+        return '<li class="memo-sec">' + esc(k) +
+               '<span>' + bySec[k].length + "</span></li>" +
+               bySec[k].map(policyRow).join("");
+      }).join("");
+    }
 
     view = "list";
     bodyEl.innerHTML = bar + '<ul class="memo-list">' + rows + "</ul>";
@@ -1278,6 +1377,19 @@
       '<p class="memo-hint">' + hintText() + "</p>";
     editing = null;
     renderFootState();
+  }
+
+  /* 정책 한 줄 — 상태와 규칙, 그리고 꽂힌 대상 */
+  function policyRow(n) {
+    var mine = isMine(n);
+    return '<li class="memo-item is-policy" data-id="' + n.id + '">' +
+      '<span class="memo-pill memo-pill--' +
+      (n.pstate === "확정" ? "ok" : n.pstate === "보관" ? "off" : "draft") + '">' +
+      esc(n.pstate || PSTATE_DEFAULT) + "</span>" +
+      "<div><b>" + esc(n.text) + "</b>" +
+      '<span class="memo-meta">' + (mine ? "" : tagOf(n) + " ") +
+      esc(n.label || "") + (n.src ? " · " + esc(n.src) : "") + "</span></div>" +
+      '<button type="button" class="memo-go" data-id="' + n.id + '">보기</button></li>';
   }
 
   function hintText() {
@@ -1662,6 +1774,28 @@
       if (t.closest(".memo-relogin")) { openLogin(""); return; }
       if (t.closest(".memo-out")) { logout(); return; }
       if (t.closest(".memo-add")) { e.stopPropagation(); openEditor(null, api.getPinned()); return; }
+      /* 종류·상태 세그먼트. 다시 그리면서 **쓰고 있던 글을 들고 간다** —
+         날아가면 처음부터 다시 쓰게 된다 */
+      var kb = t.closest(".memo-kind [data-kind]");
+      if (kb) {
+        var keepText = (bodyEl.querySelector(".memo-text") || {}).value || "";
+        var keepSrc = (bodyEl.querySelector(".memo-src") || {}).value || "";
+        newKind = kb.getAttribute("data-kind");
+        var cur = editing ? found(editing) : null;
+        openEditor(cur, target);
+        var ta2 = bodyEl.querySelector(".memo-text");
+        if (ta2) { ta2.value = keepText; ta2.focus(); }
+        var s2 = bodyEl.querySelector(".memo-src");
+        if (s2 && keepSrc) s2.value = keepSrc;
+        return;
+      }
+      var pb = t.closest(".memo-pst [data-pst]");
+      if (pb) {
+        bodyEl.querySelectorAll(".memo-pst [data-pst]").forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b === pb));
+        });
+        return;
+      }
       if (t.closest(".memo-save")) { commit(); return; }
       // 관문을 거치지 않는다 — 「나중에」를 눌렀는데 또 로그인이 뜨면 갇힌다
       if (t.closest(".memo-cancel")) { openList(); return; }
