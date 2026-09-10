@@ -2,29 +2,115 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>crissit 컴포넌트 카탈로그</title>
-<!-- 깃허브 Pages 는 index.html 을 먼저 찾는다. 팀이 알고 있는 이름은
-     `카탈로그.html` 이라 파일명을 바꾸지 않고 여기서 넘긴다.
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>crissit 컴포넌트 · 정책</title>
+<!--
+  허브 — 들어오는 자리. 전에는 이 파일이 곧바로 `카탈로그.html` 로 넘겼는데,
+  2026-09-10 에 `정책.html` 이 생겨서 고를 자리가 필요해졌다.
 
-     ▸ 넘길 때 **물음표 뒷부분(?memo=…)과 #앵커를 같이 들고 가야** 한다.
-       meta refresh 는 그걸 떨어뜨린다 — 메모 서버 링크가 그래서 안 먹었다.
-       그래서 스크립트로 넘기고, meta 는 스크립트가 막힌 경우의 대비로만 둔다. -->
+  ⚠ **옛 링크를 끊지 않는다.** `?memo=…` 나 `#앵커` 를 달고 오는 주소가 이미 돌아다닌다
+     (메모 서버 링크가 그렇다). 그런 주소로 오면 예전처럼 카탈로그로 넘기고,
+     **물음표 뒷부분과 앵커를 같이 들고 간다** — meta refresh 는 그것을 떨어뜨려서
+     스크립트로 넘긴다. 이 한 가지로 전에 한 번 막혔다.
+  ⚠ 문(이름·닉네임)은 각 화면이 세운다. 허브는 고르는 자리라 막지 않는다 —
+     막아 봐야 여기엔 내용이 없고, 들어가서 또 묻게 된다.
+-->
 <script>
   (function () {
-    var to = "./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html";
-    location.replace(to + location.search + location.hash);
+    if (location.search || location.hash) {
+      location.replace("./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html"
+                       + location.search + location.hash);
+    }
   })();
 </script>
-<noscript><meta http-equiv="refresh" content="0; url=./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html"></noscript>
-<link rel="canonical" href="./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html">
+<link rel="icon" href="assets/logo-crissit-symbol.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="css/tokens.css?v=20260910p">
+<link rel="stylesheet" href="css/base.css?v=20260910p">
+<link rel="stylesheet" href="css/icons.css?v=20260910p">
 <style>
-  body{margin:0;display:grid;place-items:center;min-height:100vh;
-       font:15px/1.6 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-       background:#fafafa;color:#151617}
-  a{color:#543efa}
+  body{
+    margin:0;min-height:100vh;display:grid;place-items:center;padding:32px;
+    background:var(--bg-normal);color:var(--label-normal);font-family:var(--font-sans);
+  }
+  .hub{width:100%;max-width:600px}
+  .hub__logo{margin:0 auto 26px}
+  .hub__title{font:var(--title-1-bold);letter-spacing:-.01em;margin:0 0 6px;text-align:center}
+  .hub__sub{font:var(--label-2-medium);color:var(--label-alternative);margin:0 0 30px;text-align:center}
+
+  .hub__list{display:grid;gap:12px}
+  .card{
+    display:block;text-decoration:none;color:inherit;
+    background:var(--neutral-0);border:1px solid var(--line-normal);
+    border-radius:var(--radius-small);padding:20px 22px;
+    transition:border-color .15s ease;
+  }
+  .card:hover{border-color:var(--label-assistive)}
+  .card__top{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+  .card__name{font:var(--label-1-bold);margin:0}
+  .card__arrow{margin-left:auto;color:var(--label-assistive)}
+  .card__desc{margin:0;font:var(--label-2-medium);color:var(--label-alternative);line-height:1.6}
+  .card__meta{margin:10px 0 0;font:var(--label-3-medium);color:var(--label-assistive)}
+  .tag{
+    display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--radius-all);
+    font:var(--label-3-medium);font-weight:700;background:var(--neutral-100);color:var(--label-neutral);
+  }
+
+  /* 개발·AI 에게 넘기는 것 — 사람이 볼 화면과 성질이 달라 따로 둔다 */
+  .hub__hand{margin:28px 0 0;padding:16px 18px;background:var(--neutral-50);border-radius:var(--radius-small)}
+  .hub__hand h2{font:var(--label-2-bold);margin:0 0 4px}
+  .hub__hand p{margin:0 0 10px;font:var(--label-3-medium);color:var(--label-alternative);line-height:1.6}
+  .hub__hand ul{list-style:none;margin:0;padding:0;display:flex;gap:18px;flex-wrap:wrap}
+  .hub__hand li{font:var(--label-3-medium);color:var(--label-assistive)}
+  .hub__hand a{color:var(--label-neutral);text-decoration:underline}
+
+  .hub__foot{margin:22px 0 0;font:var(--label-3-medium);color:var(--label-assistive);text-align:center}
 </style>
 </head>
 <body>
-<p>카탈로그로 넘어갑니다 — <a href="./%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html">바로 열기</a></p>
+
+<div class="hub">
+  <span class="logo-crissit hub__logo" role="img" aria-label="crissit"></span>
+  <h1 class="hub__title">컴포넌트 · 정책</h1>
+  <p class="hub__sub">피그마 「자사 홈페이지 v2」를 코드로 옮긴 것과, 그 화면들의 정책입니다.</p>
+
+  <div class="hub__list">
+    <a class="card" href="%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8.html">
+      <div class="card__top">
+        <h2 class="card__name">컴포넌트 카탈로그</h2>
+        <span class="tag">15종</span>
+        <i class="icon icon--20 i-arrow-right card__arrow" aria-hidden="true"></i>
+      </div>
+      <p class="card__desc">무엇이 있고 어떻게 생겼나. 변형마다 실측값이 적혀 있습니다.
+        기본은 <b>우리 웹사이트가 실제로 쓰는 것만</b> 보여줍니다.</p>
+      <p class="card__meta">검사 · 메모 · 설명 도구 · 개발용 키트 받기</p>
+    </a>
+
+    <a class="card" href="%EC%A0%95%EC%B1%85.html">
+      <div class="card__top">
+        <h2 class="card__name">정책 정의서</h2>
+        <span class="tag">4장 · 31문장</span>
+        <i class="icon icon--20 i-arrow-right card__arrow" aria-hidden="true"></i>
+      </div>
+      <p class="card__desc">언제 무엇이 보이나. 정의서 문장을 <b>우리 구현과 나란히</b> 놓고
+        지킴 · 다르게 정함 · 미구현으로 갈라 둡니다. 기본은 <b>확인 필요</b>입니다.</p>
+      <p class="card__meta">문장은 피그마에서 뽑은 사본 — 어긋나면 피그마가 맞습니다</p>
+    </a>
+  </div>
+
+  <div class="hub__hand">
+    <h2>개발 · AI 에게 넘길 것</h2>
+    <p>위 두 화면은 <b>사람이 눈으로 보는 것</b>입니다. 구현하는 쪽에는 아래만 주면 됩니다 —
+      합쳐 13KB 이고, 나머지는 필요할 때 낱개로 가져갑니다.</p>
+    <ul>
+      <li><a href="AGENTS.md">AGENTS.md</a> 규칙</li>
+      <li><a href="registry.json">registry.json</a> 색인</li>
+      <li><a href="llms.txt">llms.txt</a> 표지</li>
+    </ul>
+  </div>
+
+  <p class="hub__foot">메모를 남기려면 각 화면에서 <b>이름과 닉네임</b>을 넣습니다.</p>
+</div>
+
 </body>
 </html>
