@@ -31,7 +31,7 @@
      이 값을 쓴다. CSS·아이콘·스크립트를 고칠 때 `?v=` 와 함께 올린다.
      받은 시각이 아니라 **내용이 바뀐 시각**이어야 의미가 있다.
      날짜만으로는 같은 날 두 번 고쳤을 때 구분이 안 되므로 분까지 적는다 */
-  var UPDATED = "2026-09-09 18:40";
+  var UPDATED = "2026-09-10 09:20";
 
   /* 파일명에 쓸 꼴 — 공백과 콜론은 파일명에서 다루기 나쁘다.
      "2026-09-08 15:10" → "20260908-1510" */
@@ -117,7 +117,8 @@
     document.querySelectorAll("script[src]").forEach(function (s) {
       var h = s.getAttribute("src").split("?")[0];
       // 동작이 있는 컴포넌트 스크립트만. 도구와 이 파일 자신은 뺀다
-      if (h.indexOf("js/") === 0 && h.indexOf("kit.js") === -1) js.push(h);
+      // kit.js 와 use.js 는 **카탈로그 화면 기능**이라 키트에 담지 않는다
+      if (h.indexOf("js/") === 0 && h.indexOf("kit.js") === -1 && h.indexOf("use.js") === -1) js.push(h);
     });
     EXTRA.css.forEach(function (f) { if (css.indexOf(f) === -1) css.push(f); });
     EXTRA.js.forEach(function (f) { if (js.indexOf(f) === -1) js.push(f); });
