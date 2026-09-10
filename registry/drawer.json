@@ -1,0 +1,54 @@
+{
+ "id": "drawer",
+ "이름": "GNB 드로어 — 모바일 · 태블릿",
+ "가족": "drawer",
+ "상태": "현행",
+ "한줄": "햄버거를 누르면 열리는 전체 메뉴.",
+ "피그마": "피그마 GNB/LNB (모바일·태블릿) · 1010:18163~18175 · 가이드 문서 [GNB_Reponsible]",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/drawer.css",
+  "css/icon-button.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "drawer--inline",
+   "상태": "카탈로그 표시용",
+   "왜": "데모를 액자 안에 세우려고 쓴 것이다. 화면에서는 쓰지 않는다"
+  },
+  {
+   "클래스": "drawer--md",
+   "상태": "카탈로그 표시용",
+   "왜": "데모를 액자 안에 세우려고 쓴 것이다. 화면에서는 쓰지 않는다"
+  },
+  {
+   "클래스": "drawer--sm",
+   "상태": "카탈로그 표시용",
+   "왜": "데모를 액자 안에 세우려고 쓴 것이다. 화면에서는 쓰지 않는다"
+  }
+ ],
+ "구조": [
+  "drawer__bar",
+  "drawer__body",
+  "drawer__item",
+  "drawer__lang",
+  "drawer__lang-code",
+  "drawer__lang-group",
+  "drawer__link",
+  "drawer__list",
+  "drawer__logo",
+  "drawer__panel",
+  "drawer__scrim",
+  "drawer__sub",
+  "drawer__sub-row",
+  "drawer__sub-row--auto",
+  "drawer__top",
+  "drawer__util"
+ ],
+ "실제 조합": [],
+ "마크업": "<div class=\"drawer drawer--inline drawer--sm is-open\" style=\"width:360px;flex:none;height:560px\">\n  <div class=\"drawer__panel\">\n    <div class=\"drawer__body\">\n      <div class=\"drawer__top\">\n        <div class=\"drawer__bar\">\n          <a class=\"drawer__logo\" href=\"#drawer\"><span class=\"logo-crissit\"></span></a>\n          <button class=\"ibtn ibtn--normal ibtn--md has-overlay\"><i class=\"icon i-close\"></i></button>\n        </div>\n        <div class=\"drawer__list\">\n          <div class=\"drawer__item\">\n            <button class=\"drawer__link\"><span>회사</span><i class=\"icon icon--20 i-chevron-down\"></i></button>\n          </div>\n          <div class=\"drawer__item\">\n            <button class=\"drawer__link\"><span>제품</span><i class=\"icon icon--20 i-chevron-down\"></i></button>\n          </div>\n          <div class=\"drawer__item\">\n            <a class=\"drawer__link\" href=\"#drawer\"><span>고객사</span></a>\n          </div>\n          <div class=\"drawer__item\">\n            <a class=\"drawer__link\" href=\"#drawer\"><span>미디어</span></a>\n          </div>\n        </div>\n      </div>\n      <div class=\"drawer__util\">\n        <div class=\"lang\" data-lang>\n          <button class=\"drawer__lang\" type=\"button\" aria-expanded=\"false\" aria-haspopup=\"listbox\">\n            <i class=\"icon icon--20 i-earth\"></i>\n            <span class=\"drawer__lang-group\"><span class=\"drawer__lang-code\">KR</span><i class=\"icon icon--16 i-chevron-down\"></i></span>\n          </button>\n          <div class=\"dd-lang\" role=\"listbox\" aria-label=\"언어 선택\">\n            <button type=\"button\" role=\"option\" aria-selected=\"true\">KR</button>\n            <button type=\"button\" role=\"option\" aria-selected=\"false\">EN</button>\n          </div>\n        </div>\n        <button class=\"btn btn--solid btn--primary btn--sm has-overlay\"><span>문의하기</span></button>\n      </div>\n    </div>\n  </div>\n</div>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#drawer"
+}

@@ -1,0 +1,49 @@
+{
+ "id": "chip",
+ "이름": "Chip",
+ "가족": "chip",
+ "상태": "현행",
+ "한줄": "상호작용으로 정보를 분류하거나 상태를 표시할 때 쓴다.",
+ "피그마": "피그마 Button/Chip/Filter 1008:6628 · Chip/Filter/Active 1008:6674 · 변형 13",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/chip.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "chip--expand",
+   "상태": "라이브러리에만"
+  },
+  {
+   "클래스": "chip--lg",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  },
+  {
+   "클래스": "chip--md",
+   "상태": "라이브러리에만"
+  },
+  {
+   "클래스": "chip--sm",
+   "상태": "라이브러리에만"
+  }
+ ],
+ "구조": [
+  "chip__caret"
+ ],
+ "실제 조합": [
+  {
+   "조합": "chip chip--lg",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<button class=\"chip chip--lg\"><span>텍스트</span><i class=\"chip__caret\"></i></button>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#chip"
+}

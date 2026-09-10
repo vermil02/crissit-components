@@ -13,22 +13,22 @@
      ──────────────────────────────────────────────────────────── -->
 <link rel="icon" href="assets/logo-crissit-symbol.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="css/tokens.css?v=20260910a">
-<link rel="stylesheet" href="css/base.css?v=20260910a">
-<link rel="stylesheet" href="css/icons.css?v=20260910a">
-<link rel="stylesheet" href="css/button.css?v=20260910a">
-<link rel="stylesheet" href="css/icon-button.css?v=20260910a">
-<link rel="stylesheet" href="css/chip.css?v=20260910a">
-<link rel="stylesheet" href="css/pagination.css?v=20260910a">
-<link rel="stylesheet" href="css/dropdown.css?v=20260910a">
-<link rel="stylesheet" href="css/drawer.css?v=20260910a">
-<link rel="stylesheet" href="css/heading.css?v=20260910a">
-<link rel="stylesheet" href="css/filter.css?v=20260910a">
-<link rel="stylesheet" href="css/gnb.css?v=20260910a">
-<link rel="stylesheet" href="css/footer.css?v=20260910a">
-<link rel="stylesheet" href="css/boardlist.css?v=20260910a">
+<link rel="stylesheet" href="css/tokens.css?v=20260910b">
+<link rel="stylesheet" href="css/base.css?v=20260910b">
+<link rel="stylesheet" href="css/icons.css?v=20260910b">
+<link rel="stylesheet" href="css/button.css?v=20260910b">
+<link rel="stylesheet" href="css/icon-button.css?v=20260910b">
+<link rel="stylesheet" href="css/chip.css?v=20260910b">
+<link rel="stylesheet" href="css/pagination.css?v=20260910b">
+<link rel="stylesheet" href="css/dropdown.css?v=20260910b">
+<link rel="stylesheet" href="css/drawer.css?v=20260910b">
+<link rel="stylesheet" href="css/heading.css?v=20260910b">
+<link rel="stylesheet" href="css/filter.css?v=20260910b">
+<link rel="stylesheet" href="css/gnb.css?v=20260910b">
+<link rel="stylesheet" href="css/footer.css?v=20260910b">
+<link rel="stylesheet" href="css/boardlist.css?v=20260910b">
 <!-- 도구 · componote (정본: 업무도구/componote — 여기 것은 복사본이다) -->
-<link rel="stylesheet" href="componote/componote.css?v=20260910a">
+<link rel="stylesheet" href="componote/componote.css?v=20260910b">
 <style>
 /* ─── 카탈로그 자체의 껍데기. 컴포넌트 CSS 가 아니다 ─── */
 body{background:var(--neutral-50)}
@@ -161,8 +161,13 @@ body{background:var(--neutral-50)}
 
 /* 「쓰는 것만」 일 때 안 쓰는 것을 접는다 */
 body[data-use="only"] [data-use-off]{display:none!important}
-/* 「전부」 일 때는 보이되 안 쓰는 것임이 표시된다 */
-body[data-use="all"] [data-use-off]{opacity:.55;outline:1px dashed var(--line-normal);outline-offset:4px}
+/* 「전부」 일 때는 **그대로 선명하게** 보이고 라벨만 붙는다.
+   ⚠ 처음에는 흐리게(opacity .55) + 파선으로 두었는데 **「비활성화(고장난 것)」로
+      읽혔다**(2026-09-10 사용자 지적). 디자인 시스템 관행도 흐림이 아니라 글자 라벨이다 —
+      흐림은 disabled 를 뜻하고, 여기서 말하려는 건 「우리가 안 고른 판」이다.
+      대신 왼쪽에 얇은 표시선만 둬서 어디까지가 그 덩이인지 보이게 한다 */
+body[data-use="all"] .card[data-use-off],
+body[data-use="all"] .frame[data-use-off]{border-left:3px solid var(--neutral-200)}
 body[data-use="all"] .use-hidden{display:none}
 
 .iconset{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));
@@ -230,11 +235,11 @@ table.tk code{font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;colo
   .cat__main{padding:32px 20px 120px}
 }
 </style>
-<script src="js/boardlist-main.js?v=20260910a" defer></script>
-<script src="js/gnb-lang.js?v=20260910a" defer></script>
+<script src="js/boardlist-main.js?v=20260910b" defer></script>
+<script src="js/gnb-lang.js?v=20260910b" defer></script>
 <!-- 쓰임 — 실제로 쓰는 것만 보이게 한다. **카탈로그 화면 기능**이라 키트에는 안 담긴다 -->
-<script src="js/use.js?v=20260910a" defer></script>
-<script src="js/kit.js?v=20260910a" defer></script>
+<script src="js/use.js?v=20260910b" defer></script>
+<script src="js/kit.js?v=20260910b" defer></script>
 <!-- componote 에 이 페이지의 짜임을 알려 준다 (도구보다 먼저) -->
 <script>
 /* componote 설정
@@ -254,7 +259,7 @@ window.componote = {
   memoServer: "https://crissit-component-memos.vermil02.workers.dev/"
 };
 </script>
-<script src="componote/componote.js?v=20260910a" defer></script>
+<script src="componote/componote.js?v=20260910b" defer></script>
 </head>
 <body>
 
@@ -298,6 +303,11 @@ window.componote = {
 
   <div class="cat__kit">
     <button type="button" data-kit-download>개발용 키트 받기</button>
+    <p class="what" style="margin-top:10px">
+      개발·AI 에게 넘길 때는 <a href="AGENTS.md" style="color:inherit;text-decoration:underline">AGENTS.md</a>(규칙 6KB)와
+      <a href="registry.json" style="color:inherit;text-decoration:underline">registry.json</a>(색인 4.5KB)만 주면 됩니다.
+      컴포넌트 낱개는 <code>registry/&lt;id&gt;.json</code>.
+    </p>
     <p class="when">컴포넌트 갱신<b><span data-kit-updated>—</span> KST</b></p>
     <p class="what">CSS · 아이콘 · 동작 스크립트를 zip 한 개로. 이 카탈로그 화면과 검토 도구는 빠집니다.</p>
   </div>
@@ -1406,7 +1416,7 @@ window.componote = {
 </section>
 
 <!-- ══════════════ Board list / Main ══════════════ -->
-<section class="sec" id="bl-main" data-use-family="bl">
+<section class="sec" id="bl-main" data-use-family="bl" data-use-scope="bl-main">
   <h2>Board list / Main</h2>
   <p class="desc">미디어·소식 영역의 대표 기사. 최대 5건이 8초마다 자동으로 넘어가고, 남은 시간은 일시정지 버튼 테두리가 차오르며 표시된다.</p>
   <p class="src">피그마 <code>Content/Boardlist/Main · 1008:7744</code> · 변형 6 · 정책 <code>[Media_Web_Desktop] 기능 및 정책 정의서</code> §1 · 동작 <code>js/boardlist-main.js</code></p>
@@ -1544,7 +1554,7 @@ window.componote = {
 </section>
 
 <!-- ══════════════ Board list / Common ══════════════ -->
-<section class="sec" id="bl-common" data-use-family="bl">
+<section class="sec" id="bl-common" data-use-family="bl" data-use-scope="bl-h bl-v">
   <h2>Board list / Common</h2>
   <p class="desc">목록과 그리드에 반복해서 쓰는 카드. 가로형(Horizontal)은 목록 페이지, 세로형(Vertical)은 관련 기사 그리드에 쓴다.</p>
   <p class="src">피그마 <code>Content/Boardlist/Common · 1008:7915</code> · 변형 8 (Breakpoint 2 × State 2 × Type 2)</p>
@@ -1658,7 +1668,7 @@ window.componote = {
 </section>
 
 <!-- ══════════════ Board list / Recommand ══════════════ -->
-<section class="sec" id="bl-rec" data-use-family="bl">
+<section class="sec" id="bl-rec" data-use-family="bl" data-use-scope="bl-rec">
   <h2>Board list / Recommand</h2>
   <p class="desc">상세 페이지 사이드에서 다른 글을 추천하는 줄. 제목만 있고 이미지·날짜가 없다.</p>
   <p class="src">피그마 <code>Content/Boardlist/Recommand · 1008:8040</code> · 변형 2</p>

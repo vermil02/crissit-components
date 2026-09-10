@@ -1,0 +1,47 @@
+{
+ "id": "pgn",
+ "이름": "Pagination",
+ "가족": "pgn",
+ "상태": "현행",
+ "한줄": "많은 양의 데이터를 여러 페이지로 나누어 표시할 때 쓴다.",
+ "피그마": "피그마 Navigation/Pagination 1008:7671 · Icon Button/Num 1008:7688",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/pagination.css",
+  "css/icon-button.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "pgn--md",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  },
+  {
+   "클래스": "pgn--single",
+   "상태": "예정",
+   "왜": "페이지가 1장뿐이면 줄 자체를 감추는 규칙이다(2026-09-08 결정). 지금 보도자료 목록은 4건이라 한 장을 넘지 않아서 쓸 자리가 없다 — 기사가 11건이 되면 쓴다"
+  },
+  {
+   "클래스": "pgn--sm",
+   "상태": "라이브러리에만"
+  }
+ ],
+ "구조": [
+  "pgn__num"
+ ],
+ "실제 조합": [
+  {
+   "조합": "pgn pgn--md",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<nav class=\"pgn pgn--md\">\n  <button class=\"ibtn ibtn--bg ibtn--white ibtn--md has-overlay\" disabled><i class=\"icon i-arrow-left\"></i></button>\n  <button class=\"pgn__num is-active\">1</button>\n  <button class=\"pgn__num has-overlay\">2</button>\n  <button class=\"pgn__num has-overlay\">3</button>\n  <button class=\"pgn__num has-overlay\">4</button>\n  <button class=\"pgn__num has-overlay\">5</button>\n  <button class=\"ibtn ibtn--bg ibtn--white ibtn--md has-overlay\"><i class=\"icon i-arrow-right\"></i></button>\n</nav>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#pgn"
+}

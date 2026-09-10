@@ -1,0 +1,30 @@
+{
+ "id": "heading",
+ "이름": "Section Heading",
+ "가족": "sh",
+ "상태": "현행",
+ "한줄": "페이지·섹션 제목 블록.",
+ "피그마": "피그마 Heading · 1010:15042 · 가이드 문서에서 발견",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/heading.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "sh--inverse",
+   "상태": "예정",
+   "왜": "어두운 배경용 Section Heading. 피그마에 이 변형이 없어서 이쪽에서 Label/Inverse 토큰으로 대응시켜 만들어 뒀다. 어두운 절에 제목이 들어가는 화면이 나오면 쓴다"
+  }
+ ],
+ "구조": [
+  "sh__accent",
+  "sh__sub",
+  "sh__title"
+ ],
+ "실제 조합": [],
+ "마크업": "<header class=\"sh\">\n  <div class=\"sh__title\">\n    <span class=\"sh__accent\">처음의</span>\n    <span>설계를 만드는 조직</span>\n  </div>\n  <p class=\"sh__sub\">조직의 위대함은 개인 혼자서는<br>불가능한 일을 가능하게 만드는 것에 있습니다.</p>\n</header>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#heading"
+}

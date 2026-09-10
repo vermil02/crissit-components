@@ -1,0 +1,58 @@
+{
+ "id": "bl-main",
+ "이름": "Board list / Main",
+ "가족": "bl",
+ "상태": "현행",
+ "한줄": "미디어·소식 영역의 대표 기사.",
+ "피그마": "피그마 Content/Boardlist/Main · 1008:7744 · 변형 6 · 정책 [Media_Web_Desktop] 기능 및 정책 정의서 §1 · 동작 js/boardlist-main.js",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/boardlist.css",
+  "css/icon-button.css"
+ ],
+ "종류": [
+  {
+   "클래스": "bl-main",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "변형": [
+  {
+   "클래스": "bl-main--single",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "구조": [
+  "bl-main__body",
+  "bl-main__head",
+  "bl-main__hit",
+  "bl-main__nav",
+  "bl-main__nav-group",
+  "bl-main__summary",
+  "bl-main__text",
+  "bl-main__title",
+  "bl__badges",
+  "bl__clamp2",
+  "bl__date",
+  "bl__img",
+  "bl__img-zoom"
+ ],
+ "실제 조합": [
+  {
+   "조합": "bl bl-main",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<div class=\"bl bl-main\" data-bl-slide>\n  <a class=\"bl-main__hit\" href=\"#bl-main\" aria-label=\"기사 보기\"></a>\n  <div class=\"bl__img\"><span class=\"bl__img-zoom\"></span></div>\n  <div class=\"bl-main__body\">\n    <div class=\"bl-main__head\">\n      <div class=\"bl-main__text\">\n        <span class=\"bl__date\">26.09.01</span>\n        <h3 class=\"bl-main__title\">[2026 혁신 바이오 기술대상] 크리스아이티, 바이오·화학 AI 플랫폼 사업 확대</h3>\n        <p class=\"bl-main__summary\">[2026 혁신 바이오 기술대상] 크리스아이티, 바이오·화학 AI 플랫폼 사업 확대로 국내 연구 현장의 데이터 활용 수준을 끌어올린다.</p>\n      </div>\n      <div class=\"bl__badges\"><span class=\"badge badge--lg\">보도자료</span><span class=\"badge badge--lg\">수상</span><span class=\"badge badge--lg\">플랫폼</span></div>\n    </div>\n    <div class=\"bl-main__nav\">\n      <div class=\"bl-main__nav-group\">\n        <button class=\"ibtn ibtn--outlined ibtn--lg\" data-bl-prev aria-label=\"이전 기사\"><i class=\"icon i-arrow-left\"></i></button>\n        <button class=\"ibtn ibtn--outlined ibtn--lg\" data-bl-next aria-label=\"다음 기사\"><i class=\"icon i-arrow-right\"></i></button>\n      </div>\n      <button class=\"ibtn ibtn--outlined ibtn--lg bl-prog\" data-bl-toggle>\n        <i class=\"icon i-pause\"></i>\n        <span class=\"bl-prog__ring\" aria-hidden=\"true\"></span>\n      </button>\n    </div>\n  </div>\n</div>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#bl-main"
+}

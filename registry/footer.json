@@ -1,0 +1,76 @@
+{
+ "id": "footer",
+ "이름": "Footer",
+ "가족": "ft",
+ "상태": "현행",
+ "한줄": "사이트 하단 공통 영역.",
+ "피그마": "피그마 Footer · 1008:7323 · 변형 8 (Breakpoint 4 × Mode 2)",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/footer.css",
+  "css/icon-button.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "ft--black",
+   "상태": "현행",
+   "쓰는 화면": [
+    "메인 하단",
+    "연혁"
+   ]
+  },
+  {
+   "클래스": "ft--white",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록",
+    "보도자료 상세",
+    "파트너사",
+    "회사소개"
+   ]
+  }
+ ],
+ "구조": [
+  "ft__aurora",
+  "ft__aurora-conic",
+  "ft__aurora-cx1",
+  "ft__aurora-cx2",
+  "ft__brand",
+  "ft__col",
+  "ft__col-head",
+  "ft__col-list",
+  "ft__cols",
+  "ft__cols-wrap",
+  "ft__cta",
+  "ft__cta-inner",
+  "ft__cta-lead",
+  "ft__cta-text",
+  "ft__inner",
+  "ft__legal",
+  "ft__legal-line",
+  "ft__row"
+ ],
+ "실제 조합": [
+  {
+   "조합": "ft ft--white",
+   "쓰는 화면": [
+    "보도자료 목록",
+    "보도자료 상세",
+    "파트너사",
+    "회사소개"
+   ]
+  },
+  {
+   "조합": "ft ft--black",
+   "쓰는 화면": [
+    "메인 하단",
+    "연혁"
+   ]
+  }
+ ],
+ "마크업": "<div class=\"ft ft--black\">\n  <div class=\"ft__cta\">\n    <!-- 오로라 — 움직이는 글로우. 껍데기 두 겹은 흐름·숨만 맡고 그림은 맨 안쪽에서만 그린다 -->\n    <div class=\"ft__aurora\" aria-hidden=\"true\">\n      <div class=\"ft__aurora-cx1\"><div class=\"ft__aurora-cx2\"><div class=\"ft__aurora-conic\"></div></div></div>\n    </div>\n    <div class=\"ft__cta-inner\">\n    <div class=\"ft__cta-text\">\n      <h2><span class=\"ft__cta-lead\">성공적인 AX 도입을</span><br>함께 만듭니다</h2>\n      <p>도입이 필요한 환경을 파악하고 요청사항 및 보안 요건에 맞는 구성으로 제안합니다.</p>\n    </div>\n    <button class=\"btn btn--solid btn--primary btn--md has-overlay\"><span>무료 컨설팅 신청</span></button>\n  </div></div>\n  <div class=\"ft__inner\"><div class=\"ft__row\">\n    <a class=\"ft__brand\" href=\"#footer\"><span class=\"logo-realizers\"></span></a>\n    <div class=\"ft__cols-wrap\">\n      <div class=\"ft__cols\">\n        <div class=\"ft__col\">\n          <p class=\"ft__col-head\">회사</p>\n          <div class=\"ft__col-list\"><a href=\"#footer\">회사소개</a><a href=\"#footer\">연혁</a><a href=\"#footer\">미디어</a></div>\n        </div>\n        <div class=\"ft__col\">\n          <p class=\"ft__col-head\">제품</p>\n          <div class=\"ft__col-list\"><a href=\"#footer\">Prixm AI</a><a href=\"#footer\">Toxmind</a><a class=\"is-blank\" href=\"#footer\"><span>Knoden AI</span><i class=\"icon icon--16 i-blank\" aria-hidden=\"true\"></i></a></div>\n        </div>\n        <div class=\"ft__col\">\n          <p class=\"ft__col-head\">미디어</p>\n          <div class=\"ft__col-list\"><a href=\"#footer\">보도 자료</a></div>\n        </div>\n        <div class=\"ft__col\">\n          <p class=\"ft__col-head\">서비스 이용안내</p>\n          <div class=\"ft__col-list\"><a href=\"#footer\">문의하기</a><a href=\"#footer\">개인정보 처리방침</a></div>\n        </div>\n      </div>\n      <div class=\"ft__legal\">\n        <div class=\"ft__legal-line\"><span>사업자 등록 번호 : 863-81-03090</span><span>|</span><span>대표 : 박종진</span></div>\n        <span>경기 용인시 수지구 포은대로 59번길 시그니처광교, 1001호, 717호</span>\n        <span>© 2026 crissit Inc. All rights reserved.</span>\n      </div>\n    </div>\n  </div></div>\n</div>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#footer"
+}

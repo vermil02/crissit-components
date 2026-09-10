@@ -1,0 +1,86 @@
+{
+ "id": "bl-common",
+ "이름": "Board list / Common",
+ "가족": "bl",
+ "상태": "현행",
+ "한줄": "목록과 그리드에 반복해서 쓰는 카드.",
+ "피그마": "피그마 Content/Boardlist/Common · 1008:7915 · 변형 8 (Breakpoint 2 × State 2 × Type 2)",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/boardlist.css",
+  "css/icon-button.css"
+ ],
+ "종류": [
+  {
+   "클래스": "bl-h",
+   "상태": "이전판",
+   "후속": "bl-h--wide",
+   "왜": "피그마에서 채용해 온 판(사진 176×122)이다. 목록 폭이 865~1240 인데 글보다 사진이 우표만 해 보여서 2026-09-09 에 300×180 으로 갈아탔다. 보도자료 목록은 늘 `.bl-h--wide` 를 함께 쓴다",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  },
+  {
+   "클래스": "bl-v",
+   "상태": "현행",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 상세"
+   ]
+  }
+ ],
+ "변형": [
+  {
+   "클래스": "bl-h--wide",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "구조": [
+  "bl-h__body",
+  "bl-h__text",
+  "bl-h__title",
+  "bl-v__body",
+  "bl-v__text",
+  "bl-v__title",
+  "bl__badges",
+  "bl__clamp2",
+  "bl__date",
+  "bl__img",
+  "bl__img-zoom"
+ ],
+ "실제 조합": [
+  {
+   "조합": "bl bl-v",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 상세"
+   ]
+  },
+  {
+   "조합": "bl-v__title bl__clamp2",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 상세"
+   ]
+  },
+  {
+   "조합": "bl bl-h bl-h--wide",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  },
+  {
+   "조합": "bl-h__title bl__clamp2",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<a class=\"bl bl-h bl-h--wide\" href=\"#bl-common\">\n  <div class=\"bl-h__body\">\n    <div class=\"bl-h__text\">\n      <span class=\"bl__date\">26.09.01</span>\n      <h3 class=\"bl-h__title bl__clamp2\">1024 이상에서는 제목이 한 줄에서 잘린다 — 날짜와 나란히 온다</h3>\n    </div>\n    <div class=\"bl__badges\"><span class=\"badge badge--md\">보도자료</span></div>\n  </div>\n  <div class=\"bl__img\"><span class=\"bl__img-zoom\"></span></div>\n</a>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#bl-common"
+}

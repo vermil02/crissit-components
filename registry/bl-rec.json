@@ -1,0 +1,49 @@
+{
+ "id": "bl-rec",
+ "이름": "Board list / Recommand",
+ "가족": "bl",
+ "상태": "현행",
+ "한줄": "상세 페이지 사이드에서 다른 글을 추천하는 줄.",
+ "피그마": "피그마 Content/Boardlist/Recommand · 1008:8040 · 변형 2",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/boardlist.css",
+  "css/icon-button.css"
+ ],
+ "종류": [
+  {
+   "클래스": "bl-rec",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "변형": [],
+ "구조": [
+  "bl-rec__title",
+  "bl__badges",
+  "bl__clamp2",
+  "bl__date",
+  "bl__img",
+  "bl__img-zoom"
+ ],
+ "실제 조합": [
+  {
+   "조합": "bl bl-rec",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  },
+  {
+   "조합": "bl-rec__title bl__clamp2",
+   "쓰는 화면": [
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<a class=\"bl bl-rec\" href=\"#bl-rec\"><h3 class=\"bl-rec__title bl__clamp2\">타이틀은 2줄이 최대입니다.<br>타이틀은 2줄이 최대입니다.</h3></a>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#bl-rec"
+}

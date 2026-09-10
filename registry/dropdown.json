@@ -1,0 +1,30 @@
+{
+ "id": "dropdown",
+ "이름": "Dropdown list",
+ "가족": "chip-option",
+ "상태": "예정",
+ "한줄": "Chip / Filter 를 펼쳤을 때 아래에 뜨는 목록 패널.",
+ "피그마": "피그마 Dropdown_list · 1010:17342 · 정책은 [Media_Web_Desktop] 기능 및 정책 정의서 §2",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/chip.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "chip-option--lg",
+   "상태": "라이브러리에만"
+  },
+  {
+   "클래스": "chip-option--md",
+   "상태": "라이브러리에만"
+  }
+ ],
+ "구조": [],
+ "실제 조합": [],
+ "마크업": "<button class=\"chip-option chip-option--lg is-active has-overlay\"><span>전체 연도</span></button>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#dropdown",
+ "왜": "`Dropdown_list · 2053:58997` 은 **컴포넌트만 있고 어느 화면에도 배치돼 있지 않다**(전 덤프 인스턴스 0개). 색·치수는 컴포넌트에서 읽었지만 어떻게 열리는지가 시안에 없어서, 붙는 위치·정렬·닫는 조건을 이쪽에서 정했다. 언어 선택이 실제로 이 모양을 쓰므로 「안 씀」이 아니라 「예정」이다"
+}

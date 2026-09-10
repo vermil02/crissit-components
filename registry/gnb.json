@@ -1,0 +1,100 @@
+{
+ "id": "gnb",
+ "이름": "GNB",
+ "가족": "gnb",
+ "상태": "현행",
+ "한줄": "웹사이트 전체에 동일하게 적용되는 최상단 내비게이션.",
+ "피그마": "피그마 GNB · 1019:15724 · 변형 28 · GNB/LNB 1019:15506 · Navigation/LNB/List 1019:16302 — 2026-09-07 Navigation 섹션이 재구성되어 노드 ID가 1008:에서 1019:로 바뀌었다",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/gnb.css",
+  "css/icon-button.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "gnb--black",
+   "상태": "현행",
+   "쓰는 화면": [
+    "보도자료 상세",
+    "연혁",
+    "파트너사",
+    "회사소개"
+   ]
+  },
+  {
+   "클래스": "gnb--transparent",
+   "상태": "현행",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 목록",
+    "보도자료 상세",
+    "연혁",
+    "파트너사",
+    "회사소개"
+   ]
+  }
+ ],
+ "구조": [
+  "gnb__bar",
+  "gnb__inner",
+  "gnb__lang",
+  "gnb__lang-code",
+  "gnb__lang-group",
+  "gnb__lnb",
+  "gnb__lnb-img",
+  "gnb__lnb-inner",
+  "gnb__lnb-list",
+  "gnb__lnb-side",
+  "gnb__lnb-title",
+  "gnb__logo",
+  "gnb__menu",
+  "gnb__right",
+  "gnb__toggle",
+  "gnb__util"
+ ],
+ "실제 조합": [
+  {
+   "조합": "gnb__lnb-img gnb__lnb-img--company",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 목록",
+    "보도자료 상세",
+    "연혁",
+    "파트너사",
+    "회사소개"
+   ]
+  },
+  {
+   "조합": "gnb__lnb-img gnb__lnb-img--product",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 목록",
+    "보도자료 상세",
+    "연혁",
+    "파트너사",
+    "회사소개"
+   ]
+  },
+  {
+   "조합": "gnb gnb--black gnb--transparent",
+   "쓰는 화면": [
+    "보도자료 상세",
+    "연혁",
+    "파트너사",
+    "회사소개"
+   ]
+  },
+  {
+   "조합": "gnb gnb--transparent gnb--white",
+   "쓰는 화면": [
+    "메인 하단",
+    "보도자료 목록"
+   ]
+  }
+ ],
+ "마크업": "<header class=\"gnb gnb--white\">\n  <div class=\"gnb__bar\"><div class=\"gnb__inner\">\n    <a class=\"gnb__logo\" href=\"#gnb\"><span class=\"logo-crissit\"></span></a>\n    <div class=\"gnb__right\">\n      <nav class=\"gnb__menu\"><a href=\"#gnb\">회사</a><a href=\"#gnb\">제품</a><a href=\"#gnb\">고객사</a><a href=\"#gnb\">미디어</a></nav>\n      <div class=\"gnb__util\">\n        <div class=\"lang\" data-lang>\n          <button class=\"gnb__lang\" type=\"button\" aria-expanded=\"false\" aria-haspopup=\"listbox\">\n            <i class=\"icon icon--20 i-earth\"></i>\n            <span class=\"gnb__lang-group\"><span class=\"gnb__lang-code\">KR</span><i class=\"icon icon--16 i-chevron-down\"></i></span>\n          </button>\n          <div class=\"dd-lang\" role=\"listbox\" aria-label=\"언어 선택\">\n            <button type=\"button\" role=\"option\" aria-selected=\"true\">KR</button>\n            <button type=\"button\" role=\"option\" aria-selected=\"false\">EN</button>\n          </div>\n        </div>\n        <button class=\"btn btn--solid btn--primary btn--sm has-overlay\"><span>문의하기</span></button>\n      </div>\n    </div>\n    <button class=\"gnb__toggle ibtn ibtn--normal has-overlay\"><i class=\"icon i-menu\"></i></button>\n  </div></div>\n</header>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#gnb"
+}

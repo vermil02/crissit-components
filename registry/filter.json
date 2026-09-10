@@ -1,0 +1,30 @@
+{
+ "id": "filter",
+ "이름": "Filter bar · Empty data",
+ "가족": "filter-bar",
+ "상태": "현행",
+ "한줄": "목록 위의 필터 줄과, 결과가 없을 때 목록 자리에 들어가는 빈 화면.",
+ "피그마": "피그마 News_main · 1010:17244",
+ "css": [
+  "css/tokens.css",
+  "css/base.css",
+  "css/icons.css",
+  "css/filter.css",
+  "css/icon-button.css",
+  "css/chip.css"
+ ],
+ "종류": [],
+ "변형": [
+  {
+   "클래스": "filter-bar--dirty",
+   "상태": "라이브러리에만"
+  }
+ ],
+ "구조": [
+  "filter-bar__chips",
+  "filter-bar__reset"
+ ],
+ "실제 조합": [],
+ "마크업": "<div class=\"filter-bar\">\n  <div class=\"filter-bar__chips\">\n    <button class=\"chip chip--lg\"><span>전체 연도</span><i class=\"chip__caret\"></i></button>\n    <button class=\"chip chip--lg\" disabled><span>전체 월</span><i class=\"chip__caret\"></i></button>\n  </div>\n  <button class=\"btn btn--text btn--md btn--assistive filter-bar__reset\">\n    <i class=\"icon icon--18 i-reset\"></i><span>초기화</span>\n  </button>\n</div>",
+ "카탈로그": "https://vermil02.github.io/crissit-components/카탈로그.html#filter"
+}
